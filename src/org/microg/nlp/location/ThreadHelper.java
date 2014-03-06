@@ -1,20 +1,42 @@
 package org.microg.nlp.location;
 
 import android.content.Context;
-import android.content.Intent;
-import org.microg.nlp.api.NlpApiConstants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadHelper implements Runnable {
-	private BackendHelper api;
+	private final Context context;
+	private final LocationProvider locationProvider;
+	private BackendHandler backendHandler;
 	private ScheduledThreadPoolExecutor executor;
 	private long time = 5000; // Initialize with 5s
 	private boolean enabled;
 
-	public ThreadHelper(Context context, LocationProvider provider) {
-		api = new BackendHelper(context, provider, new Intent(NlpApiConstants.ACTION_LOCATION_BACKEND));
+	public ThreadHelper(Context context, LocationProvider locationProvider) {
+		this.context = context;
+		this.locationProvider = locationProvider;
+		updateBackendHandler();
+	}
+
+	private void updateBackendHandler() {
+		List<BackendFuser.BackendInfo> backendList = new ArrayList<BackendFuser.BackendInfo>();
+		String backends = context.getSharedPreferences("config", Context.MODE_PRIVATE).getString("location_backends", "");
+		for (String backend : backends.split("\\|")) {
+			String[] parts = backend.split("/");
+			if (parts.length == 2) {
+				backendList.add(new BackendFuser.BackendInfo(parts[0], parts[1]));
+			}
+		}
+		backendHandler = new BackendFuser(context, backendList, locationProvider);
+	}
+
+	public void reload() {
+		disable();
+		updateBackendHandler();
+		enable();
 	}
 
 	public void disable() {
@@ -23,7 +45,7 @@ public class ThreadHelper implements Runnable {
 			executor = null;
 		}
 		if (enabled) {
-			api.unbind();
+			backendHandler.unbind();
 			enabled = false;
 		}
 	}
@@ -43,7 +65,7 @@ public class ThreadHelper implements Runnable {
 
 	public void enable() {
 		if (!enabled) {
-			api.bind();
+			backendHandler.bind();
 			enabled = true;
 		}
 		reset();
@@ -51,6 +73,6 @@ public class ThreadHelper implements Runnable {
 
 	@Override
 	public void run() {
-		api.update();
+		backendHandler.update();
 	}
 }

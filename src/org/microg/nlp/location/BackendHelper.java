@@ -11,7 +11,7 @@ import com.android.location.provider.LocationProviderBase;
 import org.microg.nlp.api.LocationBackend;
 import org.microg.nlp.api.LocationCallback;
 
-public class BackendHelper {
+public class BackendHelper implements BackendHandler {
 	private static final String TAG = BackendHelper.class.getName();
 	private final Context context;
 	private final LocationProvider provider;
@@ -29,6 +29,7 @@ public class BackendHelper {
 		this.serviceIntent = serviceIntent;
 	}
 
+	@Override
 	public boolean bind() {
 		if (!bound) {
 			try {
@@ -41,6 +42,7 @@ public class BackendHelper {
 		return true;
 	}
 
+	@Override
 	public void unbind() {
 		if (bound) {
 			try {
@@ -52,10 +54,12 @@ public class BackendHelper {
 		}
 	}
 
+	@Override
 	public Location getLastLocation() {
 		return lastLocation;
 	}
 
+	@Override
 	public Location update() {
 		if (backend == null) {
 			Log.d(TAG, "Not (yet) bound.");
@@ -81,7 +85,7 @@ public class BackendHelper {
 			location.setExtras(new Bundle());
 		}
 		location.getExtras().putString("SERVICE_BACKEND_PROVIDER", location.getProvider());
-		location.getExtras().putString("SERVICE_BACKEND_PACKAGE", serviceIntent.getPackage());
+		location.getExtras().putString("SERVICE_BACKEND_COMPONENT", serviceIntent.getComponent().flattenToShortString());
 		location.setProvider("network");
 		if (!location.hasAccuracy()) {
 			location.setAccuracy(50000);
@@ -96,7 +100,6 @@ public class BackendHelper {
 		}
 		location.getExtras().putParcelable(LocationProviderBase.EXTRA_NO_GPS_LOCATION, new Location(location));
 		lastLocation = location;
-		Log.v(TAG, "location=" + lastLocation);
 		return lastLocation;
 	}
 

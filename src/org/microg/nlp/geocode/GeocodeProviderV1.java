@@ -19,4 +19,9 @@ public class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp
 	                                    GeocoderParams params, List<Address> addresses) {
 		return null;
 	}
+
+	@Override
+	public void reload() {
+
+	}
 }

@@ -1,10 +1,24 @@
 package org.microg.nlp.location;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import org.microg.nlp.Provider;
 import org.microg.nlp.ProviderService;
 
 public abstract class LocationService extends ProviderService {
+	public static final String ACTION_RELOAD_SETTINGS = "org.microg.nlp.RELOAD_SETTINGS";
+
+	public static void reloadLocationService(Context context) {
+		Intent intent = new Intent(LocationService.ACTION_RELOAD_SETTINGS);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			intent.setClass(context, LocationServiceV2.class);
+		} else {
+			// TODO
+		}
+		context.startService(intent);
+	}
+
 	/**
 	 * Creates an LocationService.  Invoked by your subclass's constructor.
 	 *
@@ -28,6 +42,13 @@ public abstract class LocationService extends ProviderService {
 			nlprovider.reportLocation(location);
 		}
 		*/
+
+		if (ACTION_RELOAD_SETTINGS.equals(intent.getAction())) {
+			Provider provider = getCurrentProvider();
+			if (provider != null) {
+				provider.reload();
+			}
+		}
 	}
 
 	@Override

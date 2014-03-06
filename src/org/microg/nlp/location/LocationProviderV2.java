@@ -24,15 +24,20 @@ public class LocationProviderV2 extends LocationProviderBase implements Location
 			true, // supportsBearing
 			Criteria.POWER_LOW, // powerRequirement
 			Criteria.ACCURACY_COARSE); // accuracy
-	private final ThreadHelper handler;
+	private ThreadHelper helper;
 
 	public LocationProviderV2(Context context) {
 		super(TAG, props);
-		handler = new ThreadHelper(context, this);
+		this.helper = new ThreadHelper(context, this);
 	}
 
 	@Override
 	public void onDisable() {
+	}
+
+	@Override
+	public void reload() {
+		helper.reload();
 	}
 
 	@Override
@@ -70,10 +75,10 @@ public class LocationProviderV2 extends LocationProviderBase implements Location
 		Log.v(TAG, "using autoUpdate=" + autoUpdate + " autoTime=" + autoTime);
 
 		if (autoUpdate) {
-			handler.setTime(autoTime);
-			handler.enable();
+			helper.setTime(autoTime);
+			helper.enable();
 		} else {
-			handler.disable();
+			helper.disable();
 		}
 	}
 }

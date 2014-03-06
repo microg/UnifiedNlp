@@ -4,4 +4,6 @@ import android.os.IBinder;
 
 public interface Provider {
 	IBinder getBinder();
+
+	void reload();
 }

@@ -18,6 +18,7 @@ public abstract class ProviderService extends IntentService {
 
 	@Override
 	public void onCreate() {
+		super.onCreate();
 		provider = createProvider();
 	}
 

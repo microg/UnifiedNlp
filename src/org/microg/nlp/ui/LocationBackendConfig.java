@@ -20,6 +20,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import org.microg.nlp.R;
 import org.microg.nlp.api.NlpApiConstants;
+import org.microg.nlp.location.LocationService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,12 +72,24 @@ public class LocationBackendConfig extends Activity {
 			Drawable icon = serviceInfo.loadIcon(getPackageManager());
 			knownBackends.put(serviceInfo, new KnownBackend(serviceInfo, simpleName, icon));
 		}
+		String activeBackendString = getSharedPreferences("config", MODE_PRIVATE).getString("location_backends", "");
+		for (String backend : activeBackendString.split("\\|")) {
+			String[] parts = backend.split("/");
+			if (parts.length == 2) {
+				for (ServiceInfo serviceInfo : knownBackends.keySet()) {
+					if (serviceInfo.packageName.equals(parts[0]) && serviceInfo.name.equals(parts[1])) {
+						activeBackends.add(serviceInfo);
+					}
+				}
+			}
+		}
 		updateAddButton();
+		resetAdapter();
 	}
 
 	private void updateAddButton() {
 		if (activeBackends.size() == knownBackends.size()) {
-			if (activeBackends.isEmpty()) {
+			if (knownBackends.isEmpty()) {
 				// No backend installed
 				// TODO: notify user about that
 			}
@@ -102,6 +115,34 @@ public class LocationBackendConfig extends Activity {
 		}
 	}
 
+	private void enableBackend(ServiceInfo serviceInfo) {
+		activeBackends.add(serviceInfo);
+		onBackendsChanged();
+	}
+
+	private void disabledBackend(ServiceInfo serviceInfo) {
+		activeBackends.remove(serviceInfo);
+		onBackendsChanged();
+	}
+
+	private void onBackendsChanged() {
+		updateAddButton();
+		resetAdapter();
+		getSharedPreferences("config", MODE_PRIVATE).edit().putString("location_backends", backendString(activeBackends)).commit();
+		LocationService.reloadLocationService(this);
+	}
+
+	private String backendString(List<ServiceInfo> backends) {
+		StringBuilder sb = new StringBuilder();
+		for (ServiceInfo backend : backends) {
+			if (sb.length() != 0) {
+				sb.append("|");
+			}
+			sb.append(backend.packageName).append("/").append(backend.name);
+		}
+		return sb.toString();
+	}
+
 	private void showAddPluginPopup(View anchorView) {
 		updateUnusedBackends();
 
@@ -124,9 +165,7 @@ public class LocationBackendConfig extends Activity {
 				popUp.dismiss();
 				popUp = null;
 
-				activeBackends.add(unusedBackends.get(menuItem.getItemId()));
-				updateAddButton();
-				resetAdapter();
+				enableBackend(unusedBackends.get(menuItem.getItemId()));
 				return true;
 			}
 		});
@@ -160,9 +199,7 @@ public class LocationBackendConfig extends Activity {
 				popUp = null;
 
 				if (item.getItemId() == 0) {
-					activeBackends.remove(backend.serviceInfo);
-					updateAddButton();
-					resetAdapter();
+					disabledBackend(backend.serviceInfo);
 				} else if (item.getItemId() == 1) {
 					startActivity(createSettingsIntent(backend.serviceInfo));
 				}

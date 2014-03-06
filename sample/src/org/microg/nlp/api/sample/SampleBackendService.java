@@ -9,6 +9,10 @@ public class SampleBackendService extends LocationBackendService {
 
 	@Override
 	protected Location update() {
+		if (System.currentTimeMillis()%60000>2000) {
+			Log.d(TAG, "I decided not to answer now...");
+			return null;
+		}
 		Location location = new Location("sample");
 		location.setLatitude(42);
 		location.setLongitude(42);
