@@ -1,84 +1,210 @@
 package org.microg.nlp.ui;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ComponentInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
+import org.microg.nlp.R;
 import org.microg.nlp.api.NlpApiConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class LocationBackendConfig extends ListActivity {
+public class LocationBackendConfig extends Activity {
+	private static final String TAG = LocationBackendConfig.class.getName();
 
-	private List<String> activeBackends;
+	private List<ServiceInfo> activeBackends;
+	private Map<ServiceInfo, KnownBackend> knownBackends;
+	private List<ServiceInfo> unusedBackends;
 	private Adapter adapter;
+	private DynamicListView listView;
+	private View addButton;
+	private PopupMenu popUp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		activeBackends = new ArrayList<String>();
-		List<KnownBackend> backends = new ArrayList<KnownBackend>();
+		setContentView(R.layout.pluginselection);
+		listView = (DynamicListView) findViewById(android.R.id.list);
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> view, View view2, int i, long l) {
+				Log.d(TAG, "onItemClick: " + l);
+			}
+		});
+		addButton = findViewById(android.R.id.button1);
+		addButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				showAddPluginPopup(view);
+			}
+		});
+
+		updateBackends();
+	}
+
+	private void updateBackends() {
+		activeBackends = new ArrayList<ServiceInfo>();
+		knownBackends = new HashMap<ServiceInfo, KnownBackend>();
+		unusedBackends = new ArrayList<ServiceInfo>();
 		Intent intent = new Intent(NlpApiConstants.ACTION_LOCATION_BACKEND);
-		List<ResolveInfo> resolveInfos = getPackageManager().queryIntentServices(intent, 0);
+		List<ResolveInfo> resolveInfos = getPackageManager().queryIntentServices(intent, PackageManager.GET_META_DATA);
 		for (ResolveInfo info : resolveInfos) {
-			String packageName = info.serviceInfo.packageName;
-			String simpleName = String.valueOf(info.serviceInfo.loadLabel(getPackageManager()));
-			Drawable icon = info.serviceInfo.loadIcon(getPackageManager());
-			backends.add(new KnownBackend(packageName, simpleName, icon));
+			ServiceInfo serviceInfo = info.serviceInfo;
+			String simpleName = String.valueOf(serviceInfo.loadLabel(getPackageManager()));
+			Drawable icon = serviceInfo.loadIcon(getPackageManager());
+			knownBackends.put(serviceInfo, new KnownBackend(serviceInfo, simpleName, icon));
 		}
-		adapter = new Adapter(backends);
-		setListAdapter(adapter);
+		updateAddButton();
 	}
 
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		KnownBackend backend = adapter.getItem(position);
-		if (activeBackends.contains(backend.packageName)) {
-			activeBackends.remove(backend.packageName);
+	private void updateAddButton() {
+		if (activeBackends.size() == knownBackends.size()) {
+			if (activeBackends.isEmpty()) {
+				// No backend installed
+				// TODO: notify user about that
+			}
+			addButton.setVisibility(View.GONE);
 		} else {
-			activeBackends.add(backend.packageName);
+			addButton.setVisibility(View.VISIBLE);
 		}
-		adapter.notifyDataSetChanged();
 	}
 
-	private class Adapter extends ArrayAdapter<KnownBackend> {
-		public Adapter(List<KnownBackend> backends) {
-			super(LocationBackendConfig.this, android.R.layout.select_dialog_multichoice, android.R.id.text1, backends);
+	private void resetAdapter() {
+		List<ServiceInfo> backends = activeBackends;
+		adapter = new Adapter(backends);
+		listView.setList(backends);
+		listView.setAdapter(adapter);
+	}
+
+	private void updateUnusedBackends() {
+		unusedBackends.clear();
+		for (KnownBackend backend : knownBackends.values()) {
+			if (!activeBackends.contains(backend.serviceInfo)) {
+				unusedBackends.add(backend.serviceInfo);
+			}
+		}
+	}
+
+	private void showAddPluginPopup(View anchorView) {
+		updateUnusedBackends();
+
+		if (popUp != null) {
+			popUp.dismiss();
+		}
+		popUp = new PopupMenu(this, anchorView);
+
+		for (int i = 0; i < unusedBackends.size(); i++) {
+			KnownBackend backend = knownBackends.get(unusedBackends.get(i));
+			String label = backend.simpleName;
+			if (TextUtils.isEmpty(label)) {
+				label = backend.serviceInfo.name;
+			}
+			popUp.getMenu().add(Menu.NONE, i, Menu.NONE, label);
+		}
+		popUp.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				popUp.dismiss();
+				popUp = null;
+
+				activeBackends.add(unusedBackends.get(menuItem.getItemId()));
+				updateAddButton();
+				resetAdapter();
+				return true;
+			}
+		});
+		popUp.show();
+	}
+
+	private Intent createSettingsIntent(ComponentInfo componentInfo) {
+		Intent settingsIntent = new Intent(Intent.ACTION_VIEW);
+		settingsIntent.setPackage(componentInfo.packageName);
+		settingsIntent.setClassName(componentInfo.packageName,
+				componentInfo.metaData.getString(NlpApiConstants.METADATA_BACKEND_SETTINGS_ACTIVITY));
+		return settingsIntent;
+	}
+
+	private void showSettingsPopup(View anchorView, final KnownBackend backend) {
+		if (popUp != null) {
+			popUp.dismiss();
+		}
+		popUp = new PopupMenu(this, anchorView);
+		popUp.getMenu().add(Menu.NONE, 0, Menu.NONE, "Remove");  // TODO label
+		if (backend.serviceInfo.metaData != null &&
+				backend.serviceInfo.metaData.getString(NlpApiConstants.METADATA_BACKEND_SETTINGS_ACTIVITY) != null) {
+			if (getPackageManager().resolveActivity(createSettingsIntent(backend.serviceInfo), 0) != null) {
+				popUp.getMenu().add(Menu.NONE, 1, Menu.NONE, "Settings"); // TODO label
+			}
+		}
+		popUp.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				popUp.dismiss();
+				popUp = null;
+
+				if (item.getItemId() == 0) {
+					activeBackends.remove(backend.serviceInfo);
+					updateAddButton();
+					resetAdapter();
+				} else if (item.getItemId() == 1) {
+					startActivity(createSettingsIntent(backend.serviceInfo));
+				}
+				return true;
+			}
+		});
+		popUp.show();
+	}
+
+	private class Adapter extends DynamicListView.StableArrayAdapter {
+		public Adapter(List<ServiceInfo> backends) {
+			super(LocationBackendConfig.this, R.layout.backend_list_entry, android.R.id.text2, backends);
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// User super class to create the View
 			View v = super.getView(position, convertView, parent);
-			CheckedTextView tv = (CheckedTextView) v.findViewById(android.R.id.text1);
-
-			// Put the image on the TextView
-			tv.setCompoundDrawablesWithIntrinsicBounds(getItem(position).icon, null,
-					null, null);
-
-			// Add margin between image and text (support various screen densities)
-			int dp10 = (int) (10 * getContext().getResources().getDisplayMetrics().density + 0.5f);
-			tv.setCompoundDrawablePadding(dp10);
-
-			tv.setChecked(activeBackends.contains(getItem(position).packageName));
-
+			final KnownBackend backend = knownBackends.get(getItem(position));
+			ImageView icon = (ImageView) v.findViewById(android.R.id.icon);
+			icon.setImageDrawable(backend.icon);
+			TextView title = (TextView) v.findViewById(android.R.id.text1);
+			title.setText(backend.simpleName);
+			TextView subtitle = (TextView) v.findViewById(android.R.id.text2);
+			subtitle.setText(backend.serviceInfo.name);
+			View overflow = v.findViewById(android.R.id.button1);
+			overflow.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					showSettingsPopup(view, backend);
+				}
+			});
 			return v;
 		}
 	}
 
 	private class KnownBackend {
-		private String packageName;
+		private ServiceInfo serviceInfo;
 		private String simpleName;
 		private Drawable icon;
 
-		public KnownBackend(String packageName, String simpleName, Drawable icon) {
-			this.packageName = packageName;
+		private KnownBackend(ServiceInfo serviceInfo, String simpleName, Drawable icon) {
+			this.serviceInfo = serviceInfo;
 			this.simpleName = simpleName;
 			this.icon = icon;
 		}
