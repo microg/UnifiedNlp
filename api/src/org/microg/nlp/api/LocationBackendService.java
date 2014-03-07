@@ -13,7 +13,7 @@ public abstract class LocationBackendService extends Service {
 	private Location waiting;
 
 	/**
-	 * This method is called, whenever an app requires a location update. This can be a single or a repeated request.
+	 * Called, whenever an app requires a location update. This can be a single or a repeated request.
 	 * <p/>
 	 * You may return null if your backend has no newer location available then the last one.
 	 * Do not send the same {@link android.location.Location} twice, if it's not based on updated/refreshed data.
@@ -22,7 +22,9 @@ public abstract class LocationBackendService extends Service {
 	 *
 	 * @return a new {@link android.location.Location} instance or null if not available.
 	 */
-	protected abstract Location update();
+	protected Location update() {
+		return null;
+	}
 
 	/**
 	 * Directly report a {@link android.location.Location} to the requesting apps. Use this if your updates are based
@@ -47,6 +49,20 @@ public abstract class LocationBackendService extends Service {
 		return backend;
 	}
 
+	/**
+	 * Called after a connection was setup
+	 */
+	protected void onOpen() {
+
+	}
+
+	/**
+	 * Called before connection closure
+	 */
+	protected void onClose() {
+
+	}
+
 
 	private class Backend extends LocationBackend.Stub {
 		@Override
@@ -56,6 +72,7 @@ public abstract class LocationBackendService extends Service {
 				callback.report(waiting);
 				waiting = null;
 			}
+			onOpen();
 		}
 
 		@Override
@@ -65,6 +82,7 @@ public abstract class LocationBackendService extends Service {
 
 		@Override
 		public void close() throws RemoteException {
+			onClose();
 			callback = null;
 		}
 	}
