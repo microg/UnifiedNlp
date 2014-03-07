@@ -3,6 +3,7 @@ package org.microg.nlp.api.sample;
 import android.location.Location;
 import android.util.Log;
 import org.microg.nlp.api.LocationBackendService;
+import org.microg.nlp.api.LocationHelper;
 
 import java.util.Random;
 
@@ -25,10 +26,7 @@ public class ThirdSampleService extends LocationBackendService {
 						} catch (InterruptedException e) {
 							return;
 						}
-						Location location = new Location("random");
-						location.setLatitude(random.nextDouble() * 90);
-						location.setLongitude(random.nextDouble() * 90);
-						location.setAccuracy(random.nextFloat() * 90);
+						Location location = LocationHelper.create("random", random.nextDouble() * 90, random.nextDouble() * 90, random.nextFloat() * 90);
 						Log.d(TAG, "Just reported: " + location);
 						report(location);
 					}
