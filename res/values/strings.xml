@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="nlp_app_name">NLP Controller</string>
-	<string name="add_plugin">Add plugin</string>
+	<string name="add_backend">Add backend</string>
 </resources>

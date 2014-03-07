@@ -24,5 +24,5 @@
 		android:textAppearance="?android:textAppearanceMedium"
 		android:textStyle="bold"
 		android:textAllCaps="true"
-		android:text="@string/add_plugin" />
+		android:text="@string/add_backend" />
 </LinearLayout>
