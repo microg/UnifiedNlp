@@ -47,6 +47,10 @@ public class BackendHelper implements BackendHandler {
 		if (bound) {
 			try {
 				backend.close();
+			} catch (Exception e) {
+				Log.w(TAG, e);
+			}
+			try {
 				context.unbindService(connection);
 			} catch (Exception e) {
 				Log.w(TAG, e);
