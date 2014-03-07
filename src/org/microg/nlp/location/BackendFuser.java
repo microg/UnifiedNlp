@@ -131,17 +131,16 @@ public class BackendFuser implements BackendHandler, LocationProvider {
 			if (rhs == null) {
 				return -1;
 			}
-			if (rhs.getTime() > lhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
-				return 1;
-			}
-
-			if (lhs.getTime() > rhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
-				return -1;
-			}
 			if (!lhs.hasAccuracy()) {
 				return 1;
 			}
 			if (!rhs.hasAccuracy()) {
+				return -1;
+			}
+			if (rhs.getTime() > lhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
+				return 1;
+			}
+			if (lhs.getTime() > rhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
 				return -1;
 			}
 			return (int) (lhs.getAccuracy() - rhs.getAccuracy());

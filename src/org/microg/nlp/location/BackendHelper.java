@@ -85,6 +85,9 @@ public class BackendHelper implements BackendHandler {
 		if (location == null) {
 			return lastLocation;
 		}
+		if (!location.hasAccuracy()) {
+			return lastLocation;
+		}
 		if (location.getExtras() == null) {
 			location.setExtras(new Bundle());
 		}
