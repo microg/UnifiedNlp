@@ -63,6 +63,12 @@ public abstract class LocationBackendService extends Service {
 
 	}
 
+	/**
+	 * @return true if we're an actively connected backend, false if not
+	 */
+	public boolean isConnected() {
+		return callback != null;
+	}
 
 	private class Backend extends LocationBackend.Stub {
 		@Override

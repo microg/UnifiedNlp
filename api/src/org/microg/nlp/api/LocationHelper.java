@@ -1,6 +1,7 @@
 package org.microg.nlp.api;
 
 import android.location.Location;
+import android.os.Bundle;
 
 import java.util.Collection;
 
@@ -26,6 +27,25 @@ public final class LocationHelper {
 		return location;
 	}
 
+	private static Location create(String source, double latitude, double longitude, double altitude, float accuracy, Bundle extras) {
+		Location location = create(source, latitude, longitude, altitude, accuracy);
+		location.setExtras(extras);
+		return location;
+	}
+
+	private static Location create(String source, double latitude, double longitude, float altitude, Bundle extras) {
+		Location location = create(source, latitude, longitude, altitude);
+		location.setExtras(extras);
+		return location;
+	}
+
+	public static Location create(String source, long time) {
+		Location location = create(source);
+		location.setTime(time);
+		return location;
+	}
+
+
 	public static Location average(String source, Collection<Location> locations) {
 		if (locations == null || locations.size() == 0) {
 			return null;
@@ -47,10 +67,13 @@ public final class LocationHelper {
 				}
 			}
 		}
+		Bundle extras = new Bundle();
+		extras.putInt("averagedOf", num);
 		if (altitudes > 0) {
-			return create(source, latitude / num, longitude / num, altitude / altitudes, accuracy / num);
+			return create(source, latitude / num, longitude / num, altitude / altitudes, accuracy / num, extras);
 		} else {
-			return create(source, latitude / num, longitude / num, accuracy / num);
+			return create(source, latitude / num, longitude / num, accuracy / num, extras);
 		}
 	}
+
 }
