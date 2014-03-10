@@ -1,8 +1,12 @@
 package org.microg.nlp.location;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
+import android.os.IBinder;
+import android.util.Log;
 import org.microg.nlp.Provider;
 import org.microg.nlp.ProviderService;
 
@@ -57,6 +61,6 @@ public abstract class LocationService extends ProviderService {
 		if (provider instanceof LocationProvider) {
 			((LocationProvider) provider).onDisable();
 		}
-		return false;
+		return super.onUnbind(intent);
 	}
 }

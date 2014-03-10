@@ -75,5 +75,18 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
+		<receiver android:name="org.microg.nlp.PackageReceiver" >
+			<intent-filter>
+				<action android:name="android.intent.action.PACKAGE_ADDED" />
+				<action android:name="android.intent.action.PACKAGE_CHANGED" />
+				<action android:name="android.intent.action.PACKAGE_UPGRADED" />
+				<action android:name="android.intent.action.PACKAGE_REMOVED" />
+				<action android:name="android.intent.action.PACKAGE_REPLACED" />
+				<action android:name="android.intent.action.PACKAGE_RESTARTED" />
+
+				<data android:scheme="package" />
+			</intent-filter>
+		</receiver>
 	</application>
 </manifest>
