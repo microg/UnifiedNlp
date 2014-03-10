@@ -68,7 +68,7 @@ public final class LocationHelper {
 			}
 		}
 		Bundle extras = new Bundle();
-		extras.putInt("averagedOf", num);
+		extras.putInt("AVERAGED_OF", num);
 		if (altitudes > 0) {
 			return create(source, latitude / num, longitude / num, altitude / altitudes, accuracy / num, extras);
 		} else {
