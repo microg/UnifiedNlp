@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.microg.nlp"
+<manifest
+	package="org.microg.nlp"
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<uses-sdk android:minSdkVersion="14" />
 
-	<uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER"/>
-	<uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES"/>
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+	<uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 	<application
 		android:icon="@drawable/nlp_app_icon"
 		android:label="@string/nlp_app_name">
-		<uses-library
-			android:name="com.android.location.provider"
-			android:required="false" />
+		<uses-library android:name="com.android.location.provider" />
 
 		<!-- Gingerbread / Ice Cream Sandwich -->
 		<service

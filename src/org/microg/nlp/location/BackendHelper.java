@@ -73,7 +73,7 @@ public class BackendHelper implements BackendHandler {
 			try {
 				setLastLocation(backend.update());
 				provider.reportLocation(lastLocation);
-			} catch (RemoteException e) {
+			} catch (Exception e) {
 				Log.w(TAG, e);
 				unbind();
 			}
