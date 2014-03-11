@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
 	package="org.microg.nlp.api.sample"
+	android:versionCode="1"
+	android:versionName="0.0.1"
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<uses-sdk android:minSdkVersion="19" />
+	<uses-sdk
+		android:targetSdkVersion="19"
+		android:minSdkVersion="10" />
 	<application
+		android:allowBackup="false"
 		android:icon="@drawable/icon"
 		android:label="@string/app_name">
 
 		<service
 			android:name=".SampleBackendService"
 			android:exported="true"
+			android:permission="android.permission.ACCESS_COARSE_LOCATION"
 			android:label="NLPV2-Sample">
 			<intent-filter>
 				<action android:name="org.microg.nlp.LOCATION_BACKEND" />
@@ -20,6 +26,7 @@
 		<service
 			android:name=".SecondSampleService"
 			android:exported="true"
+			android:permission="android.permission.ACCESS_COARSE_LOCATION"
 			android:label="NLPV2-Second">
 			<intent-filter>
 				<action android:name="org.microg.nlp.LOCATION_BACKEND" />
@@ -37,6 +44,7 @@
 		<service
 			android:name=".ThirdSampleService"
 			android:exported="true"
+			android:permission="android.permission.ACCESS_COARSE_LOCATION"
 			android:label="NLPV2-Random">
 			<intent-filter>
 				<action android:name="org.microg.nlp.LOCATION_BACKEND" />

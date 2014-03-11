@@ -11,7 +11,7 @@ public class ThirdSampleService extends LocationBackendService {
 	private static final String TAG = ThirdSampleService.class.getName();
 
 	private Thread regular;
-	private Random random = new Random();
+	private final Random random = new Random();
 
 	@Override
 	protected void onOpen() {
