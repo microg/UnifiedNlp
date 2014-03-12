@@ -42,7 +42,7 @@ Take a look at the API documentation in `/api/README.md`. You might also be inte
 
 Building
 --------
-To be build with Android Build System using `make UnifiedNlp`
+To be build with Android Build System using `make UnifiedNlp`, `make LegacyNetworkLocation` or `make NetworkLocation`
 
 Attribution
 -----------
