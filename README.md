@@ -14,7 +14,7 @@ Download `LegacyNetworkLocation.apk`, copy it to `/system/app/NetworkLocation.ap
 	adb push path/to/LegacyNetworkLocation.apk /system/app/NetworkLocation.apk
 	adb reboot
 
-# Android 4.4 (KitKat)
+### Android 4.4 (KitKat)
 Download `NetworkLocation.apk`, copy it to `/system/priv-app/NetworkLocation.apk` and reboot. The following shell commands will do the job:
 
 	adb root && adb remount
