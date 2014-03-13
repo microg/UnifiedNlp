@@ -45,10 +45,12 @@ public class BackendHelper implements BackendHandler {
 	@Override
 	public void unbind() {
 		if (bound) {
-			try {
-				backend.close();
-			} catch (Exception e) {
-				Log.w(TAG, e);
+			if (backend != null) {
+				try {
+					backend.close();
+				} catch (Exception e) {
+					Log.w(TAG, e);
+				}
 			}
 			try {
 				context.unbindService(connection);
@@ -115,14 +117,16 @@ public class BackendHelper implements BackendHandler {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			bound = true;
 			backend = LocationBackend.Stub.asInterface(service);
-			try {
-				backend.open(callback);
-				if (updateWaiting) {
-					update();
+			if (backend != null) {
+				try {
+					backend.open(callback);
+					if (updateWaiting) {
+						update();
+					}
+				} catch (Exception e) {
+					Log.w(TAG, e);
+					unbind();
 				}
-			} catch (RemoteException e) {
-				Log.w(TAG, e);
-				unbind();
 			}
 		}
 
