@@ -36,6 +36,9 @@ public abstract class LocationBackendService extends Service {
 		if (callback != null) {
 			try {
 				callback.report(location);
+			} catch (android.os.DeadObjectException e) {
+				waiting = location;
+				callback = null;
 			} catch (RemoteException e) {
 				waiting = location;
 			}
