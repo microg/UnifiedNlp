@@ -57,6 +57,7 @@ public class BackendHelper implements BackendHandler {
 			} catch (Exception e) {
 				Log.w(TAG, e);
 			}
+			bound = false;
 		}
 	}
 
