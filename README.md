@@ -23,7 +23,7 @@ Download `NetworkLocation.apk`, copy it to `/system/priv-app/NetworkLocation.apk
 
 Usage
 -----
-UnifiedNlp as it does not provide any location provider features, but acts as a middleware for multiple backends. 
+UnifiedNlp as it does not provide any location provider features, but acts as a middleware for multiple backends.
 
 Here is an open list of backends known to me:
 
@@ -31,6 +31,7 @@ Here is an open list of backends known to me:
 -	[OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - backend that uses OpenWlanMap.org to resolve user location.
 -	[LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend
 -	[LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
+-	[PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for WiFi APs using on-phone generated database.
 -	(...) Create issue or pull request to extend this list :)
 
 As part of a custom ROM
@@ -54,13 +55,13 @@ Some components: Copyright (C) 2013 The Android Open Source Project
 License
 -------
     Copyright 2014 μg Project Team
-    
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-    
+
         http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
