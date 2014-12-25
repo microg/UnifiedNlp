@@ -18,7 +18,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
-LOCAL_SRC_FILES += $(call all-java-files-under, api/src)
 
 # For some reason framework has to be added here else GeocoderParams is not found, 
 # this way everything else is duplicated, but atleast compiles...
@@ -81,5 +80,5 @@ LOCAL_AAPT_FLAGS := --rename-manifest-package com.google.android.location
 
 include $(BUILD_PACKAGE)
 
-include $(call all-makefiles-under,$(LOCAL_PATH))
+include $(LOCAL_PATH)/api/Android.mk
 

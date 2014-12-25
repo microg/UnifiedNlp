@@ -3,10 +3,12 @@ package org.microg.nlp.location;
 import android.location.Location;
 import org.microg.nlp.Provider;
 
-public interface LocationProvider extends Provider {
-	void onEnable();
+interface LocationProvider extends Provider {
+    void onEnable();
 
-	void onDisable();
+    void onDisable();
 
-	void reportLocation(Location location);
+    void reportLocation(Location location);
+
+    void forceLocation(Location location);
 }

@@ -1,78 +1,77 @@
 package org.microg.nlp.location;
 
 import android.content.Context;
+import android.location.Location;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class ThreadHelper implements Runnable {
-	private final Context context;
-	private final LocationProvider locationProvider;
-	private BackendHandler backendHandler;
-	private ScheduledThreadPoolExecutor executor;
-	private long time = 5000; // Initialize with 5s
-	private boolean enabled;
+class ThreadHelper implements Runnable {
+    private final Context context;
+    private final LocationProvider locationProvider;
+    private BackendFuser backendFuser;
+    private ScheduledThreadPoolExecutor executor;
+    private long time = 5000; // Initialize with 5s
+    private boolean enabled;
 
-	public ThreadHelper(Context context, LocationProvider locationProvider) {
-		this.context = context;
-		this.locationProvider = locationProvider;
-		updateBackendHandler();
-	}
+    public ThreadHelper(Context context, LocationProvider locationProvider) {
+        this.context = context;
+        this.locationProvider = locationProvider;
+        updateBackendHandler();
+    }
 
-	private void updateBackendHandler() {
-		List<BackendFuser.BackendInfo> backendList = new ArrayList<BackendFuser.BackendInfo>();
-		String backends = context.getSharedPreferences("config", Context.MODE_PRIVATE).getString("location_backends", "");
-		for (String backend : backends.split("\\|")) {
-			String[] parts = backend.split("/");
-			if (parts.length == 2) {
-				backendList.add(new BackendFuser.BackendInfo(parts[0], parts[1]));
-			}
-		}
-		backendHandler = new BackendFuser(context, backendList, locationProvider);
-	}
+    private void updateBackendHandler() {
+        BackendFuser old = backendFuser;
+        backendFuser = new BackendFuser(context, locationProvider);
+        if (old != null) {
+            backendFuser.forceLocation(old.getForcedLocation());
+        }
+    }
 
-	public void reload() {
-		disable();
-		updateBackendHandler();
-		enable();
-	}
+    public void forceLocation(Location location) {
+        backendFuser.forceLocation(location);
+    }
 
-	public void disable() {
-		if (executor != null) {
-			executor.shutdownNow();
-			executor = null;
-		}
-		if (enabled) {
-			backendHandler.unbind();
-			enabled = false;
-		}
-	}
+    public void reload() {
+        disable();
+        updateBackendHandler();
+        enable();
+    }
 
-	public void setTime(long time) {
-		this.time = time;
-	}
+    public void disable() {
+        if (executor != null) {
+            executor.shutdownNow();
+            executor = null;
+        }
+        if (enabled) {
+            backendFuser.unbind();
+            enabled = false;
+        }
+    }
 
-	public void reset() {
-		if (executor != null) {
-			executor.shutdownNow();
-			executor = null;
-		}
-		executor = new ScheduledThreadPoolExecutor(1);
-		executor.scheduleAtFixedRate(this, 0, time, TimeUnit.MILLISECONDS);
-	}
+    public void setTime(long time) {
+        this.time = time;
+    }
 
-	public void enable() {
-		if (!enabled) {
-			backendHandler.bind();
-			enabled = true;
-		}
-		reset();
-	}
+    public void reset() {
+        if (executor != null) {
+            executor.shutdownNow();
+            executor = null;
+        }
+        executor = new ScheduledThreadPoolExecutor(1);
+        executor.scheduleAtFixedRate(this, 0, time, TimeUnit.MILLISECONDS);
+    }
 
-	@Override
-	public void run() {
-		backendHandler.update();
-	}
+    public void enable() {
+        if (!enabled) {
+            backendFuser.bind();
+            enabled = true;
+        }
+        reset();
+    }
+
+    @Override
+    public void run() {
+        backendFuser.update();
+    }
 }

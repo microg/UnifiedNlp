@@ -3,147 +3,156 @@ package org.microg.nlp.location;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.IBinder;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
-import org.microg.nlp.api.NlpApiConstants;
+import org.microg.nlp.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class BackendFuser implements BackendHandler, LocationProvider {
-	private static final String TAG = BackendFuser.class.getName();
+import static org.microg.nlp.api.NlpApiConstants.*;
 
-	private final List<BackendHandler> backendHandlers;
-	private final LocationProvider locationProvider;
-	private boolean fusing = false;
+class BackendFuser {
+    private static final String TAG = BackendFuser.class.getName();
 
-	public BackendFuser(Context context, List<BackendInfo> backends, LocationProvider provider) {
-		locationProvider = provider;
-		backendHandlers = new ArrayList<BackendHandler>();
-		for (BackendInfo backendInfo : backends) {
-			Intent intent = new Intent(NlpApiConstants.ACTION_LOCATION_BACKEND);
-			intent.setPackage(backendInfo.packageName);
-			intent.setClassName(backendInfo.packageName, backendInfo.className);
-			backendHandlers.add(new BackendHelper(context, this, intent));
-		}
-	}
+    private final List<BackendHelper> backendHelpers;
+    private final LocationProvider locationProvider;
+    private Location forcedLocation;
+    private boolean fusing = false;
 
-	@Override
-	public void unbind() {
-		for (BackendHandler handler : backendHandlers) {
-			handler.unbind();
-		}
-	}
+    public BackendFuser(Context context, LocationProvider provider) {
+        locationProvider = provider;
+        backendHelpers = new ArrayList<BackendHelper>();
+        for (String backend : new Preferences(context).getLocationBackends()) {
+            String[] parts = backend.split("/");
+            if (parts.length == 2) {
+                Intent intent = new Intent(ACTION_LOCATION_BACKEND);
+                intent.setPackage(parts[0]);
+                intent.setClassName(parts[0], parts[1]);
+                backendHelpers.add(new BackendHelper(context, this, intent));
+            }
+        }
+    }
 
-	@Override
-	public boolean bind() {
-		fusing = false;
-		boolean handlerBound = false;
-		for (BackendHandler handler : backendHandlers) {
-			if (handler.bind()) {
-				handlerBound = true;
-			}
-		}
-		return handlerBound;
-	}
+    public void unbind() {
+        for (BackendHelper handler : backendHelpers) {
+            handler.unbind();
+        }
+    }
 
-	@Override
-	public Location update() {
-		fusing = true;
-		for (BackendHandler handler : backendHandlers) {
-			handler.update();
-		}
-		fusing = false;
-		return getLastLocation();
-	}
+    public boolean bind() {
+        fusing = false;
+        boolean handlerBound = false;
+        for (BackendHelper handler : backendHelpers) {
+            if (handler.bind()) {
+                handlerBound = true;
+            }
+        }
+        return handlerBound;
+    }
 
-	@Override
-	public Location getLastLocation() {
-		List<Location> locations = new ArrayList<Location>();
-		for (BackendHandler handler : backendHandlers) {
-			locations.add(handler.getLastLocation());
-		}
-		if (locations.isEmpty()) {
-			return null;
-		} else {
-			Collections.sort(locations, LocationComparator.INSTANCE);
-			if (locations.get(0) != null) {
-				locationProvider.reportLocation(locations.get(0));
-				Log.v(TAG, "location=" + locations.get(0));
-			}
-			return locations.get(0);
-		}
-	}
+    public Location update() {
+        fusing = true;
+        for (BackendHelper handler : backendHelpers) {
+            handler.update();
+        }
+        fusing = false;
+        return getLastLocation();
+    }
 
-	@Override
-	public void onEnable() {
-		locationProvider.onEnable();
-	}
+    public Location getLastLocation() {
+        List<Location> locations = new ArrayList<Location>();
+        for (BackendHelper handler : backendHelpers) {
+            locations.add(handler.getLastLocation());
+        }
+        if (forcedLocation != null) {
+            locations.add(forcedLocation);
+        }
+        if (locations.isEmpty()) {
+            return null;
+        } else {
+            Location location = mergeLocations(locations);
+            if (location != null) {
+                location.setProvider(LocationManager.NETWORK_PROVIDER);
+                locationProvider.reportLocation(location);
+                Log.v(TAG, "location=" + location);
+            }
+            return location;
+        }
+    }
 
-	@Override
-	public void onDisable() {
-		locationProvider.onDisable();
-	}
+    private Location mergeLocations(List<Location> locations) {
+        Collections.sort(locations, LocationComparator.INSTANCE);
+        if (locations.isEmpty() || locations.get(0) == null)
+            return null;
+        if (locations.size() == 1)
+            return locations.get(0);
+        Location location = new Location(locations.get(0));
+        ArrayList<Location> backendResults = new ArrayList<Location>();
+        for (Location backendResult : locations) {
+            if (locations.get(0) == backendResult)
+                continue;
+            if (backendResult != null)
+                backendResults.add(backendResult);
+        }
+        if (!backendResults.isEmpty()) {
+            location.getExtras()
+                    .putParcelableArrayList(LOCATION_EXTRA_OTHER_BACKENDS, backendResults);
+        }
+        return location;
+    }
 
-	@Override
-	public void reportLocation(Location location) {
-		if (fusing) return;
-		getLastLocation();
-	}
+    public void reportLocation() {
+        if (fusing)
+            return;
+        getLastLocation();
+    }
 
-	@Override
-	public IBinder getBinder() {
-		return locationProvider.getBinder();
-	}
+    public void forceLocation(Location location) {
+        forcedLocation = location;
+        Bundle extras = new Bundle();
+        extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
+        location.setExtras(extras);
+    }
 
-	@Override
-	public void reload() {
-		locationProvider.reload();
-	}
+    public Location getForcedLocation() {
+        return forcedLocation;
+    }
 
-	public static class BackendInfo {
-		private final String packageName;
-		private final String className;
+    public static class LocationComparator implements Comparator<Location> {
 
-		public BackendInfo(String packageName, String className) {
-			this.packageName = packageName;
-			this.className = className;
-		}
-	}
+        public static final LocationComparator INSTANCE = new LocationComparator();
+        public static final long SWITCH_ON_FRESHNESS_CLIFF_MS = 30000; // 30 seconds TODO: make it a setting
 
-	public static class LocationComparator implements Comparator<Location> {
-
-		public static final LocationComparator INSTANCE = new LocationComparator();
-		public static final long SWITCH_ON_FRESHNESS_CLIFF_MS = 30000; // 30 seconds TODO: make it a setting
-
-		/**
-		 * @return whether {@param lhs} is better than {@param rhs}
-		 */
-		@Override
-		public int compare(Location lhs, Location rhs) {
-			if (lhs == rhs)
-				return 0;
-			if (lhs == null) {
-				return 1;
-			}
-			if (rhs == null) {
-				return -1;
-			}
-			if (!lhs.hasAccuracy()) {
-				return 1;
-			}
-			if (!rhs.hasAccuracy()) {
-				return -1;
-			}
-			if (rhs.getTime() > lhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
-				return 1;
-			}
-			if (lhs.getTime() > rhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
-				return -1;
-			}
-			return (int) (lhs.getAccuracy() - rhs.getAccuracy());
-		}
-	}
+        /**
+         * @return whether {@param lhs} is better than {@param rhs}
+         */
+        @Override
+        public int compare(Location lhs, Location rhs) {
+            if (lhs == rhs)
+                return 0;
+            if (lhs == null) {
+                return 1;
+            }
+            if (rhs == null) {
+                return -1;
+            }
+            if (!lhs.hasAccuracy()) {
+                return 1;
+            }
+            if (!rhs.hasAccuracy()) {
+                return -1;
+            }
+            if (rhs.getTime() > lhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
+                return 1;
+            }
+            if (lhs.getTime() > rhs.getTime() + SWITCH_ON_FRESHNESS_CLIFF_MS) {
+                return -1;
+            }
+            return (int) (lhs.getAccuracy() - rhs.getAccuracy());
+        }
+    }
 }
