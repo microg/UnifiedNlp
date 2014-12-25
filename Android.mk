@@ -54,11 +54,12 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
-# Remove LocationProvider V1 as it does not work with gms package name
-LOCAL_SRC_FILES := $(filter-out src/org/microg/nlp/location/LocationProviderV1.java, $(LOCAL_SRC_FILES))
-LOCAL_SRC_FILES := $(filter-out src/org/microg/nlp/location/LocationServiceV1.java, $(LOCAL_SRC_FILES))
-
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
+
+# Include compat v9 files if necassary
+ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
+LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
+endif
 
 LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
 LOCAL_PACKAGE_NAME := NetworkLocation

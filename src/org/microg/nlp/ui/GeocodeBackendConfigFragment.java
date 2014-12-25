@@ -6,6 +6,8 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Drawable;
 import org.microg.nlp.Preferences;
+import org.microg.nlp.geocode.GeocodeService;
+import org.microg.nlp.location.LocationService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,5 +38,6 @@ public class GeocodeBackendConfigFragment extends AbstractBackendConfigFragment 
     @Override
     protected void saveActiveBackends(List<ServiceInfo> activeBackends) {
         new Preferences(getActivity()).setGeocoderBackends(serviceInfosToBackendString(activeBackends));
+        GeocodeService.reloadLocationService(getActivity());
     }
 }

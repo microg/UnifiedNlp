@@ -129,7 +129,6 @@ public abstract class AbstractBackendConfigFragment extends Fragment {
         updateAddButton();
         resetAdapter();
         saveActiveBackends(activeBackends);
-        LocationService.reloadLocationService(getActivity());
     }
 
     public static String serviceInfosToBackendString(List<ServiceInfo> backends) {

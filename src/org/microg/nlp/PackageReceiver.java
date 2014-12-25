@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import org.microg.nlp.geocode.GeocodeService;
 import org.microg.nlp.location.LocationService;
 
 public class PackageReceiver extends BroadcastReceiver {
@@ -14,5 +15,6 @@ public class PackageReceiver extends BroadcastReceiver {
         Log.d(TAG, "Intent received: " + intent);
         Log.d(TAG, "Reloading location service...");
         LocationService.reloadLocationService(context);
+        GeocodeService.reloadLocationService(context);
     }
 }

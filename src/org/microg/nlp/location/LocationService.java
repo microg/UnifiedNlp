@@ -15,7 +15,7 @@ public abstract class LocationService extends ProviderService<LocationProvider> 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             intent.setClass(context, LocationServiceV2.class);
         } else {
-            // TODO
+            intent.setClass(context, LocationServiceV1.class);
         }
         context.startService(intent);
     }

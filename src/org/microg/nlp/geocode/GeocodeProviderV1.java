@@ -47,6 +47,10 @@ class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp.geocod
 
     @Override
     public void reload() {
+        if (backendFuser != null) {
+            backendFuser.unbind();
+        }
         backendFuser = new BackendFuser(context);
+        backendFuser.bind();
     }
 }

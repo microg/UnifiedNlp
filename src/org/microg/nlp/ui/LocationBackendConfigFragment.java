@@ -3,6 +3,7 @@ package org.microg.nlp.ui;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import org.microg.nlp.Preferences;
+import org.microg.nlp.location.LocationService;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class LocationBackendConfigFragment extends AbstractBackendConfigFragment
     protected void saveActiveBackends(List<ServiceInfo> activeBackends) {
         new Preferences(getActivity())
                 .setLocationBackends(serviceInfosToBackendString(activeBackends));
+        LocationService.reloadLocationService(getActivity());
     }
 
 }

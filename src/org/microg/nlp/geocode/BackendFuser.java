@@ -26,6 +26,18 @@ class BackendFuser {
             }
         }
     }
+    
+    public void bind() {
+        for (BackendHelper backendHelper : backendHelpers) {
+            backendHelper.bind();
+        }
+    }
+    
+    public void unbind() {
+        for (BackendHelper backendHelper : backendHelpers) {
+            backendHelper.unbind();
+        }
+    }
 
     public List<Address> getFromLocation(double latitude, double longitude, int maxResults,
             String locale) {
