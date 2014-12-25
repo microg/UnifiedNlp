@@ -23,6 +23,11 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 # this way everything else is duplicated, but atleast compiles...
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
 
+# Include compat v9 files if necassary
+ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
+LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
+endif
+
 LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi
 LOCAL_PACKAGE_NAME := UnifiedNlp
 LOCAL_SDK_VERSION := current
@@ -41,7 +46,10 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
-LOCAL_SRC_FILES += $(call all-java-files-under, api/src)
+
+# Remove LocationProvider V1 as it does not work with gms package name
+LOCAL_SRC_FILES := $(filter-out src/org/microg/nlp/location/LocationProviderV1.java, $(LOCAL_SRC_FILES))
+LOCAL_SRC_FILES := $(filter-out src/org/microg/nlp/location/LocationServiceV1.java, $(LOCAL_SRC_FILES))
 
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
 
@@ -57,7 +65,7 @@ LOCAL_AAPT_FLAGS := --rename-manifest-package com.google.android.gms
 include $(BUILD_PACKAGE)
 
 ##
-# LegacyNetworkLocation
+# NetworkLocation
 # Target using com.google.android.location as package name
 
 include $(CLEAR_VARS)
@@ -65,9 +73,13 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
-LOCAL_SRC_FILES += $(call all-java-files-under, api/src)
 
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
+
+# Build against compat v9 files if necessary
+ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
+LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
+endif
 
 LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi
 LOCAL_PACKAGE_NAME := LegacyNetworkLocation
@@ -80,5 +92,5 @@ LOCAL_AAPT_FLAGS := --rename-manifest-package com.google.android.location
 
 include $(BUILD_PACKAGE)
 
-include $(LOCAL_PATH)/api/Android.mk
+include $(LOCAL_PATH)/api/Android.mk $(LOCAL_PATH)/compat/v9/Android.mk
 
