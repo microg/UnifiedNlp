@@ -14,9 +14,12 @@
 
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
+appcompat_dir := ../../../prebuilts/sdk/current/support/v7/appcompat/res
+res_dir := res $(appcompat_dir)
 
 LOCAL_MODULE_TAGS := optional
 
+LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 # For some reason framework has to be added here else GeocoderParams is not found, 
@@ -28,12 +31,15 @@ ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
 LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
 endif
 
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi
+LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
 LOCAL_PACKAGE_NAME := UnifiedNlp
 LOCAL_SDK_VERSION := current
 LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
+
+LOCAL_AAPT_FLAGS := --auto-add-overlay \
+    --extra-packages android.support.v7.appcompat \
 
 include $(BUILD_PACKAGE)
 
@@ -45,6 +51,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 
+LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 # Remove LocationProvider V1 as it does not work with gms package name
@@ -53,14 +60,16 @@ LOCAL_SRC_FILES := $(filter-out src/org/microg/nlp/location/LocationServiceV1.ja
 
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
 
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi
+LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
 LOCAL_PACKAGE_NAME := NetworkLocation
 LOCAL_SDK_VERSION := current
 LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
-LOCAL_AAPT_FLAGS := --rename-manifest-package com.google.android.gms
+LOCAL_AAPT_FLAGS := --auto-add-overlay \
+    --rename-manifest-package com.google.android.gms \
+    --extra-packages android.support.v7.appcompat \
 
 include $(BUILD_PACKAGE)
 
@@ -72,6 +81,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 
+LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
@@ -81,14 +91,17 @@ ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
 LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
 endif
 
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi
+LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
 LOCAL_PACKAGE_NAME := LegacyNetworkLocation
 LOCAL_SDK_VERSION := current
 LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
-LOCAL_AAPT_FLAGS := --rename-manifest-package com.google.android.location
+
+LOCAL_AAPT_FLAGS := --auto-add-overlay \
+    --rename-manifest-package com.google.android.location \
+    --extra-packages android.support.v7.appcompat \
 
 include $(BUILD_PACKAGE)
 

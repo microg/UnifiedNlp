@@ -5,7 +5,7 @@
     android:versionCode="1100">
 
     <uses-sdk
-        android:minSdkVersion="14" />
+        android:minSdkVersion="9" />
 
     <permission
         android:name="org.microg.permission.FORCE_COARSE_LOCATION"
@@ -20,6 +20,7 @@
 
     <application
         android:icon="@drawable/nlp_app_icon"
+        android:theme="@style/AppTheme"
         android:label="@string/nlp_app_name">
         <uses-library android:name="com.android.location.provider" />
 
@@ -74,14 +75,19 @@
                 android:value="false" />
         </service>
 
-        <activity
-            android:name="org.microg.nlp.ui.LocationBackendConfig"
-            android:theme="@android:style/Theme.Light">
+        <activity android:name=".ui.PreferencesActivity"
+            android:label="@string/nlp_settings_label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.LocationBackendConfig"
+            android:label="@string/configure_location_backends" />
+
+        <activity android:name=".ui.GeocodeBackendConfig"
+            android:label="@string/configure_geocoder_backends" />
 
         <receiver android:name="org.microg.nlp.PackageReceiver">
             <intent-filter>

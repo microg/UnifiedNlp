@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:gravity="center_vertical"
-	android:padding="16dp">
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="16dp">
 
-	<ImageView
-		android:id="@android:id/icon"
-		android:layout_width="48dp"
-		android:layout_height="48dp" />
+    <ImageView
+        android:id="@android:id/icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
 
-	<LinearLayout
-		android:orientation="vertical"
-		android:layout_width="0dip"
-		android:layout_weight="1"
-		android:paddingLeft="8dp"
-		android:paddingRight="8dp"
-		android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_height="wrap_content">
 
-		<!-- simple name -->
-		<TextView
-			android:id="@android:id/text1"
-			style="?android:textAppearanceMedium"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content" />
+        <!-- simple name -->
+        <TextView
+            android:id="@android:id/text1"
+            style="?android:textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-		<!-- service info -->
-		<TextView
-			android:id="@android:id/text2"
-			style="?android:textAppearanceSmall"
-			android:visibility="gone"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content" />
+        <!-- service info -->
+        <TextView
+            android:id="@android:id/text2"
+            style="?android:textAppearanceSmall"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<ImageView
-		android:id="@android:id/button1"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:focusable="false"
-		android:clickable="false"
-		android:background="?android:selectableItemBackground"
-		android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
+    <ImageView
+        android:id="@android:id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:clickable="false"
+        android:background="?android:selectableItemBackground"
+        android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
 </LinearLayout>

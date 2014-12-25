@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<org.microg.nlp.ui.DynamicListView
-		android:id="@android:id/list"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
+    <org.microg.nlp.ui.DynamicListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-	<TextView
-		android:id="@android:id/button1"
-		android:duplicateParentState="true"
-		android:layout_width="wrap_content"
-		android:layout_height="?android:listPreferredItemHeight"
-		android:layout_gravity="center"
-		android:paddingRight="20dp"
-		android:drawableLeft="@drawable/ic_action_add"
-		android:drawablePadding="8dp"
-		android:gravity="center_vertical"
-		android:textColor="#c333"
-		android:textAppearance="?android:textAppearanceMedium"
-		android:textStyle="bold"
-		android:textAllCaps="true"
-		android:text="@string/add_backend" />
+    <Button
+        android:id="@android:id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="?android:listPreferredItemHeight"
+        android:layout_gravity="center"
+        android:paddingRight="20dp"
+        android:drawableLeft="@drawable/ic_action_add"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:text="@string/add_backend" />
 </LinearLayout>

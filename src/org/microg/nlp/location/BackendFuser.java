@@ -26,7 +26,8 @@ class BackendFuser {
     public BackendFuser(Context context, LocationProvider provider) {
         locationProvider = provider;
         backendHelpers = new ArrayList<BackendHelper>();
-        for (String backend : new Preferences(context).getLocationBackends()) {
+        for (String backend : Preferences
+                .splitBackendString(new Preferences(context).getLocationBackends())) {
             String[] parts = backend.split("/");
             if (parts.length == 2) {
                 Intent intent = new Intent(ACTION_LOCATION_BACKEND);
@@ -113,9 +114,11 @@ class BackendFuser {
 
     public void forceLocation(Location location) {
         forcedLocation = location;
-        Bundle extras = new Bundle();
-        extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
-        location.setExtras(extras);
+        if (forcedLocation != null) {
+            Bundle extras = new Bundle();
+            extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
+            location.setExtras(extras);
+        }
     }
 
     public Location getForcedLocation() {

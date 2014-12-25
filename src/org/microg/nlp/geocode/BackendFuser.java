@@ -15,7 +15,8 @@ class BackendFuser {
 
     public BackendFuser(Context context) {
         backendHelpers = new ArrayList<BackendHelper>();
-        for (String backend : new Preferences(context).getGeocoderBackends()) {
+        for (String backend : Preferences
+                .splitBackendString(new Preferences(context).getGeocoderBackends())) {
             String[] parts = backend.split("/");
             if (parts.length == 2) {
                 Intent intent = new Intent(ACTION_GEOCODER_BACKEND);

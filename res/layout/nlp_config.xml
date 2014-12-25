@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/toolbar" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/network_location"
+            android:layout_marginStart="2dip"
+            android:layout_marginEnd="6dip"
+            android:layout_marginTop="12dip"/>
+        <RelativeLayout
+            android:id="@+id/location_backends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dip"
+            android:paddingBottom="12dip"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:id="@+android:id/title"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/configure_backends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/configure_location_backends_summary"
+                android:layout_below="@android:id/title"
+                android:layout_alignStart="@android:id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/geocoding"
+            android:layout_marginStart="2dip"
+            android:layout_marginEnd="6dip"
+            android:layout_marginTop="12dip"/>
+        <RelativeLayout
+            android:id="@+id/geocoder_backends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dip"
+            android:paddingBottom="12dip"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:id="@+android:id/title"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/configure_backends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/configure_geocoder_backends_summary"
+                android:layout_below="@android:id/title"
+                android:layout_alignStart="@android:id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
