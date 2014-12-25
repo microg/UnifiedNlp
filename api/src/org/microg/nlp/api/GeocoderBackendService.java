@@ -20,21 +20,17 @@ public abstract class GeocoderBackendService extends AbstractBackendService {
      *               address should be localized in
      * @see android.location.Geocoder#getFromLocation(double, double, int)
      */
-    protected List<Address> getFromLocation(double latitude, double longitude, int maxResults,
-            String locale) {
-        return null;
-    }
+    protected abstract List<Address> getFromLocation(double latitude, double longitude,
+            int maxResults, String locale);
 
     /**
      * @param locale The locale, formatted as a String with underscore (eg. en_US) the resulting
      *               address should be localized in
      * @see android.location.Geocoder#getFromLocationName(String, int, double, double, double, double)
      */
-    protected List<Address> getFromLocationName(String locationName, int maxResults,
+    protected abstract List<Address> getFromLocationName(String locationName, int maxResults,
             double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude,
-            double upperRightLongitude, String locale) {
-        return null;
-    }
+            double upperRightLongitude, String locale);
 
     private class Backend extends GeocoderBackend.Stub {
 

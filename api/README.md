@@ -4,7 +4,7 @@ This library contains anything needed to build a backend for UnifiedNlp.
 
 Writing the service
 -------------------
-### The easy way
+### The easy way (Location)
 Writing a service is fairly easy. Just create a class that extends `org.microg.nlp.api.LocationBackendService`, it provides several methods:
 
 #### `update()`-method
@@ -22,6 +22,10 @@ This is a good place to initialize or respectively destroy whatever you need dur
 
 #### `report(Location)`-method
 You can call this method every time to report the given location as soon as possible.
+
+### The easy way (Geocoding)
+Providing a Geocoder is even simpler than a LocationProvider. Extend `org.microg.nlp.api.GeocoderBackendService` and implement the methods `getFromLocation` and `getFromLocationName`.
+Both methods reflect a call to the corresponding method in `android.location.Geocoder`.
 
 ### The flexible way
 Instead of using the `LocationBackendService` helper class you can do it by hand. 
