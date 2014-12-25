@@ -1,12 +1,10 @@
 package org.microg.nlp.api;
 
-import android.app.Service;
-import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-public abstract class LocationBackendService extends Service {
+public abstract class LocationBackendService extends AbstractBackendService {
 
     private Backend backend = new Backend();
     private LocationCallback callback;
@@ -47,30 +45,16 @@ public abstract class LocationBackendService extends Service {
         }
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return backend;
-    }
-
-    /**
-     * Called after a connection was setup
-     */
-    protected void onOpen() {
-
-    }
-
-    /**
-     * Called before connection closure
-     */
-    protected void onClose() {
-
-    }
-
     /**
      * @return true if we're an actively connected backend, false if not
      */
     public boolean isConnected() {
         return callback != null;
+    }
+
+    @Override
+    protected IBinder getBackend() {
+        return backend;
     }
 
     private class Backend extends LocationBackend.Stub {

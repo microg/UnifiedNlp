@@ -28,9 +28,9 @@ class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp.geocod
     public String onGetFromLocationName(String locationName, double lowerLeftLatitude,
             double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude,
             int maxResults, GeocoderParams params, List<Address> addresses) {
-        List<Address> fuserResult = backendFuser.getFromLocationName(locationName,
+        List<Address> fuserResult = backendFuser.getFromLocationName(locationName, maxResults,
                 lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude,
-                maxResults, params.getLocale().toString());
+                params.getLocale().toString());
         return handleResult(addresses, fuserResult);
     }
 

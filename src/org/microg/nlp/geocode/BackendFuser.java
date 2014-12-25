@@ -41,16 +41,16 @@ class BackendFuser {
         return result;
     }
 
-    public List<Address> getFromLocationName(String locationName, double lowerLeftLatitude,
-            double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude,
-            int maxResults, String locale) {
+    public List<Address> getFromLocationName(String locationName, int maxResults,
+            double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude,
+            double upperRightLongitude, String locale) {
         if (backendHelpers.isEmpty())
             return null;
         ArrayList<Address> result = new ArrayList<Address>();
         for (BackendHelper backendHelper : backendHelpers) {
-            List<Address> backendResult = backendHelper.getFromLocationName(
-                    locationName, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude,
-                    upperRightLongitude, maxResults, locale);
+            List<Address> backendResult = backendHelper
+                    .getFromLocationName(locationName, maxResults, lowerLeftLatitude,
+                            lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale);
             if (backendResult != null) {
                 result.addAll(backendResult);
             }

@@ -31,12 +31,12 @@ class BackendHelper extends AbstractBackendHelper {
         }
     }
 
-    public List<Address> getFromLocationName(String locationName, double lowerLeftLatitude,
-            double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude,
-            int maxResults, String locale) {
+    public List<Address> getFromLocationName(String locationName, int maxResults,
+            double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude,
+            double upperRightLongitude, String locale) {
         try {
-            return backend.getFromLocationName(locationName, lowerLeftLatitude, lowerLeftLongitude,
-                    upperRightLatitude, upperRightLongitude, maxResults, locale);
+            return backend.getFromLocationName(locationName, maxResults, lowerLeftLatitude,
+                    lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale);
         } catch (Exception e) {
             Log.w(TAG, e);
             unbind();
