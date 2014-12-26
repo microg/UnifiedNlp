@@ -12,7 +12,7 @@ import static org.microg.nlp.api.NlpApiConstants.*;
 public abstract class LocationService extends ProviderService<LocationProvider> {
     public static void reloadLocationService(Context context) {
         Intent intent = new Intent(ACTION_RELOAD_SETTINGS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             intent.setClass(context, LocationServiceV2.class);
         } else {
             intent.setClass(context, LocationServiceV1.class);

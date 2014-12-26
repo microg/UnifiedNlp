@@ -7,7 +7,12 @@ Installation
 Release builds may be found on the [release page](https://github.com/microg/android_packages_apps_UnifiedNlp/releases).
 Installation requires a rooted system.
 
-### Android 4.1 - 4.3 (Jelly Bean)
+### Android 2.3 - 4.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
+These releases are no longer actively supported and might be unstable. Additionally, most backends require a newer Android version.
+
+However the LegacyNetworkLocation (instructions for Android 4.2) usually works quiet well.
+
+### Android 4.2 - 4.3 (Jelly Bean)
 Download `LegacyNetworkLocation.apk`, copy it to `/system/app/NetworkLocation.apk` and reboot. The following shell commands will do the job:
 
 	adb root && adb remount
