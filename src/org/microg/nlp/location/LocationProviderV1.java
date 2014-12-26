@@ -10,9 +10,10 @@ import android.util.Log;
 
 import static android.location.LocationProvider.AVAILABLE;
 
-public class LocationProviderV1 extends com.android.location.provider.LocationProvider implements LocationProvider {
+public class LocationProviderV1 extends com.android.location.provider.LocationProvider
+        implements LocationProvider {
     private static final String TAG = LocationProviderV1.class.getName();
-    
+
     private final ThreadHelper helper;
     private long autoTime = Long.MAX_VALUE;
     private boolean autoUpdate = false;
@@ -110,13 +111,16 @@ public class LocationProviderV1 extends com.android.location.provider.LocationPr
     @Override
     public void onEnableLocationTracking(boolean enable) {
         Log.v(TAG, "onEnableLocationTracking: " + enable);
-        autoUpdate = true;
+        autoUpdate = enable;
+        if (autoUpdate && autoTime != Long.MAX_VALUE) helper.enable();
     }
 
     @Override
     public void onSetMinTime(long minTime, WorkSource ws) {
         Log.v(TAG, "onSetMinTime: " + minTime + " by " + ws);
         autoTime = minTime;
+        helper.setTime(autoTime);
+        if (autoUpdate) helper.enable();
     }
 
     @Override
@@ -142,5 +146,10 @@ public class LocationProviderV1 extends com.android.location.provider.LocationPr
     @Override
     public void onRemoveListener(int uid, WorkSource ws) {
 
+    }
+
+    @Override
+    public void destroy() {
+        helper.destroy();
     }
 }

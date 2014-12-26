@@ -18,14 +18,20 @@ import static org.microg.nlp.api.NlpApiConstants.*;
 class BackendFuser {
     private static final String TAG = BackendFuser.class.getName();
 
-    private final List<BackendHelper> backendHelpers;
+    private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
     private final LocationProvider locationProvider;
+    private final Context context;
     private Location forcedLocation;
     private boolean fusing = false;
 
-    public BackendFuser(Context context, LocationProvider provider) {
-        locationProvider = provider;
-        backendHelpers = new ArrayList<BackendHelper>();
+    public BackendFuser(Context context, LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+        this.context = context;
+    }
+
+    public void reset() {
+        unbind();
+        backendHelpers.clear();
         for (String backend : Preferences
                 .splitBackendString(new Preferences(context).getLocationBackends())) {
             String[] parts = backend.split("/");
@@ -123,6 +129,11 @@ class BackendFuser {
 
     public Location getForcedLocation() {
         return forcedLocation;
+    }
+
+    public void destroy() {
+        unbind();
+        backendHelpers.clear();
     }
 
     public static class LocationComparator implements Comparator<Location> {

@@ -15,6 +15,7 @@ public class PackageReceiver extends BroadcastReceiver {
         Log.d(TAG, "Intent received: " + intent);
         Log.d(TAG, "Reloading location service...");
         LocationService.reloadLocationService(context);
+        Log.d(TAG, "Reloading geocoding service...");
         GeocodeService.reloadLocationService(context);
     }
 }

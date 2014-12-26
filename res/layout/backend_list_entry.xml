@@ -39,7 +39,7 @@
         android:focusable="false"
         android:clickable="false"
         android:tintMode="src_in"
-        android:tint="?android:attr/textColorPrimary"
+        android:tint="@color/primary_text_default_material_dark"
         android:background="?android:selectableItemBackground"
         android:visibility="gone"
         android:src="@drawable/info" />
@@ -51,7 +51,7 @@
         android:focusable="false"
         android:clickable="false"
         android:tintMode="src_in"
-        android:tint="?android:attr/textColorPrimary"
+        android:tint="@color/primary_text_default_material_dark"
         android:background="?android:selectableItemBackground"
         android:src="@drawable/settings" />
 

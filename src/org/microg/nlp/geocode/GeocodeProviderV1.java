@@ -8,12 +8,11 @@ import com.android.location.provider.GeocodeProvider;
 import java.util.List;
 
 class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp.geocode.GeocodeProvider {
-    private BackendFuser backendFuser;
-    private Context context;
+    private final BackendFuser backendFuser;
 
     public GeocodeProviderV1(Context context) {
-        this.context = context;
-        reload();
+        backendFuser = new BackendFuser(context);
+        backendFuser.bind();
     }
 
     @Override
@@ -47,10 +46,13 @@ class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp.geocod
 
     @Override
     public void reload() {
-        if (backendFuser != null) {
-            backendFuser.unbind();
-        }
-        backendFuser = new BackendFuser(context);
+        backendFuser.unbind();
+        backendFuser.reset();
         backendFuser.bind();
+    }
+
+    @Override
+    public void destroy() {
+        backendFuser.unbind();
     }
 }

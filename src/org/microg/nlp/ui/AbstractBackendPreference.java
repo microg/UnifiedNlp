@@ -96,7 +96,6 @@ public abstract class AbstractBackendPreference extends DialogPreference {
             ServiceInfo serviceInfo = info.serviceInfo;
             String simpleName = String
                     .valueOf(serviceInfo.loadLabel(getContext().getPackageManager()));
-            Log.d("nlp.IntentToBackend", intent.getAction() + ": " + serviceInfo);
             knownBackends.add(new BackendInfo(serviceInfo, simpleName));
         }
         return knownBackends;

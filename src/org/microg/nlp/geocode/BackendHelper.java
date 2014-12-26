@@ -46,7 +46,7 @@ class BackendHelper extends AbstractBackendHelper {
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        bound = true;
+        super.onServiceConnected(name, service);
         backend = GeocoderBackend.Stub.asInterface(service);
         if (backend != null) {
             try {
@@ -60,8 +60,8 @@ class BackendHelper extends AbstractBackendHelper {
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        super.onServiceDisconnected(name);
         backend = null;
-        bound = false;
     }
 
     @Override

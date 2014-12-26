@@ -28,6 +28,12 @@ public abstract class ProviderService<T extends Provider> extends IntentService 
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        destroyProvider();
+        return super.onUnbind(intent);
+    }
+
+    @Override
     public void onDestroy() {
         provider = null;
     }
@@ -39,6 +45,8 @@ public abstract class ProviderService<T extends Provider> extends IntentService 
      * @return a new {@link org.microg.nlp.Provider} instance
      */
     protected abstract T createProvider();
+    
+    protected abstract void destroyProvider();
 
     @Override
     protected void onHandleIntent(Intent intent) {

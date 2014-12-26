@@ -11,20 +11,12 @@ import java.util.List;
 import static org.microg.nlp.api.NlpApiConstants.ACTION_GEOCODER_BACKEND;
 
 class BackendFuser {
-    private final List<BackendHelper> backendHelpers;
+    private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
+    private final Context context;
 
     public BackendFuser(Context context) {
-        backendHelpers = new ArrayList<BackendHelper>();
-        for (String backend : Preferences
-                .splitBackendString(new Preferences(context).getGeocoderBackends())) {
-            String[] parts = backend.split("/");
-            if (parts.length == 2) {
-                Intent intent = new Intent(ACTION_GEOCODER_BACKEND);
-                intent.setPackage(parts[0]);
-                intent.setClassName(parts[0], parts[1]);
-                backendHelpers.add(new BackendHelper(context, intent));
-            }
-        }
+        this.context = context;
+        reset();
     }
     
     public void bind() {
@@ -69,5 +61,20 @@ class BackendFuser {
             }
         }
         return result;
+    }
+
+    public void reset() {
+        unbind();
+        backendHelpers.clear();
+        for (String backend : Preferences
+                .splitBackendString(new Preferences(context).getGeocoderBackends())) {
+            String[] parts = backend.split("/");
+            if (parts.length == 2) {
+                Intent intent = new Intent(ACTION_GEOCODER_BACKEND);
+                intent.setPackage(parts[0]);
+                intent.setClassName(parts[0], parts[1]);
+                backendHelpers.add(new BackendHelper(context, intent));
+            }
+        }
     }
 }

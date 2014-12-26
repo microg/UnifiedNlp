@@ -47,6 +47,11 @@ class LocationProviderV2 extends LocationProviderBase implements LocationProvide
     }
 
     @Override
+    public void destroy() {
+        helper.destroy();
+    }
+
+    @Override
     public void onEnable() {
     }
 

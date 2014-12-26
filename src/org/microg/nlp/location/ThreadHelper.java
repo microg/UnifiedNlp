@@ -2,30 +2,23 @@ package org.microg.nlp.location;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class ThreadHelper implements Runnable {
+    private static final String TAG = ThreadHelper.class.getName();
     private final Context context;
-    private final LocationProvider locationProvider;
-    private BackendFuser backendFuser;
+    private final BackendFuser backendFuser;
     private ScheduledThreadPoolExecutor executor;
-    private long time = 5000; // Initialize with 5s
-    private boolean enabled;
+    private long time = 60000; // Initialize with 60s
+    private AtomicBoolean enabled = new AtomicBoolean(false);
 
     public ThreadHelper(Context context, LocationProvider locationProvider) {
         this.context = context;
-        this.locationProvider = locationProvider;
-        updateBackendHandler();
-    }
-
-    private void updateBackendHandler() {
-        BackendFuser old = backendFuser;
         backendFuser = new BackendFuser(context, locationProvider);
-        if (old != null) {
-            backendFuser.forceLocation(old.getForcedLocation());
-        }
     }
 
     public void forceLocation(Location location) {
@@ -34,7 +27,7 @@ class ThreadHelper implements Runnable {
 
     public void reload() {
         disable();
-        updateBackendHandler();
+        backendFuser.reset();
         enable();
     }
 
@@ -43,10 +36,8 @@ class ThreadHelper implements Runnable {
             executor.shutdownNow();
             executor = null;
         }
-        if (enabled) {
-            backendFuser.unbind();
-            enabled = false;
-        }
+        backendFuser.unbind();
+        enabled.set(false);
     }
 
     public void setTime(long time) {
@@ -63,9 +54,8 @@ class ThreadHelper implements Runnable {
     }
 
     public void enable() {
-        if (!enabled) {
+        if (enabled.compareAndSet(false, true)) {
             backendFuser.bind();
-            enabled = true;
         }
         reset();
     }
@@ -73,5 +63,12 @@ class ThreadHelper implements Runnable {
     @Override
     public void run() {
         backendFuser.update();
+    }
+
+    public void destroy() {
+        if (executor != null) {
+            executor.shutdownNow();
+        }
+        backendFuser.destroy();
     }
 }
