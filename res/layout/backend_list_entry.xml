@@ -7,11 +7,6 @@
     android:gravity="center_vertical"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@android:id/icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp" />
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dip"
@@ -38,11 +33,30 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@android:id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:clickable="false"
+        android:tintMode="src_in"
+        android:tint="?android:attr/textColorPrimary"
+        android:background="?android:selectableItemBackground"
+        android:visibility="gone"
+        android:src="@drawable/info" />
+
+    <ImageView
         android:id="@android:id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:clickable="false"
+        android:tintMode="src_in"
+        android:tint="?android:attr/textColorPrimary"
         android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
+        android:src="@drawable/settings" />
+
+    <CheckBox
+        android:id="@+id/enabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

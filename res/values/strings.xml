@@ -14,4 +14,6 @@
     <string name="configure_geocoder_backends_summary">
         Enable, disable and configure backends for (reverse) geocoding.
     </string>
+    <string name="pref_location_backends">location_backends</string>
+    <string name="pref_geocoder_backends">geocoder_backends</string>
 </resources>

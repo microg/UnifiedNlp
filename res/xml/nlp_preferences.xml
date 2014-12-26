@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:key="nlp_preferences">
+    <PreferenceCategory android:title="@string/network_location">
+        <org.microg.nlp.ui.LocationBackendPreference
+            android:key="@string/pref_location_backends"
+            android:title="@string/configure_backends"
+            android:summary="@string/configure_location_backends_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/geocoding">
+        <org.microg.nlp.ui.GeocoderBackendPreference
+            android:key="@string/pref_geocoder_backends"
+            android:title="@string/configure_backends"
+            android:summary="@string/configure_geocoder_backends_summary" />
+    </PreferenceCategory>
+</PreferenceScreen>

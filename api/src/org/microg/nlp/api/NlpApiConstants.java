@@ -11,4 +11,6 @@ public class NlpApiConstants {
     public static final String LOCATION_EXTRA_BACKEND_COMPONENT = "SERVICE_BACKEND_COMPONENT";
     public static final String LOCATION_EXTRA_OTHER_BACKENDS = "OTHER_BACKEND_RESULTS";
     public static final String METADATA_BACKEND_SETTINGS_ACTIVITY = "org.microg.nlp.BACKEND_SETTINGS_ACTIVITY";
+    public static final String METADATA_BACKEND_ABOUT_ACTIVITY = "org.microg.nlp.BACKEND_ABOUT_ACTIVITY";
+    public static final String METADATA_BACKEND_SUMMARY = "org.microg.nlp.BACKEND_SUMMARY";
 }
