@@ -7,10 +7,12 @@ Installation
 Release builds may be found on the [release page](https://github.com/microg/android_packages_apps_UnifiedNlp/releases).
 Installation requires a rooted system.
 
-### Android 2.3 - 4.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
-These releases are no longer actively supported and might be unstable. Additionally, most backends require a newer Android version.
+### Android 4.4 - 5.0 (KitKat / Lollipop)
+Download `NetworkLocation.apk`, copy it to `/system/priv-app/NetworkLocation.apk` and reboot. The following shell commands will do the job:
 
-However the LegacyNetworkLocation (instructions for Android 4.2) usually works quiet well.
+	adb root && adb remount
+	adb push path/to/NetworkLocation.apk /system/priv-app/NetworkLocation.apk
+	adb reboot
 
 ### Android 4.2 - 4.3 (Jelly Bean)
 Download `LegacyNetworkLocation.apk`, copy it to `/system/app/NetworkLocation.apk` and reboot. The following shell commands will do the job:
@@ -19,12 +21,10 @@ Download `LegacyNetworkLocation.apk`, copy it to `/system/app/NetworkLocation.ap
 	adb push path/to/LegacyNetworkLocation.apk /system/app/NetworkLocation.apk
 	adb reboot
 
-### Android 4.4 (KitKat)
-Download `NetworkLocation.apk`, copy it to `/system/priv-app/NetworkLocation.apk` and reboot. The following shell commands will do the job:
+### Android 2.3 - 4.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
+These releases are no longer actively supported and might be unstable. Additionally, most backends require a newer Android version.
 
-	adb root && adb remount
-	adb push path/to/NetworkLocation.apk /system/priv-app/NetworkLocation.apk
-	adb reboot
+However the LegacyNetworkLocation (instructions for Android 4.2) usually works quiet well.
 
 Usage
 -----
