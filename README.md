@@ -43,6 +43,10 @@ The following is an open list of backends for (reverse) geocoding:
 
 -   [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService)
 
+After installing a backend, you can use UnifiedNlp by activating network-based geolocation in Settings->Location. 
+Since KitKat, you need to select any mode but "device only", on older Android version this setting is called "Wi-Fi & mobile network location" 
+(ignore any misleading texts saying this is for Google's location service, you don't have Google's service installed but UnifiedNlp :smile:) 
+
 As part of a custom ROM
 -----------------------
 UnifiedNlp can be build as part of Android when building an Android ROM from source.
