@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.microg.nlp"
-    android:versionName="1.1.1"
-    android:versionCode="1101">
+    android:versionName="1.1.2"
+    android:versionCode="1102">
 
     <uses-sdk
         android:minSdkVersion="9" />
@@ -82,12 +82,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.LocationBackendConfig"
-            android:label="@string/configure_location_backends" />
-
-        <activity android:name=".ui.GeocodeBackendConfig"
-            android:label="@string/configure_geocoder_backends" />
 
         <receiver android:name="org.microg.nlp.PackageReceiver">
             <intent-filter>
