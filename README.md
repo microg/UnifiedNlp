@@ -32,9 +32,8 @@ It is required to have a rooted system to install on Jelly Bean and older.
 
 Usage
 -----
-UnifiedNlp alone does not provide any features, but acts as a middleware for multiple backends.
-
-Here is an open list of backends for geolocation known to me. Most of them can be downloaded through F-Droid
+UnifiedNlp alone does not provide any features, but acts as a middleware for multiple backends.Most of them can be downloaded and updated using [F-Droid](https://f-droid.org)
+Here is a list of backends for geolocation and (reverse) geocoding known to me:
 
 -	[AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - backend that uses Apple's service to resolve wifi locations
 -	[OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - backend that uses OpenWlanMap.org to resolve user location.
@@ -42,7 +41,6 @@ Here is an open list of backends for geolocation known to me. Most of them can b
 -	[LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
 -	[PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for WiFi APs using on-phone generated database.
 
-The following is an open list of backends for (reverse) geocoding:
 
 -   [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService)
 -	(...) Create issue or pull request to extend either list :)
