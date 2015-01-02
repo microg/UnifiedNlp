@@ -1,5 +1,7 @@
 package org.microg.nlp.location;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -68,14 +70,19 @@ class BackendHelper extends AbstractBackendHelper {
             location.setTime(System.currentTimeMillis());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (location.getElapsedRealtimeNanos() <= 0) {
-                location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
-            }
+            updateElapsedRealtimeNanos(location);
         }
         location.getExtras()
                 .putParcelable(LocationProviderBase.EXTRA_NO_GPS_LOCATION, new Location(location));
         lastLocation = location;
         return lastLocation;
+    }
+    
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void updateElapsedRealtimeNanos(Location location) {
+        if (location.getElapsedRealtimeNanos() <= 0) {
+            location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        }
     }
 
     @Override

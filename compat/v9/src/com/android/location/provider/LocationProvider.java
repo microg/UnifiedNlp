@@ -16,18 +16,12 @@
 
 package com.android.location.provider;
 
-import android.content.Context;
-import android.net.NetworkInfo;
 import android.location.Criteria;
-import android.location.ILocationManager;
-import android.location.ILocationProvider;
 import android.location.Location;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
-import android.os.ServiceManager;
 import android.os.WorkSource;
-import android.util.Log;
 
 /**
  * An abstract superclass for location providers that are implemented
@@ -39,111 +33,7 @@ import android.util.Log;
  */
 public abstract class LocationProvider {
 
-    private static final String TAG = "LocationProvider";
-
-    private ILocationManager mLocationManager;
-
-    private ILocationProvider.Stub mProvider = new ILocationProvider.Stub() {
-
-        public boolean requiresNetwork() {
-            return LocationProvider.this.onRequiresNetwork();
-        }
-
-        public boolean requiresSatellite() {
-            return LocationProvider.this.onRequiresSatellite();
-        }
-
-        public boolean requiresCell() {
-            return LocationProvider.this.onRequiresCell();
-        }
-
-        public boolean hasMonetaryCost() {
-            return LocationProvider.this.onHasMonetaryCost();
-        }
-
-        public boolean supportsAltitude() {
-            return LocationProvider.this.onSupportsAltitude();
-        }
-
-        public boolean supportsSpeed() {
-            return LocationProvider.this.onSupportsSpeed();
-        }
-
-        public boolean supportsBearing() {
-            return LocationProvider.this.onSupportsBearing();
-        }
-
-        public int getPowerRequirement() {
-            return LocationProvider.this.onGetPowerRequirement();
-        }
-
-        public boolean meetsCriteria(Criteria criteria) {
-            return LocationProvider.this.onMeetsCriteria(criteria);
-        }
-
-        public int getAccuracy() {
-            return LocationProvider.this.onGetAccuracy();
-        }
-
-        public void enable() {
-            LocationProvider.this.onEnable();
-        }
-
-        public void disable() {
-            LocationProvider.this.onDisable();
-        }
-
-        public int getStatus(Bundle extras) {
-            return LocationProvider.this.onGetStatus(extras);
-        }
-
-        public long getStatusUpdateTime() {
-            return LocationProvider.this.onGetStatusUpdateTime();
-        }
-
-        public String getInternalState() {
-            return LocationProvider.this.onGetInternalState();
-        }
-
-        public void enableLocationTracking(boolean enable) {
-            LocationProvider.this.onEnableLocationTracking(enable);
-        }
-
-        public void setMinTime(long minTime, WorkSource ws) {
-            LocationProvider.this.onSetMinTime(minTime, ws);
-        }
-
-        public void updateNetworkState(int state, NetworkInfo info) {
-            LocationProvider.this.onUpdateNetworkState(state, info);
-        }
-
-        public void updateLocation(Location location) {
-            LocationProvider.this.onUpdateLocation(location);
-        }
-
-        public boolean sendExtraCommand(String command, Bundle extras) {
-            return LocationProvider.this.onSendExtraCommand(command, extras);
-        }
-
-        public void addListener(int uid) {
-            LocationProvider.this.onAddListener(uid, new WorkSource(uid));
-        }
-
-        public void removeListener(int uid) {
-            LocationProvider.this.onRemoveListener(uid, new WorkSource(uid));
-        }
-    };
-
     public LocationProvider() {
-        IBinder b = ServiceManager.getService(Context.LOCATION_SERVICE);
-        mLocationManager = ILocationManager.Stub.asInterface(b);
-    }
-
-    /**
-     * {@hide}
-     */
-    /* package */ ILocationProvider getInterface() {
-        return mProvider;
     }
 
     /**
@@ -154,22 +44,17 @@ public abstract class LocationProvider {
      * @return the IBinder instance for the provider
      */
     public IBinder getBinder() {
-        return mProvider;
+        return null;
     }
 
     /**
      * Used by the location provider to report new locations.
      *
      * @param location new Location to report
-     *
-     * Requires the android.permission.INSTALL_LOCATION_PROVIDER permission.
+     *                 <p/>
+     *                 Requires the android.permission.INSTALL_LOCATION_PROVIDER permission.
      */
     public void reportLocation(Location location) {
-        try {
-            mLocationManager.reportLocation(location, false);
-        } catch (RemoteException e) {
-            Log.e(TAG, "RemoteException in reportLocation: ", e);
-        }
     }
 
     /**
@@ -264,7 +149,7 @@ public abstract class LocationProvider {
      * the provider is temporarily unavailable but is expected to be
      * available shortly; and {@link android.location.LocationProvider#AVAILABLE} is returned
      * if the provider is currently available.
-     *
+     * <p/>
      * <p> If extras is non-null, additional status information may be
      * added to it in the form of provider-specific key/value pairs.
      */
@@ -306,7 +191,7 @@ public abstract class LocationProvider {
      * the frequency of updates to match the requested frequency.
      *
      * @param minTime the smallest minTime value over all listeners for this provider.
-     * @param ws the source this work is coming from.
+     * @param ws      the source this work is coming from.
      */
     public abstract void onSetMinTime(long minTime, WorkSource ws);
 
@@ -333,9 +218,8 @@ public abstract class LocationProvider {
      * Implements addditional location provider specific additional commands.
      *
      * @param command name of the command to send to the provider.
-     * @param extras optional arguments for the command (or null).
-     * The provider may optionally fill the extras Bundle with results from the command.
-     *
+     * @param extras  optional arguments for the command (or null).
+     *                The provider may optionally fill the extras Bundle with results from the command.
      * @return true if the command succeeds.
      */
     public abstract boolean onSendExtraCommand(String command, Bundle extras);
@@ -344,7 +228,7 @@ public abstract class LocationProvider {
      * Notifies the location provider when a new client is listening for locations.
      *
      * @param uid user ID of the new client.
-     * @param ws a WorkSource representation of the client.
+     * @param ws  a WorkSource representation of the client.
      */
     public abstract void onAddListener(int uid, WorkSource ws);
 
@@ -352,7 +236,7 @@ public abstract class LocationProvider {
      * Notifies the location provider when a client is no longer listening for locations.
      *
      * @param uid user ID of the client no longer listening.
-     * @param ws a WorkSource representation of the client.
+     * @param ws  a WorkSource representation of the client.
      */
     public abstract void onRemoveListener(int uid, WorkSource ws);
 }

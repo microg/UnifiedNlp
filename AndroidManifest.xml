@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.microg.nlp"
-    android:versionName="1.1.2"
-    android:versionCode="1102">
+    android:versionName="1.1.3"
+    android:versionCode="1103">
 
     <uses-sdk
-        android:minSdkVersion="9" />
+        android:minSdkVersion="9"
+        android:targetSdkVersion="21" />
 
     <permission
         android:name="org.microg.permission.FORCE_COARSE_LOCATION"
@@ -21,12 +22,14 @@
     <application
         android:icon="@drawable/nlp_app_icon"
         android:theme="@style/AppTheme"
+        android:allowBackup="true"
         android:label="@string/nlp_app_name">
         <uses-library android:name="com.android.location.provider" />
 
         <!-- Gingerbread / Ice Cream Sandwich -->
         <service
             android:name="org.microg.nlp.location.LocationServiceV1"
+            android:permission="android.permission.ACCESS_COARSE_LOCATION"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.location.NetworkLocationProvider" />
@@ -43,6 +46,7 @@
         <!-- Jelly Bean / KitKat -->
         <service
             android:name="org.microg.nlp.location.LocationServiceV2"
+            android:permission="android.permission.ACCESS_COARSE_LOCATION"
             android:exported="true">
             <intent-filter>
                 <!-- KitKat changed the action name but nothing else, hence we handle it the same -->

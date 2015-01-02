@@ -7,11 +7,13 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.ListView;
+import android.widget.TextView;
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
 
@@ -55,7 +57,9 @@ public abstract class AbstractBackendPreference extends DialogPreference {
 
     private void resetAdapter() {
         adapter.clear();
-        adapter.addAll(knownBackends);
+        for (BackendInfo backend : knownBackends) {
+            adapter.add(backend);
+        }
         listView.setAdapter(adapter);
     }
 
@@ -67,7 +71,8 @@ public abstract class AbstractBackendPreference extends DialogPreference {
                 if (sb.length() != 0) {
                     sb.append("|");
                 }
-                sb.append(backend.serviceInfo.packageName).append("/").append(backend.serviceInfo.name);
+                sb.append(backend.serviceInfo.packageName).append("/")
+                        .append(backend.serviceInfo.name);
             }
         }
         return sb.toString();
@@ -116,9 +121,14 @@ public abstract class AbstractBackendPreference extends DialogPreference {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View v = ((LayoutInflater) getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                    .inflate(R.layout.backend_list_entry, null);
+            View v;
+            if (convertView != null) {
+                v = convertView;
+            } else {
+                v = ((LayoutInflater) getContext().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE)).inflate(
+                        R.layout.backend_list_entry, parent, false);
+            }
             final BackendInfo backend = getItem(position);
             TextView title = (TextView) v.findViewById(android.R.id.text1);
             title.setText(backend.simpleName);
@@ -161,7 +171,6 @@ public abstract class AbstractBackendPreference extends DialogPreference {
             }
         }
     }
-    
 
     @Override
     protected void onDialogClosed(boolean positiveResult) {
@@ -170,9 +179,11 @@ public abstract class AbstractBackendPreference extends DialogPreference {
             onValueChanged();
         }
     }
-    
+
     protected abstract void onValueChanged();
+
     protected abstract Intent buildBackendIntent();
+
     protected abstract String defaultValue();
 
     private class BackendInfo {

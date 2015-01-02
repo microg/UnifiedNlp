@@ -1,0 +1,63 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.2'
+    compile 'com.android.support:appcompat-v7:21.0.2'
+}
+
+/**
+ * This is a dirty approach to add a compile-time module that is not build into the APK.
+ * Doing everything in the beginning will break other dependencies, so we first compile the module
+ * and then configure gradle to change the compile classpath before compiling
+ */
+
+tasks.findByPath(':preBuild').dependsOn += ':compatSetup'
+
+task compatSetup (dependsOn: [':compat:assembleDebug',':compat:assembleRelease']) << {
+    final java.util.concurrent.atomic.AtomicBoolean classpathSet = new java.util.concurrent.atomic.AtomicBoolean(false);
+    tasks.findAll{it.path.startsWith(':compile') && it.path.endsWith('Java')}.each{it.doFirst {
+        if (!classpathSet.get()) {
+            android.applicationVariants.all {
+                variant -> variant.javaCompile.classpath += project(':compat').files('build/intermediates/bundles/' + (variant.name.endsWith('ebug') ? 'debug' : 'release') + '/classes.jar'); 
+            };
+            classpathSet.set(true);
+        }
+    }};
+}
+
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.2"
+    lintOptions.abortOnError false
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src', 'api/src']
+            aidl.srcDirs = ['src', 'api/src']
+            res.srcDirs = ['res']
+        }
+    }
+
+    productFlavors {
+        NetworkLocation {
+            applicationId = 'com.google.android.gms'
+        }
+        LegacyNetworkLocation {
+            applicationId = 'com.google.android.location'
+        }
+        UnifiedNlp {
+            applicationId = 'org.microg.nlp'
+        }
+    }
+}
