@@ -22,16 +22,18 @@ dependencies {
 
 tasks.findByPath(':preBuild').dependsOn += ':compatSetup'
 
-task compatSetup (dependsOn: [':compat:assembleDebug',':compat:assembleRelease']) << {
+task compatSetup(dependsOn: [':compat:assembleDebug', ':compat:assembleRelease']) << {
     final java.util.concurrent.atomic.AtomicBoolean classpathSet = new java.util.concurrent.atomic.AtomicBoolean(false);
-    tasks.findAll{it.path.startsWith(':compile') && it.path.endsWith('Java')}.each{it.doFirst {
-        if (!classpathSet.get()) {
-            android.applicationVariants.all {
-                variant -> variant.javaCompile.classpath += project(':compat').files('build/intermediates/bundles/' + (variant.name.endsWith('ebug') ? 'debug' : 'release') + '/classes.jar'); 
-            };
-            classpathSet.set(true);
+    tasks.findAll { it.path.startsWith(':compile') && it.path.endsWith('Java') }.each {
+        it.doFirst {
+            if (!classpathSet.get()) {
+                android.applicationVariants.all {
+                    variant -> variant.javaCompile.classpath += project(':compat').files('build/intermediates/bundles/' + (variant.name.endsWith('ebug') ? 'debug' : 'release') + '/classes.jar');
+                };
+                classpathSet.set(true);
+            }
         }
-    }};
+    };
 }
 
 
@@ -60,4 +62,8 @@ android {
             applicationId = 'org.microg.nlp'
         }
     }
+}
+
+if (file('user.gradle').exists()) {
+    apply from: 'user.gradle'
 }
