@@ -35,15 +35,15 @@ Usage
 UnifiedNlp alone does not provide any features, but acts as a middleware for multiple backends.Most of them can be downloaded and updated using [F-Droid](https://f-droid.org)
 Here is a list of backends for geolocation and (reverse) geocoding known to me:
 
--	[AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - backend that uses Apple's service to resolve wifi locations
--	[OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - backend that uses OpenWlanMap.org to resolve user location.
--	[LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend
--	[LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
--	[PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for WiFi APs using on-phone generated database.
+- [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - backend that uses Apple's service to resolve wifi locations
+- [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - backend that uses OpenWlanMap.org to resolve user location.
+- [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend
+- [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
+- [PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for WiFi APs using on-phone generated database.
 
 
--   [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService)
--	(...) Create issue or pull request to extend either list :)
+- [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService)
+- (...) Create issue or pull request to extend either list :)
 
 After installing a backend, you can use UnifiedNlp by activating network-based geolocation in Settings->Location. 
 Since KitKat, you need to select any mode but "device only", on older Android version this setting is called "Wi-Fi & mobile network location" 
