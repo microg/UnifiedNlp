@@ -41,7 +41,7 @@ Here is a list of backends for geolocation and (reverse) geocoding known to me:
 - [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend
 - [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
 
-
+ 
 
 - [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService)
 - (...) Create issue or pull request to extend either list :)
