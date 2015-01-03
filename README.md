@@ -67,7 +67,7 @@ To build with Gradle, first clone UnifiedNlpApi as sub-project by invoking the f
 AOSP Build system integration
 -----------------------------
 UnifiedNlp can be build as part of Android when building an Android ROM from source.
-Add the repo to your (local) manifest.xml and extend the `PRODUCT_PACKAGES` variable with `NetworkLocation` for KitKat and `LegacyNetworkLocation` for Jelly Bean.
+Add this repo to your (local) manifest.xml, as well as the UnifiedNlpApi and extend the `PRODUCT_PACKAGES` variable with `NetworkLocation` for KitKat and `LegacyNetworkLocation` for Jelly Bean.
 
 You can also directly invoke the compilation of UnifiedNlp by calling `make UnifiedNlp` or `make NetworkLocation` (respectively `make LegacyNetworkLocation`) from the build system root.
 
@@ -75,6 +75,7 @@ You can also directly invoke the compilation of UnifiedNlp by calling `make Unif
 Attribution
 -----------
 Some components: Copyright (C) 2013 The Android Open Source Project
+
 `compat`-folder is extracted from different AOSP versions for cross-version compatibility
 
 License
