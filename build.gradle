@@ -1,3 +1,5 @@
+import java.util.concurrent.atomic.AtomicBoolean
+
 buildscript {
     repositories {
         mavenCentral()
@@ -7,7 +9,13 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.application'
+final boolean buildNlpAsLib = name.equals('UnifiedNlpLib')
+
+if (buildNlpAsLib) {
+    apply plugin: 'com.android.library'
+} else {
+    apply plugin: 'com.android.application'
+}
 
 dependencies {
     compile 'com.android.support:support-v4:21.0.2'
@@ -22,20 +30,22 @@ dependencies {
 
 tasks.getByName('preBuild').dependsOn += 'compatSetup'
 
-task compatSetup(dependsOn: [project('compat').path+':assembleDebug', project('compat').path+':assembleRelease']) << {
-    final java.util.concurrent.atomic.AtomicBoolean classpathSet = new java.util.concurrent.atomic.AtomicBoolean(false);
+task compatSetup(dependsOn: [project('compat').path + ':assembleDebug', project('compat').path + ':assembleRelease']) << {
+    final AtomicBoolean classpathSet = new AtomicBoolean(false);
     tasks.findAll { it.name.startsWith('compile') && it.name.endsWith('Java') }.each {
         it.doFirst {
             if (!classpathSet.get()) {
-                android.applicationVariants.all {
-                    variant -> variant.javaCompile.classpath += project('compat').files('build/intermediates/bundles/' + (variant.name.endsWith('ebug') ? 'debug' : 'release') + '/classes.jar');
+                def variants;
+                if (buildNlpAsLib) variants = android.libraryVariants;
+                else variants = android.applicationVariants;
+                variants.all {
+                    it.javaCompile.classpath += project('compat').files('build/intermediates/bundles/' + (it.name.endsWith('ebug') ? 'debug' : 'release') + '/classes.jar');
                 };
                 classpathSet.set(true);
             }
         }
     };
 }
-
 
 android {
     compileSdkVersion 21
@@ -44,22 +54,28 @@ android {
 
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
+            if (buildNlpAsLib) {
+                manifest.srcFile 'EmptyAndroidManifest.xml'
+            } else {
+                manifest.srcFile 'AndroidManifest.xml'
+            }
             java.srcDirs = ['src', 'api/src']
             aidl.srcDirs = ['src', 'api/src']
             res.srcDirs = ['res']
         }
     }
 
-    productFlavors {
-        NetworkLocation {
-            applicationId = 'com.google.android.gms'
-        }
-        LegacyNetworkLocation {
-            applicationId = 'com.google.android.location'
-        }
-        UnifiedNlp {
-            applicationId = 'org.microg.nlp'
+    if (!buildNlpAsLib) {
+        productFlavors {
+            NetworkLocation {
+                applicationId = 'com.google.android.gms'
+            }
+            LegacyNetworkLocation {
+                applicationId = 'com.google.android.location'
+            }
+            UnifiedNlp {
+                applicationId = 'org.microg.nlp'
+            }
         }
     }
 }

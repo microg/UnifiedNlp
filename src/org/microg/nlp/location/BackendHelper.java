@@ -1,6 +1,5 @@
 package org.microg.nlp.location;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
