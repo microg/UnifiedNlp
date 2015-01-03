@@ -20,6 +20,7 @@ if (buildNlpAsLib) {
 dependencies {
     compile 'com.android.support:support-v4:21.0.2'
     compile 'com.android.support:appcompat-v7:21.0.2'
+    compile project(':UnifiedNlpApi')
 }
 
 /**
@@ -59,8 +60,8 @@ android {
             } else {
                 manifest.srcFile 'AndroidManifest.xml'
             }
-            java.srcDirs = ['src', 'api/src']
-            aidl.srcDirs = ['src', 'api/src']
+            java.srcDirs = ['src']
+            aidl.srcDirs = ['src']
             res.srcDirs = ['res']
         }
     }

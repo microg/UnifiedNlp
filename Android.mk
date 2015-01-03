@@ -106,5 +106,5 @@ LOCAL_AAPT_FLAGS := --auto-add-overlay \
 
 include $(BUILD_PACKAGE)
 
-include $(LOCAL_PATH)/api/Android.mk $(LOCAL_PATH)/compat/v9/Android.mk
+include $(LOCAL_PATH)/compat/v9/Android.mk
 
