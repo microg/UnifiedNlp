@@ -52,7 +52,9 @@ Since KitKat, you need to select any mode but "device only", on older Android ve
 
 Backend-development
 -------------------
-Take a look at the API documentation in `/api/README.md`. You might also be interested in the sample backends in `/sample/`
+The API is available [here](https://github.com/microg/android_external_UnifiedNlpApi). Documentation may be found in the README provided with the API.
+
+You might also take a look into existing backends, to see how they work out.
 
 Building
 --------
