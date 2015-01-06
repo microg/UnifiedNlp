@@ -4,15 +4,15 @@
     <string name="nlp_settings_label">µg UnifiedNlp Settings</string>
     <string name="add_backend">Add backend</string>
     <string name="configure_location_backends">Configure location backends</string>
-    <string name="configure_geocoder_backends">Configure geocoder backends</string>
+    <string name="configure_geocoder_backends">Configure address lookup backends</string>
     <string name="network_location">Network-based Geolocation</string>
-    <string name="geocoding">(Reverse) Geocoding</string>
+    <string name="geocoding">Address lookup</string>
     <string name="configure_backends">Configure backends</string>
     <string name="configure_location_backends_summary">
         Enable, disable and configure backends for network based geolocation.
     </string>
     <string name="configure_geocoder_backends_summary">
-        Enable, disable and configure backends for (reverse) geocoding.
+        Enable, disable and configure backends for address lookup.
     </string>
     <string name="pref_location_backends">location_backends</string>
     <string name="pref_geocoder_backends">geocoder_backends</string>
