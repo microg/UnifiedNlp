@@ -70,6 +70,7 @@ android {
         productFlavors {
             NetworkLocation {
                 applicationId = 'com.google.android.gms'
+                minSdkVersion 19
             }
             LegacyNetworkLocation {
                 applicationId = 'com.google.android.location'
