@@ -14,8 +14,8 @@
 
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
-appcompat_dir := ../../../prebuilts/sdk/current/support/v7/appcompat/res
-res_dir := res $(appcompat_dir)
+appcompat_dir := ../../../frameworks/support/v7/appcompat
+res_dir := res $(appcompat_dir)/res
 
 LOCAL_MODULE_TAGS := optional
 
