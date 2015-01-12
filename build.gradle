@@ -18,8 +18,8 @@ if (buildNlpAsLib) {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.2'
-    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
     compile project(':UnifiedNlpApi')
 }
 
@@ -54,12 +54,8 @@ android {
     lintOptions.abortOnError false
 
     sourceSets {
-        main {
-            if (buildNlpAsLib) {
-                manifest.srcFile 'EmptyAndroidManifest.xml'
-            } else {
-                manifest.srcFile 'AndroidManifest.xml'
-            }
+        main { 
+            manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src']
             aidl.srcDirs = ['src']
             res.srcDirs = ['res']
