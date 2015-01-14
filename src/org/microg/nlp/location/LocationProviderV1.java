@@ -12,7 +12,7 @@ import static android.location.LocationProvider.AVAILABLE;
 
 public class LocationProviderV1 extends com.android.location.provider.LocationProvider
         implements LocationProvider {
-    private static final String TAG = LocationProviderV1.class.getName();
+    private static final String TAG = "NlpLocationProvider";
 
     private final ThreadHelper helper;
     private long autoTime = Long.MAX_VALUE;

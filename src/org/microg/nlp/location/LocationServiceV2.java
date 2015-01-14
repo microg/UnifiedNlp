@@ -1,7 +1,7 @@
 package org.microg.nlp.location;
 
 public class LocationServiceV2 extends AbstractLocationService {
-    private static final String TAG = LocationServiceV2.class.getName();
+    private static final String TAG = "NlpLocationService";
     private static LocationProviderV2 THE_ONE;
 
     public LocationServiceV2() {

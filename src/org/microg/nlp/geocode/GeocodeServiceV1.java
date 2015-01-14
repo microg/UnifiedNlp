@@ -1,7 +1,7 @@
 package org.microg.nlp.geocode;
 
 public class GeocodeServiceV1 extends AbstractGeocodeService {
-    private static final String TAG = GeocodeServiceV1.class.getName();
+    private static final String TAG = "NlpGeocodeService";
     private static GeocodeProviderV1 THE_ONE;
 
     public GeocodeServiceV1() {

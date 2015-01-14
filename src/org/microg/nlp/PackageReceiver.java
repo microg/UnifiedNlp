@@ -8,7 +8,7 @@ import org.microg.nlp.geocode.AbstractGeocodeService;
 import org.microg.nlp.location.AbstractLocationService;
 
 public class PackageReceiver extends BroadcastReceiver {
-    private static final String TAG = PackageReceiver.class.getName();
+    private static final String TAG = "NlpPackageReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {

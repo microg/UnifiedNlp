@@ -14,7 +14,7 @@ import com.android.location.provider.ProviderRequestUnbundled;
 import static android.location.LocationProvider.AVAILABLE;
 
 class LocationProviderV2 extends LocationProviderBase implements LocationProvider {
-    private static final String TAG = LocationProviderV2.class.getName();
+    private static final String TAG = "NlpLocationProvider";
     private static final ProviderPropertiesUnbundled props = ProviderPropertiesUnbundled.create(
             false, // requiresNetwork
             false, // requiresSatellite

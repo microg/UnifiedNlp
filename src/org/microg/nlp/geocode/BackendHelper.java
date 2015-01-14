@@ -13,7 +13,7 @@ import org.microg.nlp.api.GeocoderBackend;
 import java.util.List;
 
 class BackendHelper extends AbstractBackendHelper {
-    private static final String TAG = BackendHelper.class.getName();
+    private static final String TAG = "NlpGeocodeBackendHelper";
     private GeocoderBackend backend;
 
     public BackendHelper(Context context, Intent serviceIntent) {
