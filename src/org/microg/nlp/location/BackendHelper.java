@@ -12,8 +12,8 @@ import org.microg.nlp.AbstractBackendHelper;
 import org.microg.nlp.api.LocationBackend;
 import org.microg.nlp.api.LocationCallback;
 
-import static org.microg.nlp.api.NlpApiConstants.LOCATION_EXTRA_BACKEND_COMPONENT;
-import static org.microg.nlp.api.NlpApiConstants.LOCATION_EXTRA_BACKEND_PROVIDER;
+import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
+import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT;
 
 class BackendHelper extends AbstractBackendHelper {
     private static final String TAG = BackendHelper.class.getName();
@@ -76,7 +76,7 @@ class BackendHelper extends AbstractBackendHelper {
         lastLocation = location;
         return lastLocation;
     }
-    
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void updateElapsedRealtimeNanos(Location location) {
         if (location.getElapsedRealtimeNanos() <= 0) {

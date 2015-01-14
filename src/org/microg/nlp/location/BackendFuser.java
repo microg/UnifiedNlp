@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.microg.nlp.api.NlpApiConstants.*;
+import static org.microg.nlp.api.Constants.*;
 
 class BackendFuser {
     private static final String TAG = BackendFuser.class.getName();

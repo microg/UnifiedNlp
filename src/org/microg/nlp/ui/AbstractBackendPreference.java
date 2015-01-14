@@ -20,7 +20,7 @@ import org.microg.nlp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.microg.nlp.api.NlpApiConstants.*;
+import static org.microg.nlp.api.Constants.*;
 
 public abstract class AbstractBackendPreference extends DialogPreference {
     private ListView listView;

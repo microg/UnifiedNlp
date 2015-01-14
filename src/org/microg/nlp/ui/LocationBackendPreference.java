@@ -7,7 +7,7 @@ import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
 import org.microg.nlp.location.LocationService;
 
-import static org.microg.nlp.api.NlpApiConstants.ACTION_LOCATION_BACKEND;
+import static org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND;
 
 public class LocationBackendPreference extends AbstractBackendPreference {
     public LocationBackendPreference(Context context, AttributeSet attrs) {

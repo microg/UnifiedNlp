@@ -7,7 +7,7 @@ import android.location.Location;
 import android.os.Build;
 import org.microg.nlp.ProviderService;
 
-import static org.microg.nlp.api.NlpApiConstants.*;
+import static org.microg.nlp.api.Constants.*;
 
 public abstract class LocationService extends ProviderService<LocationProvider> {
     public static void reloadLocationService(Context context) {

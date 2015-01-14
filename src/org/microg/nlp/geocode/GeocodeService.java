@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import org.microg.nlp.ProviderService;
 
-import static org.microg.nlp.api.NlpApiConstants.ACTION_RELOAD_SETTINGS;
+import static org.microg.nlp.api.Constants.ACTION_RELOAD_SETTINGS;
 
 public abstract class GeocodeService extends ProviderService<GeocodeProvider> {
     public static void reloadLocationService(Context context) {
