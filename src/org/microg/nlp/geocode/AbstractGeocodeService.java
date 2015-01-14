@@ -2,11 +2,12 @@ package org.microg.nlp.geocode;
 
 import android.content.Context;
 import android.content.Intent;
-import org.microg.nlp.ProviderService;
+
+import org.microg.nlp.AbstractProviderService;
 
 import static org.microg.nlp.api.Constants.ACTION_RELOAD_SETTINGS;
 
-public abstract class GeocodeService extends ProviderService<GeocodeProvider> {
+public abstract class AbstractGeocodeService extends AbstractProviderService<GeocodeProvider> {
     public static void reloadLocationService(Context context) {
         Intent intent = new Intent(ACTION_RELOAD_SETTINGS);
         intent.setClass(context, GeocodeServiceV1.class);
@@ -18,14 +19,14 @@ public abstract class GeocodeService extends ProviderService<GeocodeProvider> {
      *
      * @param tag Used for debugging.
      */
-    public GeocodeService(String tag) {
+    public AbstractGeocodeService(String tag) {
         super(tag);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (ACTION_RELOAD_SETTINGS.equals(intent.getAction())) {
-            GeocodeProvider provider = getCurrentProvider();
+            GeocodeProvider provider = getProvider();
             if (provider != null) {
                 provider.reload();
             }

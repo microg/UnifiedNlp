@@ -4,27 +4,24 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.IBinder;
 
-public abstract class ProviderService<T extends Provider> extends IntentService {
-    private T provider;
-
+public abstract class AbstractProviderService<T extends Provider> extends IntentService {
     /**
      * Creates an ProviderService.  Invoked by your subclass's constructor.
      *
      * @param tag Used for debugging.
      */
-    public ProviderService(String tag) {
+    public AbstractProviderService(String tag) {
         super(tag);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        provider = createProvider();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return provider.getBinder();
+        return getProvider().getBinder();
     }
 
     @Override
@@ -35,28 +32,29 @@ public abstract class ProviderService<T extends Provider> extends IntentService 
 
     @Override
     public void onDestroy() {
-        provider = null;
+        super.onDestroy();
     }
 
     /**
-     * Create a {@link org.microg.nlp.Provider}.
-     * This is most likely only called once
+     * Create a new {@link Provider} or return the existing one.
+     * <p/>
+     * This might be called more than once, the implementation has to ensure that only one
+     * {@link Provider} is returned.
      *
-     * @return a new {@link org.microg.nlp.Provider} instance
+     * @return a new or existing {@link Provider} instance
      */
-    protected abstract T createProvider();
-    
+    protected abstract T getProvider();
+
+    /**
+     * Destroy the active {@link Provider}.
+     *
+     * After this has been called, the {@link Provider} instance, that was active before should no
+     * longer be returned with {@link #getProvider()}.
+     */
     protected abstract void destroyProvider();
 
     @Override
     protected void onHandleIntent(Intent intent) {
         // Default implementation is to do nothing
-    }
-
-    /**
-     * @return the currently used {@link org.microg.nlp.Provider} instance
-     */
-    protected T getCurrentProvider() {
-        return provider;
     }
 }

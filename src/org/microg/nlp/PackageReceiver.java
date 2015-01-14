@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import org.microg.nlp.geocode.GeocodeService;
-import org.microg.nlp.location.LocationService;
+import org.microg.nlp.geocode.AbstractGeocodeService;
+import org.microg.nlp.location.AbstractLocationService;
 
 public class PackageReceiver extends BroadcastReceiver {
     private static final String TAG = PackageReceiver.class.getName();
@@ -14,8 +14,8 @@ public class PackageReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Intent received: " + intent);
         Log.d(TAG, "Reloading location service...");
-        LocationService.reloadLocationService(context);
+        AbstractLocationService.reloadLocationService(context);
         Log.d(TAG, "Reloading geocoding service...");
-        GeocodeService.reloadLocationService(context);
+        AbstractGeocodeService.reloadLocationService(context);
     }
 }

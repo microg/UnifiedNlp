@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
-import org.microg.nlp.ProviderService;
+import org.microg.nlp.AbstractProviderService;
 
 import static org.microg.nlp.api.Constants.*;
 
-public abstract class LocationService extends ProviderService<LocationProvider> {
+public abstract class AbstractLocationService extends AbstractProviderService<LocationProvider> {
     public static void reloadLocationService(Context context) {
         Intent intent = new Intent(ACTION_RELOAD_SETTINGS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -25,16 +25,17 @@ public abstract class LocationService extends ProviderService<LocationProvider> 
      *
      * @param tag Used for debugging.
      */
-    public LocationService(String tag) {
+    public AbstractLocationService(String tag) {
         super(tag);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        LocationProvider provider = getProvider();
+
         if (ACTION_FORCE_LOCATION.equals(intent.getAction())) {
             if (checkCallingPermission(PERMISSION_FORCE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED) {
-                LocationProvider provider = getCurrentProvider();
                 if (provider != null && intent.hasExtra(INTENT_EXTRA_LOCATION)) {
                     provider.forceLocation(
                             (Location) intent.getParcelableExtra(INTENT_EXTRA_LOCATION));
@@ -43,7 +44,6 @@ public abstract class LocationService extends ProviderService<LocationProvider> 
         }
 
         if (ACTION_RELOAD_SETTINGS.equals(intent.getAction())) {
-            LocationProvider provider = getCurrentProvider();
             if (provider != null) {
                 provider.reload();
             }
@@ -52,7 +52,7 @@ public abstract class LocationService extends ProviderService<LocationProvider> 
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LocationProvider provider = getCurrentProvider();
+        LocationProvider provider = getProvider();
         if (provider != null) {
             provider.onDisable();
         }

@@ -1,6 +1,6 @@
 package org.microg.nlp.location;
 
-public class LocationServiceV1 extends LocationService {
+public class LocationServiceV1 extends AbstractLocationService {
     private static final String TAG = LocationServiceV1.class.getName();
     private static LocationProviderV1 THE_ONE;
 
@@ -9,7 +9,7 @@ public class LocationServiceV1 extends LocationService {
     }
 
     @Override
-    protected synchronized LocationProvider createProvider() {
+    protected synchronized LocationProvider getProvider() {
         if (THE_ONE == null) {
             THE_ONE = new LocationProviderV1(this);
         }

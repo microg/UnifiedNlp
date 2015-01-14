@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
-import org.microg.nlp.geocode.GeocodeService;
+import org.microg.nlp.geocode.AbstractGeocodeService;
 
 import static org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND;
 
@@ -18,7 +18,7 @@ public class GeocoderBackendPreference extends AbstractBackendPreference {
 
     @Override
     protected void onValueChanged() {
-        GeocodeService.reloadLocationService(getContext());
+        AbstractGeocodeService.reloadLocationService(getContext());
     }
 
     @Override

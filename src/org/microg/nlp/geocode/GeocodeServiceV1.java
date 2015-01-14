@@ -1,6 +1,6 @@
 package org.microg.nlp.geocode;
 
-public class GeocodeServiceV1 extends GeocodeService {
+public class GeocodeServiceV1 extends AbstractGeocodeService {
     private static final String TAG = GeocodeServiceV1.class.getName();
     private static GeocodeProviderV1 THE_ONE;
 
@@ -9,7 +9,7 @@ public class GeocodeServiceV1 extends GeocodeService {
     }
 
     @Override
-    protected synchronized GeocodeProvider createProvider() {
+    protected synchronized GeocodeProvider getProvider() {
         if (THE_ONE == null) {
             THE_ONE = new GeocodeProviderV1(this);
         }

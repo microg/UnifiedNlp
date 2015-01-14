@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
-import org.microg.nlp.location.LocationService;
+import org.microg.nlp.location.AbstractLocationService;
 
 import static org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND;
 
@@ -18,7 +18,7 @@ public class LocationBackendPreference extends AbstractBackendPreference {
 
     @Override
     protected void onValueChanged() {
-        LocationService.reloadLocationService(getContext());
+        AbstractLocationService.reloadLocationService(getContext());
     }
 
     @Override
