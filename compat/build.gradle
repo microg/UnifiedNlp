@@ -1,24 +1,10 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
-    }
-}
+apply plugin: 'java'
 
-apply plugin: 'com.android.library'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def sdkDir = properties.getProperty('sdk.dir')
 
-android {
-    compileSdkVersion 21
-    buildToolsVersion "21.0.2"
-    lintOptions.abortOnError false
-
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['v9/src', 'current/src']
-            aidl.srcDirs = ['v9/src', 'current/src']
-        }
-    }
+sourceSets.main {
+    java.srcDirs = ['current/src', 'v9/src']
+    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-21/android.jar")
 }
