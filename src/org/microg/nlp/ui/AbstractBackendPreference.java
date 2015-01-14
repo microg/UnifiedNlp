@@ -38,12 +38,12 @@ import java.util.List;
 
 import static org.microg.nlp.api.Constants.*;
 
-public abstract class AbstractBackendPreference extends DialogPreference {
+abstract class AbstractBackendPreference extends DialogPreference {
     private ListView listView;
-    private Adapter adapter;
+    private final Adapter adapter;
     private List<BackendInfo> knownBackends;
 
-    public AbstractBackendPreference(Context context, AttributeSet attrs) {
+    AbstractBackendPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setPositiveButtonText(android.R.string.ok);
@@ -67,7 +67,7 @@ public abstract class AbstractBackendPreference extends DialogPreference {
         resetAdapter();
     }
 
-    protected List<BackendInfo> queryKnownBackends() {
+    List<BackendInfo> queryKnownBackends() {
         return intentToKnownBackends(buildBackendIntent());
     }
 
@@ -94,7 +94,7 @@ public abstract class AbstractBackendPreference extends DialogPreference {
         return sb.toString();
     }
 
-    public void markBackendsAsEnabled() {
+    void markBackendsAsEnabled() {
         for (String backend : Preferences.splitBackendString(getPersistedString(defaultValue()))) {
             String[] parts = backend.split("/");
             if (parts.length == 2) {
@@ -109,8 +109,8 @@ public abstract class AbstractBackendPreference extends DialogPreference {
         }
     }
 
-    public List<BackendInfo> intentToKnownBackends(Intent intent) {
-        List<BackendInfo> knownBackends = new ArrayList<BackendInfo>();
+    List<BackendInfo> intentToKnownBackends(Intent intent) {
+        List<BackendInfo> knownBackends = new ArrayList<>();
         List<ResolveInfo> resolveInfos = getContext().getPackageManager()
                 .queryIntentServices(intent, PackageManager.GET_META_DATA);
         for (ResolveInfo info : resolveInfos) {
@@ -203,8 +203,8 @@ public abstract class AbstractBackendPreference extends DialogPreference {
     protected abstract String defaultValue();
 
     private class BackendInfo {
-        private ServiceInfo serviceInfo;
-        private String simpleName;
+        private final ServiceInfo serviceInfo;
+        private final String simpleName;
         private boolean enabled = false;
 
         public BackendInfo(ServiceInfo serviceInfo, String simpleName) {

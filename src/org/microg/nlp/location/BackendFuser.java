@@ -22,6 +22,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+
 import org.microg.nlp.Preferences;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import static org.microg.nlp.api.Constants.*;
 class BackendFuser {
     private static final String TAG = "NlpLocationBackendFuser";
 
-    private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
+    private final List<BackendHelper> backendHelpers = new ArrayList<>();
     private final LocationProvider locationProvider;
     private final Context context;
     private Location forcedLocation;
@@ -67,44 +68,37 @@ class BackendFuser {
         }
     }
 
-    public boolean bind() {
+    public void bind() {
         fusing = false;
-        boolean handlerBound = false;
         for (BackendHelper handler : backendHelpers) {
-            if (handler.bind()) {
-                handlerBound = true;
-            }
+            handler.bind();
         }
-        return handlerBound;
     }
 
-    public Location update() {
+    public void update() {
         fusing = true;
         for (BackendHelper handler : backendHelpers) {
             handler.update();
         }
         fusing = false;
-        return getLastLocation();
+        updateLocation();
     }
 
-    public Location getLastLocation() {
-        List<Location> locations = new ArrayList<Location>();
+    void updateLocation() {
+        List<Location> locations = new ArrayList<>();
         for (BackendHelper handler : backendHelpers) {
             locations.add(handler.getLastLocation());
         }
         if (forcedLocation != null) {
             locations.add(forcedLocation);
         }
-        if (locations.isEmpty()) {
-            return null;
-        } else {
+        if (!locations.isEmpty()) {
             Location location = mergeLocations(locations);
             if (location != null) {
                 location.setProvider(LocationManager.NETWORK_PROVIDER);
                 locationProvider.reportLocation(location);
                 Log.v(TAG, "location=" + location);
             }
-            return location;
         }
     }
 
@@ -115,7 +109,7 @@ class BackendFuser {
         if (locations.size() == 1)
             return locations.get(0);
         Location location = new Location(locations.get(0));
-        ArrayList<Location> backendResults = new ArrayList<Location>();
+        ArrayList<Location> backendResults = new ArrayList<>();
         for (Location backendResult : locations) {
             if (locations.get(0) == backendResult)
                 continue;
@@ -132,7 +126,7 @@ class BackendFuser {
     public void reportLocation() {
         if (fusing)
             return;
-        getLastLocation();
+        updateLocation();
     }
 
     public void forceLocation(Location location) {

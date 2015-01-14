@@ -31,11 +31,6 @@ public abstract class AbstractProviderService<T extends Provider> extends Intent
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-    }
-
-    @Override
     public IBinder onBind(Intent intent) {
         return getProvider().getBinder();
     }
@@ -44,11 +39,6 @@ public abstract class AbstractProviderService<T extends Provider> extends Intent
     public boolean onUnbind(Intent intent) {
         destroyProvider();
         return super.onUnbind(intent);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     /**

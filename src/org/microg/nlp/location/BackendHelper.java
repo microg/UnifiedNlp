@@ -48,7 +48,7 @@ class BackendHelper extends AbstractBackendHelper {
         return lastLocation;
     }
 
-    public Location update() {
+    public void update() {
         if (backend == null) {
             Log.d(TAG, "Not (yet) bound.");
             updateWaiting = true;
@@ -62,15 +62,11 @@ class BackendHelper extends AbstractBackendHelper {
                 unbind();
             }
         }
-        return lastLocation;
     }
 
-    private Location setLastLocation(Location location) {
-        if (location == null) {
-            return lastLocation;
-        }
-        if (!location.hasAccuracy()) {
-            return lastLocation;
+    private void setLastLocation(Location location) {
+        if (location == null || !location.hasAccuracy()) {
+            return;
         }
         if (location.getExtras() == null) {
             location.setExtras(new Bundle());
@@ -90,7 +86,6 @@ class BackendHelper extends AbstractBackendHelper {
         location.getExtras()
                 .putParcelable(LocationProviderBase.EXTRA_NO_GPS_LOCATION, new Location(location));
         lastLocation = location;
-        return lastLocation;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

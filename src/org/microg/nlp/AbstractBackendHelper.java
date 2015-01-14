@@ -25,20 +25,20 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public abstract class AbstractBackendHelper implements ServiceConnection {
-    protected final Context context;
+    private final Context context;
     protected final Intent serviceIntent;
     private boolean bound;
     private final String TAG;
 
-    public AbstractBackendHelper(String tag, Context context, Intent serviceIntent) {
+    protected AbstractBackendHelper(String tag, Context context, Intent serviceIntent) {
         TAG = tag;
         this.context = context;
         this.serviceIntent = serviceIntent;
     }
 
-    public abstract void close() throws RemoteException;
+    protected abstract void close() throws RemoteException;
 
-    public abstract boolean hasBackend();
+    protected abstract boolean hasBackend();
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
@@ -71,17 +71,15 @@ public abstract class AbstractBackendHelper implements ServiceConnection {
         }
     }
 
-    public boolean bind() {
+    public void bind() {
         if (!bound) {
             Log.d(TAG, "Binding to: " + serviceIntent);
             try {
                 context.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
             } catch (Exception e) {
                 Log.w(TAG, e);
-                return false;
             }
         }
-        return true;
     }
 
 }
