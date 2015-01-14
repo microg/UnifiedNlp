@@ -27,6 +27,7 @@ class BackendFuser {
     public BackendFuser(Context context, LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
         this.context = context;
+        reset();
     }
 
     public void reset() {
