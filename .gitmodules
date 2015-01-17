@@ -1,0 +1,3 @@
+[submodule "UnifiedNlpApi"]
+	path = UnifiedNlpApi
+	url = https://github.com/microg/android_external_UnifiedNlpApi.git
