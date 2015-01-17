@@ -60,9 +60,10 @@ Building
 --------
 UnifiedNlp can be built using Gradle. Current builds are done using Gradle 2.2, but other versions might work as well.
 
-To build with Gradle, first clone UnifiedNlpApi as sub-project by invoking the following command in the project root:
+To build with Gradle, first download git submodules:
 
-	git clone https://github.com/microg/android_external_UnifiedNlpApi.git UnifiedNlpApi
+	git submodule init
+	git submodule update
 
 AOSP Build system integration
 -----------------------------
