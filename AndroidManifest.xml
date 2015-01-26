@@ -46,7 +46,6 @@
         <service
             android:name="org.microg.nlp.location.LocationServiceV1"
             android:permission="android.permission.ACCESS_COARSE_LOCATION"
-            android:process=":nlp_loc_service"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.location.NetworkLocationProvider" />
@@ -64,7 +63,6 @@
         <service
             android:name="org.microg.nlp.location.LocationServiceV2"
             android:permission="android.permission.ACCESS_COARSE_LOCATION"
-            android:process=":nlp_loc_service"
             android:exported="true">
             <intent-filter>
                 <!-- KitKat changed the action name but nothing else, hence we handle it the same -->
@@ -82,7 +80,6 @@
 
         <service
             android:name="org.microg.nlp.geocode.GeocodeServiceV1"
-            android:process=":nlp_geo_service"
             android:exported="true">
             <intent-filter>
                 <!-- Jelly Bean changed the action name but nothing else, hence we handle it the same -->

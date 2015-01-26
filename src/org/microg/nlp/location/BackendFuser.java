@@ -30,7 +30,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.microg.nlp.api.Constants.*;
+import static org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND;
+import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
+import static org.microg.nlp.api.Constants.LOCATION_EXTRA_OTHER_BACKENDS;
 
 class BackendFuser {
     private static final String TAG = "NlpLocationBackendFuser";
@@ -150,7 +152,7 @@ class BackendFuser {
     public static class LocationComparator implements Comparator<Location> {
 
         public static final LocationComparator INSTANCE = new LocationComparator();
-        public static final long SWITCH_ON_FRESHNESS_CLIFF_MS = 30000; // 30 seconds TODO: make it a setting
+        public static final long SWITCH_ON_FRESHNESS_CLIFF_MS = 30000; // 30 seconds
 
         /**
          * @return whether {@param lhs} is better than {@param rhs}

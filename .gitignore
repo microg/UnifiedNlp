@@ -1,5 +1,10 @@
 *.iml
-gen
-bin
-build
+gen/
+bin/
+build/
 user.gradle
+.gradle/
+gradle/
+gradlew
+local.properties
+.idea/

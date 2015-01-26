@@ -50,6 +50,8 @@ class LocationProviderV2 extends LocationProviderBase implements LocationProvide
 
     @Override
     public void onDisable() {
+        Log.d(TAG, "onDisable");
+        helper.disable();
     }
 
     @Override
@@ -69,6 +71,7 @@ class LocationProviderV2 extends LocationProviderBase implements LocationProvide
 
     @Override
     public void onEnable() {
+        Log.d(TAG, "onEnable");
     }
 
     @Override
@@ -85,15 +88,8 @@ class LocationProviderV2 extends LocationProviderBase implements LocationProvide
     public void onSetRequest(ProviderRequestUnbundled requests, WorkSource source) {
         Log.v(TAG, "onSetRequest: " + requests + " by " + source);
 
-        long autoTime = Long.MAX_VALUE;
-        boolean autoUpdate = false;
-        for (LocationRequestUnbundled request : requests.getLocationRequests()) {
-            Log.v(TAG, "onSetRequest: request: " + request);
-            if (autoTime > request.getInterval()) {
-                autoTime = request.getInterval();
-            }
-            autoUpdate = true;
-        }
+        long autoTime = requests.getInterval();
+        boolean autoUpdate = requests.getReportLocation();
 
         if (autoTime < 1500) {
             // Limit to 1.5s

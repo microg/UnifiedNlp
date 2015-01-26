@@ -40,6 +40,8 @@ public class LocationProviderV1 extends com.android.location.provider.LocationPr
 
     @Override
     public void onDisable() {
+        Log.d(TAG, "onDisable");
+        helper.disable();
     }
 
     @Override
@@ -54,6 +56,7 @@ public class LocationProviderV1 extends com.android.location.provider.LocationPr
 
     @Override
     public void onEnable() {
+        Log.d(TAG, "onEnable");
     }
 
     @Override
