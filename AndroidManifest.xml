@@ -25,13 +25,15 @@
         android:targetSdkVersion="21" />
 
     <permission
+        android:permissionGroup="android.permission-group.LOCATION"
+        android:label="@string/perm_force_coarse_location_label"
+        android:description="@string/perm_force_coarse_location_desc"
         android:name="org.microg.permission.FORCE_COARSE_LOCATION"
         android:protectionLevel="dangerous" />
 
     <uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="org.microg.permission.FORCE_COARSE_LOCATION" />
 

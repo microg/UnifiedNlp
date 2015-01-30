@@ -32,4 +32,6 @@
     </string>
     <string name="pref_location_backends">location_backends</string>
     <string name="pref_geocoder_backends">geocoder_backends</string>
+    <string name="perm_force_coarse_location_label">enforce approximate location</string>
+    <string name="perm_force_coarse_location_desc">Force the network-based location provider to report a certain location</string>
 </resources>
