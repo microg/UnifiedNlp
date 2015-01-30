@@ -21,9 +21,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+
 import org.microg.nlp.AbstractProviderService;
 
-import static org.microg.nlp.api.Constants.*;
+import static org.microg.nlp.api.Constants.ACTION_FORCE_LOCATION;
+import static org.microg.nlp.api.Constants.ACTION_RELOAD_SETTINGS;
+import static org.microg.nlp.api.Constants.INTENT_EXTRA_LOCATION;
+import static org.microg.nlp.api.Constants.PERMISSION_FORCE_LOCATION;
 
 public abstract class AbstractLocationService extends AbstractProviderService<LocationProvider> {
     public static void reloadLocationService(Context context) {

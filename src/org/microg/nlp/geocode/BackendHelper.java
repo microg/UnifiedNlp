@@ -23,6 +23,7 @@ import android.location.Address;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+
 import org.microg.nlp.AbstractBackendHelper;
 import org.microg.nlp.api.GeocoderBackend;
 

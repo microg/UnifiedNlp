@@ -19,6 +19,7 @@ package org.microg.nlp.geocode;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
+
 import org.microg.nlp.Preferences;
 
 import java.util.ArrayList;
@@ -34,13 +35,13 @@ class BackendFuser {
         this.context = context;
         reset();
     }
-    
+
     public void bind() {
         for (BackendHelper backendHelper : backendHelpers) {
             backendHelper.bind();
         }
     }
-    
+
     public void unbind() {
         for (BackendHelper backendHelper : backendHelpers) {
             backendHelper.unbind();

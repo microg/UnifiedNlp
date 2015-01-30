@@ -22,8 +22,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.WorkSource;
 import android.util.Log;
+
 import com.android.location.provider.LocationProviderBase;
-import com.android.location.provider.LocationRequestUnbundled;
 import com.android.location.provider.ProviderPropertiesUnbundled;
 import com.android.location.provider.ProviderRequestUnbundled;
 

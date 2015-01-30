@@ -21,15 +21,21 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.*;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
+
 import com.android.location.provider.LocationProviderBase;
+
 import org.microg.nlp.AbstractBackendHelper;
 import org.microg.nlp.api.LocationBackend;
 import org.microg.nlp.api.LocationCallback;
 
-import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
 import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT;
+import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
 
 class BackendHelper extends AbstractBackendHelper {
     private static final String TAG = "NlpLocationBackendHelper";
