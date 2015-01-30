@@ -17,8 +17,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.microg.nlp"
-    android:versionName="1.2.2"
-    android:versionCode="1202">
+    android:versionName="1.2.3"
+    android:versionCode="1203">
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -106,7 +106,6 @@
 
         <receiver android:name="org.microg.nlp.PackageReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_CHANGED" />
                 <action android:name="android.intent.action.PACKAGE_UPGRADED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
