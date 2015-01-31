@@ -150,7 +150,7 @@ public abstract class PreferenceFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup,
-            Bundle paramBundle) {
+                             Bundle paramBundle) {
         ListView listView = new ListView(paramLayoutInflater.getContext());
         listView.setId(android.R.id.list);
         listView.setDrawSelectorOnTop(false);
@@ -265,7 +265,7 @@ public abstract class PreferenceFragment extends Fragment {
     }
 
     public PreferenceScreen inflateFromResource(Context context, int resId,
-            PreferenceScreen rootPreferences) {
+                                                PreferenceScreen rootPreferences) {
         PreferenceScreen preferenceScreen;
         try {
             Method m = PreferenceManager.class
@@ -281,7 +281,7 @@ public abstract class PreferenceFragment extends Fragment {
     }
 
     public PreferenceScreen inflateFromIntent(Intent queryIntent,
-            PreferenceScreen rootPreferences) {
+                                              PreferenceScreen rootPreferences) {
         PreferenceScreen preferenceScreen;
         try {
             Method m = PreferenceManager.class

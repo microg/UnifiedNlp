@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 µg Project Team
+ * Copyright 2013-2015 µg Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public abstract class AbstractProviderService<T extends Provider> extends Intent
 
     /**
      * Destroy the active {@link Provider}.
-     *
+     * <p/>
      * After this has been called, the {@link Provider} instance, that was active before should no
      * longer be returned with {@link #getProvider()}.
      */

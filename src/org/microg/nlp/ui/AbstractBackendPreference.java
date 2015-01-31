@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 µg Project Team
+ * Copyright 2013-2015 µg Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,16 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.microg.nlp.api.Constants.*;
+import static org.microg.nlp.api.Constants.METADATA_BACKEND_ABOUT_ACTIVITY;
+import static org.microg.nlp.api.Constants.METADATA_BACKEND_SETTINGS_ACTIVITY;
+import static org.microg.nlp.api.Constants.METADATA_BACKEND_SUMMARY;
 
 abstract class AbstractBackendPreference extends DialogPreference {
     private ListView listView;
@@ -173,7 +176,7 @@ abstract class AbstractBackendPreference extends DialogPreference {
         }
 
         private void configureExternalButton(final BackendInfo backend, View button,
-                final String metaName) {
+                                             final String metaName) {
             if (backend.getMeta(metaName) != null) {
                 button.setVisibility(View.VISIBLE);
                 button.setOnClickListener(new View.OnClickListener() {

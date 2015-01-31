@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 µg Project Team
+ * Copyright 2013-2015 µg Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp.geocod
 
     @Override
     public String onGetFromLocation(double latitude, double longitude, int maxResults,
-            GeocoderParams params, List<Address> addresses) {
+                                    GeocoderParams params, List<Address> addresses) {
         List<Address> fuserResult = backendFuser
                 .getFromLocation(latitude, longitude, maxResults, params.getLocale().toString());
         return handleResult(addresses, fuserResult);
@@ -42,8 +42,9 @@ class GeocodeProviderV1 extends GeocodeProvider implements org.microg.nlp.geocod
 
     @Override
     public String onGetFromLocationName(String locationName, double lowerLeftLatitude,
-            double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude,
-            int maxResults, GeocoderParams params, List<Address> addresses) {
+                                        double lowerLeftLongitude, double upperRightLatitude,
+                                        double upperRightLongitude, int maxResults,
+                                        GeocoderParams params, List<Address> addresses) {
         List<Address> fuserResult = backendFuser.getFromLocationName(locationName, maxResults,
                 lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude,
                 params.getLocale().toString());

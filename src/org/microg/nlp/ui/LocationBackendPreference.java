@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 µg Project Team
+ * Copyright 2013-2015 µg Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.microg.nlp.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
+
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
 import org.microg.nlp.location.AbstractLocationService;

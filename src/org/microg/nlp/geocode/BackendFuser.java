@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 µg Project Team
+ * Copyright 2013-2015 µg Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class BackendFuser {
     }
 
     public List<Address> getFromLocation(double latitude, double longitude, int maxResults,
-            String locale) {
+                                         String locale) {
         if (backendHelpers.isEmpty())
             return null;
         ArrayList<Address> result = new ArrayList<>();
@@ -64,8 +64,9 @@ class BackendFuser {
     }
 
     public List<Address> getFromLocationName(String locationName, int maxResults,
-            double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude,
-            double upperRightLongitude, String locale) {
+                                             double lowerLeftLatitude, double lowerLeftLongitude,
+                                             double upperRightLatitude, double upperRightLongitude,
+                                             String locale) {
         if (backendHelpers.isEmpty())
             return null;
         ArrayList<Address> result = new ArrayList<>();
