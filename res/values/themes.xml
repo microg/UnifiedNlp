@@ -19,8 +19,8 @@
     <style name="NlpTheme" parent="NlpTheme.Base" />
 
     <style name="NlpTheme.Base" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/theme_primary</item>
-        <item name="colorPrimaryDark">@color/theme_primary_dark</item>
+        <item name="colorPrimary">@color/nlp_theme_primary</item>
+        <item name="colorPrimaryDark">@color/nlp_theme_primary_dark</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>

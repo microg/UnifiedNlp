@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <color name="theme_primary">#ff263238</color>
-    <color name="theme_primary_dark">#ff21272b</color>
-    <color name="theme_accent">#ff009688</color>
+    <color name="nlp_theme_primary">#ff263238</color>
+    <color name="nlp_theme_primary_dark">#ff21272b</color>
+    <color name="nlp_theme_accent">#ff009688</color>
 </resources>
