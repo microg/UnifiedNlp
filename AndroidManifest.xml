@@ -95,6 +95,15 @@
                 android:value="false" />
         </service>
 
+        <service android:name=".ui.SettingInjectorService">
+            <intent-filter>
+                <action android:name="android.location.SettingInjectorService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.location.SettingInjectorService"
+                android:resource="@xml/nlp_injected_setting" />
+        </service>
+
         <activity
             android:name=".ui.SettingsActivity"
             android:icon="@drawable/ic_nlp_settings"
