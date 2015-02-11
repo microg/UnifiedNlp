@@ -37,7 +37,7 @@ public class SettingInjectorService extends android.location.SettingInjectorServ
     @Override
     protected boolean onGetEnabled() {
         PackageManager p = getPackageManager();
-        p.setComponentEnabledSetting(new ComponentName(this, SettingsActivity.class),
+        p.setComponentEnabledSetting(new ComponentName(this, SettingsLauncherActivity.class),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         return true;
     }

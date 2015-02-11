@@ -105,7 +105,13 @@
         </service>
 
         <activity
+            android:theme="@style/NlpTheme"
             android:name=".ui.SettingsActivity"
+            android:icon="@drawable/ic_nlp_settings"
+            android:label="@string/nlp_app_name" />
+
+        <activity
+            android:name=".ui.SettingsLauncherActivity"
             android:icon="@drawable/ic_nlp_settings"
             android:label="@string/nlp_app_name">
             <intent-filter>
