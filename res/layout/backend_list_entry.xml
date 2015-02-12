@@ -55,9 +55,9 @@
         android:focusable="false"
         android:clickable="false"
         android:tintMode="src_in"
-        android:tint="@color/primary_text_default_material_dark"
+        android:tint="?attr/colorPrimary"
         android:background="?android:selectableItemBackground"
-        android:visibility="gone"
+        android:padding="4dp"
         android:src="@drawable/info" />
 
     <ImageView
@@ -67,8 +67,9 @@
         android:focusable="false"
         android:clickable="false"
         android:tintMode="src_in"
-        android:tint="@color/primary_text_default_material_dark"
+        android:tint="?attr/colorPrimary"
         android:background="?android:selectableItemBackground"
+        android:padding="4dp"
         android:src="@drawable/settings" />
 
     <CheckBox
