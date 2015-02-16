@@ -16,9 +16,7 @@
 
 <resources>
 
-    <style name="NlpTheme" parent="NlpTheme.Base" />
-
-    <style name="NlpTheme.Base" parent="android:Theme.Material.Light.DarkActionBar">
+    <style name="NlpTheme" parent="android:Theme.Material.Light.DarkActionBar">
         <item name="colorPrimary">@color/nlp_theme_primary</item>
         <item name="colorPrimaryDark">@color/nlp_theme_primary_dark</item>
         <item name="android:colorPrimary">@color/nlp_theme_primary</item>

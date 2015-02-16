@@ -16,9 +16,7 @@
 
 <resources>
 
-    <style name="NlpTheme" parent="NlpTheme.Base" />
-
-    <style name="NlpTheme.Base">
+    <style name="NlpTheme">
         <item name="colorPrimary">#eee</item>
         <item name="colorPrimaryDark">#ccc</item>
     </style>
