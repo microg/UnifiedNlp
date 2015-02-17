@@ -80,6 +80,7 @@ class BackendHelper extends AbstractBackendHelper {
         location.getExtras().putString(LOCATION_EXTRA_BACKEND_PROVIDER, location.getProvider());
         location.getExtras().putString(LOCATION_EXTRA_BACKEND_COMPONENT,
                 serviceIntent.getComponent().flattenToShortString());
+        location.setProvider("network");
         if (!location.hasAccuracy()) {
             location.setAccuracy(50000);
         }
