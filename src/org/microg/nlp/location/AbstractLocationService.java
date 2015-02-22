@@ -21,8 +21,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.os.IBinder;
 
 import org.microg.nlp.AbstractProviderService;
+import org.microg.nlp.ui.SettingInjectorService;
 
 import static org.microg.nlp.api.Constants.ACTION_FORCE_LOCATION;
 import static org.microg.nlp.api.Constants.ACTION_RELOAD_SETTINGS;
@@ -50,6 +52,12 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
     }
 
     @Override
+    public IBinder onBind(Intent intent) {
+        updateLauncherIcon();
+        return super.onBind(intent);
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         LocationProvider provider = getProvider();
 
@@ -68,6 +76,8 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
                 provider.reload();
             }
         }
+
+        updateLauncherIcon();
     }
 
     @Override
@@ -76,6 +86,17 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
         if (provider != null) {
             provider.onDisable();
         }
+        updateLauncherIcon();
         return super.onUnbind(intent);
+    }
+
+    private void updateLauncherIcon() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (SettingInjectorService.settingsInjectionPossible(this)) {
+                SettingInjectorService.setLauncherIconEnabled(this, false);
+            } else {
+                SettingInjectorService.setLauncherIconEnabled(this, true);
+            }
+        }
     }
 }
