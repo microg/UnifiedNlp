@@ -14,13 +14,25 @@
  limitations under the License.
  */
 
-apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.3'
+    }
+}
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def sdkDir = properties.getProperty('sdk.dir')
+apply plugin: 'com.android.library'
 
-sourceSets.main {
-    java.srcDirs = ['current/src', 'v9/src']
-    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-21/android.jar")
+dependencies {
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile project(':unifiednlp-api')
+    provided project(':unifiednlp-compat')
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.0"
 }

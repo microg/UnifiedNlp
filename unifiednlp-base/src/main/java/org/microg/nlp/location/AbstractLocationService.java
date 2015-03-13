@@ -26,6 +26,8 @@ import android.os.IBinder;
 import org.microg.nlp.AbstractProviderService;
 import org.microg.nlp.ui.SettingInjectorService;
 
+import java.lang.reflect.Method;
+
 import static org.microg.nlp.api.Constants.ACTION_FORCE_LOCATION;
 import static org.microg.nlp.api.Constants.ACTION_RELOAD_SETTINGS;
 import static org.microg.nlp.api.Constants.INTENT_EXTRA_LOCATION;
@@ -91,12 +93,12 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
     }
 
     private void updateLauncherIcon() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (SettingInjectorService.settingsInjectionPossible(this)) {
-                SettingInjectorService.setLauncherIconEnabled(this, false);
-            } else {
-                SettingInjectorService.setLauncherIconEnabled(this, true);
-            }
+        try {
+            Class cls = Class.forName("org.microg.nlp.ui.SettingsLauncherActivity");
+            Method updateLauncherIcon = cls.getDeclaredMethod("updateLauncherIcon", Context.class);
+            updateLauncherIcon.invoke(null, this);
+        } catch (Exception ignored) {
+            // This package does not come with a settings launcher icon
         }
     }
 }

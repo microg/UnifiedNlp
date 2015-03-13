@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+import android.os.UserHandle;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
@@ -52,25 +53,34 @@ public class SettingInjectorService extends android.location.SettingInjectorServ
         return true;
     }
 
-    public static void setLauncherIconEnabled(Context context, boolean enabled) {
-        PackageManager pm = context.getPackageManager();
-        pm.setComponentEnabledSetting(new ComponentName(context, SettingsLauncherActivity.class),
-                enabled ? COMPONENT_ENABLED_STATE_ENABLED : COMPONENT_ENABLED_STATE_DISABLED,
-                DONT_KILL_APP);
-    }
-
+    /**
+     * Dirty method to check whether settings injection is possible on the currently used system
+     */
     public static boolean settingsInjectionPossible(Context context) {
         try {
             Context settingsContext = context.createPackageContext("com.android.settings", CONTEXT_INCLUDE_CODE);
             ClassLoader cl = settingsContext.getClassLoader();
             Class cls = cl.loadClass("com.android.settings.location.SettingsInjector");
-            Method pSi = cls.getDeclaredMethod("parseServiceInfo", ResolveInfo.class, PackageManager.class);
+            int pSiVersion;
+            Method pSi;
+            try {
+                pSi = cls.getDeclaredMethod("parseServiceInfo", ResolveInfo.class, PackageManager.class);
+                pSiVersion = 1;
+            } catch (NoSuchMethodException e) {
+                pSi = cls.getDeclaredMethod("parseServiceInfo", ResolveInfo.class, UserHandle.class, PackageManager.class);
+                pSiVersion = 2;
+            }
             pSi.setAccessible(true);
             PackageManager pm = context.getPackageManager();
             Intent intent = new Intent(context, SettingInjectorService.class);
             List<ResolveInfo> ris = pm.queryIntentServices(intent, GET_META_DATA);
             ResolveInfo ri = ris.get(0);
-            Object result = pSi.invoke(null, ri, pm);
+            Object result = null;
+            if (pSiVersion == 1) {
+                result = pSi.invoke(null, ri, pm);
+            } else if (pSiVersion == 2) {
+                result = pSi.invoke(null, ri, android.os.Process.myUserHandle(), pm);
+            }
             if (result != null) {
                 Log.d(TAG, "Setting injection possible!");
                 return true;
@@ -78,7 +88,7 @@ public class SettingInjectorService extends android.location.SettingInjectorServ
         } catch (InvocationTargetException e) {
             Log.d(TAG, "settings injection not possible: " + e.getMessage());
         } catch (Exception e) {
-            Log.d(TAG, "Can't determine if settings injection is possible");
+            Log.w(TAG, "Can't determine if settings injection is possible", e);
         }
         return false;
     }
