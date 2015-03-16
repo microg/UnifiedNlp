@@ -15,33 +15,7 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 appcompat_dir := ../../../frameworks/support/v7/appcompat
-res_dir := res $(appcompat_dir)/res
-
-LOCAL_MODULE_TAGS := optional
-
-LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
-
-# For some reason framework has to be added here else GeocoderParams is not found, 
-# this way everything else is duplicated, but atleast compiles...
-LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
-
-# Include compat v9 files if necassary
-ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
-LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
-endif
-
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
-LOCAL_PACKAGE_NAME := UnifiedNlp
-LOCAL_SDK_VERSION := current
-LOCAL_PRIVILEGED_MODULE := true
-
-LOCAL_PROGUARD_FLAG_FILES := proguard.flags
-
-LOCAL_AAPT_FLAGS := --auto-add-overlay \
-    --extra-packages android.support.v7.appcompat \
-
-include $(BUILD_PACKAGE)
+res_dir := unifiednlp-base/src/main/res $(appcompat_dir)/res
 
 ##
 # NetworkLocation
@@ -52,7 +26,36 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-app/src/main/java)
+LOCAL_MANIFEST_FILE := unifiednlp-app/src/main/AndroidManifest.xml
+LOCAL_FULL_LIBS_MANIFEST_FILES := $(LOCAL_PATH)/unifiednlp-base/src/main/AndroidManifest.xml
+
+LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
+
+LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpBase
+LOCAL_PACKAGE_NAME := NetworkLocation
+LOCAL_SDK_VERSION := current
+LOCAL_PRIVILEGED_MODULE := true
+
+LOCAL_PROGUARD_FLAG_FILES := proguard.flags
+
+LOCAL_AAPT_FLAGS := --auto-add-overlay \
+    --rename-manifest-package com.google.android.gms \
+    --extra-packages org.microg.nlp \
+    --extra-packages android.support.v7.appcompat \
+
+include $(BUILD_PACKAGE)
+
+##
+# UnifiedNlpBase
+#
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-base/src/main/java)
+LOCAL_MANIFEST_FILE := unifiednlp-base/src/main/AndroidManifest.xml
 
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
 
@@ -62,49 +65,19 @@ LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
 endif
 
 LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
-LOCAL_PACKAGE_NAME := NetworkLocation
+LOCAL_MODULE := UnifiedNlpBase
 LOCAL_SDK_VERSION := current
-LOCAL_PRIVILEGED_MODULE := true
 
-LOCAL_PROGUARD_FLAG_FILES := proguard.flags
-
-LOCAL_AAPT_FLAGS := --auto-add-overlay \
-    --rename-manifest-package com.google.android.gms \
-    --extra-packages android.support.v7.appcompat \
-
-include $(BUILD_PACKAGE)
+include $(BUILD_STATIC_JAVA_LIBRARY)
 
 ##
-# NetworkLocation
-# Target using com.google.android.location as package name
+# UnifiedNlpCompatV9
+# Compatibilty files to allow building for API v9 in newer systems
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE := UnifiedNlpCompatV9
+LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-compat/src/v9/java)
+LOCAL_SRC_FILES += $(call all-Iaidl-files-under, unifiednlp-compat/src/v9/aidl)
 
-LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
-
-LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
-
-# Build against compat v9 files if necessary
-ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
-LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
-endif
-
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
-LOCAL_PACKAGE_NAME := LegacyNetworkLocation
-LOCAL_SDK_VERSION := current
-LOCAL_PRIVILEGED_MODULE := true
-
-LOCAL_PROGUARD_FLAG_FILES := proguard.flags
-
-
-LOCAL_AAPT_FLAGS := --auto-add-overlay \
-    --rename-manifest-package com.google.android.location \
-    --extra-packages android.support.v7.appcompat \
-
-include $(BUILD_PACKAGE)
-
-include $(LOCAL_PATH)/compat/v9/Android.mk
-
+include $(BUILD_STATIC_JAVA_LIBRARY)
