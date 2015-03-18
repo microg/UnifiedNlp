@@ -26,36 +26,10 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
-LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-app/src/main/java)
+LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-app/src/main/java) \
+                   $(call all-java-files-under, unifiednlp-base/src/main/java)
 LOCAL_MANIFEST_FILE := unifiednlp-app/src/main/AndroidManifest.xml
 LOCAL_FULL_LIBS_MANIFEST_FILES := $(LOCAL_PATH)/unifiednlp-base/src/main/AndroidManifest.xml
-
-LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
-
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpBase
-LOCAL_PACKAGE_NAME := NetworkLocation
-LOCAL_SDK_VERSION := current
-LOCAL_PRIVILEGED_MODULE := true
-
-LOCAL_PROGUARD_FLAG_FILES := proguard.flags
-
-LOCAL_AAPT_FLAGS := --auto-add-overlay \
-    --rename-manifest-package com.google.android.gms \
-    --extra-packages org.microg.nlp \
-    --extra-packages android.support.v7.appcompat \
-
-include $(BUILD_PACKAGE)
-
-##
-# UnifiedNlpBase
-#
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE_TAGS := optional
-
-LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-base/src/main/java)
-LOCAL_MANIFEST_FILE := unifiednlp-base/src/main/AndroidManifest.xml
 
 LOCAL_JAVA_LIBRARIES := framework com.android.location.provider
 
@@ -65,10 +39,18 @@ LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
 endif
 
 LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
-LOCAL_MODULE := UnifiedNlpBase
+LOCAL_PACKAGE_NAME := NetworkLocation
 LOCAL_SDK_VERSION := current
+LOCAL_PRIVILEGED_MODULE := true
 
-include $(BUILD_STATIC_JAVA_LIBRARY)
+LOCAL_PROGUARD_FLAG_FILES := proguard.flags
+
+LOCAL_AAPT_FLAGS := --auto-add-overlay \
+    --rename-manifest-package com.google.android.gms \
+    --extra-packages org.microg.nlp \
+    --extra-packages android.support.v7.appcompat
+
+include $(BUILD_PACKAGE)
 
 ##
 # UnifiedNlpCompatV9
