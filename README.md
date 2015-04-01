@@ -37,6 +37,8 @@ Here is a list of backends for geolocation and (reverse) geocoding known to me:
 
 - [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - backend that uses Apple's service to resolve wifi locations
 - [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - backend that uses OpenWlanMap.org to resolve user location.
+- [OpenBmapNlpBackend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - backend that uses openBmap to resolve user location.
+- [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - backend that uses the Mozilla Location Service to resolve user location.
 - [PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for WiFi APs using on-phone generated database.
 - [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend
 - [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
