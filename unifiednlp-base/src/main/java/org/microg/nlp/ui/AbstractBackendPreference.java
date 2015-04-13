@@ -113,7 +113,7 @@ abstract class AbstractBackendPreference extends DialogPreference {
     }
 
     List<BackendInfo> intentToKnownBackends(Intent intent) {
-        List<BackendInfo> knownBackends = new ArrayList<>();
+        List<BackendInfo> knownBackends = new ArrayList<BackendInfo>();
         List<ResolveInfo> resolveInfos = getContext().getPackageManager()
                 .queryIntentServices(intent, PackageManager.GET_META_DATA);
         for (ResolveInfo info : resolveInfos) {

@@ -45,6 +45,9 @@ android {
             applicationId = 'org.microg.nlp'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+    }
 }
 
 if (file('user.gradle').exists()) {

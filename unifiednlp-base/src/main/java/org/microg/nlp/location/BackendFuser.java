@@ -37,7 +37,7 @@ import static org.microg.nlp.api.Constants.LOCATION_EXTRA_OTHER_BACKENDS;
 class BackendFuser {
     private static final String TAG = "NlpLocationBackendFuser";
 
-    private final List<BackendHelper> backendHelpers = new ArrayList<>();
+    private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
     private final LocationProvider locationProvider;
     private final Context context;
     private Location forcedLocation;
@@ -87,7 +87,7 @@ class BackendFuser {
     }
 
     void updateLocation() {
-        List<Location> locations = new ArrayList<>();
+        List<Location> locations = new ArrayList<Location>();
         for (BackendHelper handler : backendHelpers) {
             locations.add(handler.getLastLocation());
         }
@@ -111,7 +111,7 @@ class BackendFuser {
         if (locations.size() == 1)
             return locations.get(0);
         Location location = new Location(locations.get(0));
-        ArrayList<Location> backendResults = new ArrayList<>();
+        ArrayList<Location> backendResults = new ArrayList<Location>();
         for (Location backendResult : locations) {
             if (locations.get(0) == backendResult)
                 continue;
