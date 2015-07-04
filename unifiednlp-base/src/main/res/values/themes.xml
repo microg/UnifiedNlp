@@ -16,7 +16,7 @@
 
 <resources>
 
-    <style name="NlpTheme">
+    <style name="SettingsTheme">
         <item name="colorPrimary">#eee</item>
         <item name="colorPrimaryDark">#ccc</item>
     </style>

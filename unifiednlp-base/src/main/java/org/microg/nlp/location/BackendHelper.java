@@ -38,7 +38,7 @@ import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT;
 import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
 
 class BackendHelper extends AbstractBackendHelper {
-    private static final String TAG = "NlpLocationBackendHelper";
+    private static final String TAG = "NlpLocBackendHelper";
     private final BackendFuser backendFuser;
     private final Callback callback = new Callback();
     private LocationBackend backend;

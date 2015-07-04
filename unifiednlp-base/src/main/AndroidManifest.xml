@@ -15,6 +15,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.microg.nlp">
 
     <uses-sdk android:minSdkVersion="9" />
@@ -26,11 +27,13 @@
         android:name="org.microg.permission.FORCE_COARSE_LOCATION"
         android:protectionLevel="dangerous" />
 
-    <uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER" />
+    <uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="org.microg.permission.FORCE_COARSE_LOCATION" />
+
+    <uses-permission android:name="com.android.settings.INJECT_SETTINGS" />
 
     <application>
         <uses-library android:name="com.android.location.provider" />
@@ -98,7 +101,7 @@
         </service>
 
         <activity
-            android:theme="@style/NlpTheme"
+            android:theme="@style/SettingsTheme"
             android:name=".ui.SettingsActivity"
             android:icon="@drawable/ic_nlp_settings"
             android:label="@string/nlp_settings_label" />

@@ -56,7 +56,7 @@
         android:clickable="false"
         android:tintMode="src_in"
         android:tint="?attr/colorPrimary"
-        android:background="?android:selectableItemBackground"
+        android:background="?attr/selectableItemBackground"
         android:padding="4dp"
         android:src="@drawable/info" />
 
@@ -68,7 +68,7 @@
         android:clickable="false"
         android:tintMode="src_in"
         android:tint="?attr/colorPrimary"
-        android:background="?android:selectableItemBackground"
+        android:background="?attr/selectableItemBackground"
         android:padding="4dp"
         android:src="@drawable/settings" />
 
