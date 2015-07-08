@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Copyright 2013-2015 µg Project Team
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,11 @@
   ~ limitations under the License.
   -->
 
-<resources>
-
-    <style name="SettingsTheme" parent="android:Theme.Material.Light.DarkActionBar">
-        <item name="colorPrimary">@color/nlp_theme_primary</item>
-        <item name="colorPrimaryDark">@color/nlp_theme_primary_dark</item>
-        <item name="android:colorPrimary">@color/nlp_theme_primary</item>
-        <item name="android:colorPrimaryDark">@color/nlp_theme_primary_dark</item>
-        <item name="android:colorAccent">@color/nlp_theme_accent</item>
-    </style>
-</resources>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
+    android:minHeight="?attr/actionBarSize"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
