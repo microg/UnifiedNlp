@@ -14,13 +14,13 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="SettingsTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/nlp_theme_primary</item>
         <item name="colorPrimaryDark">@color/nlp_theme_primary_dark</item>
-        <item name="android:colorPrimary">@color/nlp_theme_primary</item>
-        <item name="android:colorPrimaryDark">@color/nlp_theme_primary_dark</item>
-        <item name="android:colorAccent">@color/nlp_theme_accent</item>
+        <item name="android:colorPrimary" tools:targetApi="21">@color/nlp_theme_primary</item>
+        <item name="android:colorPrimaryDark" tools:targetApi="21">@color/nlp_theme_primary_dark</item>
+        <item name="android:colorAccent" tools:targetApi="21">@color/nlp_theme_accent</item>
     </style>
 </resources>
