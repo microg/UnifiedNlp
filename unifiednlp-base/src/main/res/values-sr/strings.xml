@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2013-2015 µg Project Team
+  ~ Copyright 2013-2015 microG Project Team
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
   -->
 
 <resources>
-    <string name="nlp_app_name">µg ОбједињениNlp</string>
-    <string name="nlp_settings_label">µg ОбједињениNlp поставке</string>
+    <string name="nlp_app_name">ОбједињениNlp</string>
+    <string name="nlp_settings_label">ОбједињениNlp поставке</string>
     <string name="add_backend">Додај мотор</string>
     <string name="configure_location_backends">Поставке мотора за локацију</string>
     <string name="configure_geocoder_backends">Поставке мотора за потрагу адреса</string>
