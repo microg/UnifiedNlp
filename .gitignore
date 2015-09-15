@@ -4,7 +4,5 @@ bin/
 build/
 user.gradle
 .gradle/
-gradle/
-gradlew
 local.properties
 .idea/
