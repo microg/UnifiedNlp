@@ -16,11 +16,14 @@
 
 apply plugin: 'java'
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def sdkDir = properties.getProperty('sdk.dir')
+def sdkDir = System.env.ANDROID_HOME
+if (!sdkDir) {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    sdkDir = properties.getProperty('sdk.dir')
+}
 
 sourceSets.main {
     java.srcDirs = ['src/current/java', 'src/v9/java']
-    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-22/android.jar")
+    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-23/android.jar")
 }
