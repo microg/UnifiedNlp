@@ -30,7 +30,7 @@
 
         <activity
             android:name="org.microg.nlp.ui.SettingsLauncherActivity"
-            android:icon="@drawable/ic_nlp_settings"
+            android:icon="@mipmap/ic_nlp_settings"
             android:label="@string/nlp_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

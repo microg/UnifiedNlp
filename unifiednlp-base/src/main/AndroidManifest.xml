@@ -103,7 +103,7 @@
         <activity
             android:theme="@style/SettingsTheme"
             android:name=".ui.SettingsActivity"
-            android:icon="@drawable/ic_nlp_settings"
+            android:icon="@mipmap/ic_nlp_settings"
             android:label="@string/nlp_settings_label" />
 
         <receiver android:name="org.microg.nlp.PackageReceiver">
