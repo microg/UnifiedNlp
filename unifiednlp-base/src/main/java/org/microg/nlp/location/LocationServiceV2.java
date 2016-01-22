@@ -17,11 +17,10 @@
 package org.microg.nlp.location;
 
 public class LocationServiceV2 extends AbstractLocationService {
-    private static final String TAG = "NlpLocationService";
     private static LocationProviderV2 THE_ONE;
 
     public LocationServiceV2() {
-        super(TAG);
+        super("NlpLocationServiceV2");
     }
 
     @Override

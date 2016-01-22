@@ -88,13 +88,9 @@ class LocationProviderV2 extends LocationProviderBase implements LocationProvide
     public void onSetRequest(ProviderRequestUnbundled requests, WorkSource source) {
         Log.v(TAG, "onSetRequest: " + requests + " by " + source);
 
-        long autoTime = requests.getInterval();
+        long autoTime = Math.max(requests.getInterval(), FASTEST_REFRESH_INTERVAL);
         boolean autoUpdate = requests.getReportLocation();
 
-        if (autoTime < 1500) {
-            // Limit to 1.5s
-            autoTime = 1500;
-        }
         Log.v(TAG, "using autoUpdate=" + autoUpdate + " autoTime=" + autoTime);
 
         if (autoUpdate) {

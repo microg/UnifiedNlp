@@ -16,33 +16,48 @@
 
 package org.microg.nlp.location;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import org.microg.nlp.AbstractProviderService;
-import org.microg.nlp.ui.SettingInjectorService;
 
 import java.lang.reflect.Method;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static org.microg.nlp.api.Constants.ACTION_FORCE_LOCATION;
 import static org.microg.nlp.api.Constants.ACTION_RELOAD_SETTINGS;
 import static org.microg.nlp.api.Constants.INTENT_EXTRA_LOCATION;
 import static org.microg.nlp.api.Constants.PERMISSION_FORCE_LOCATION;
 
 public abstract class AbstractLocationService extends AbstractProviderService<LocationProvider> {
-    public static void reloadLocationService(Context context) {
+    public static ComponentName reloadLocationService(Context context) {
         Intent intent = new Intent(ACTION_RELOAD_SETTINGS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        setIntentTarget(context, intent);
+        return context.startService(intent);
+    }
+
+    public static ComponentName forceLocation(Context context, Location location) {
+        Intent intent = new Intent(ACTION_FORCE_LOCATION);
+        setIntentTarget(context, intent);
+        intent.putExtra(INTENT_EXTRA_LOCATION, location);
+        return context.startService(intent);
+    }
+
+    private static void setIntentTarget(Context context, Intent intent) {
+        if (SDK_INT >= JELLY_BEAN_MR1) {
             intent.setClass(context, LocationServiceV2.class);
         } else {
             intent.setClass(context, LocationServiceV1.class);
         }
-        context.startService(intent);
     }
+
+    public static boolean WAS_BOUND = false;
 
     /**
      * Creates an LocationService.  Invoked by your subclass's constructor.
@@ -55,6 +70,7 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
 
     @Override
     public IBinder onBind(Intent intent) {
+        WAS_BOUND = true;
         updateLauncherIcon();
         return super.onBind(intent);
     }
@@ -69,6 +85,8 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
                 if (provider != null && intent.hasExtra(INTENT_EXTRA_LOCATION)) {
                     provider.forceLocation(
                             (Location) intent.getParcelableExtra(INTENT_EXTRA_LOCATION));
+                } else {
+                    Log.d(TAG, "Cannot force location, provider not ready");
                 }
             }
         }
@@ -76,6 +94,8 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
         if (ACTION_RELOAD_SETTINGS.equals(intent.getAction())) {
             if (provider != null) {
                 provider.reload();
+            } else {
+                Log.d(TAG, "Cannot reload settings, provider not ready");
             }
         }
 

@@ -137,7 +137,7 @@ public class LocationProviderV1 extends com.android.location.provider.LocationPr
     @Override
     public void onSetMinTime(long minTime, WorkSource ws) {
         Log.v(TAG, "onSetMinTime: " + minTime + " by " + ws);
-        autoTime = minTime;
+        autoTime = Math.max(minTime, FASTEST_REFRESH_INTERVAL);
         helper.setTime(autoTime);
         if (autoUpdate) helper.enable();
     }

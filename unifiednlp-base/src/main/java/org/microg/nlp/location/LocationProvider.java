@@ -21,6 +21,8 @@ import android.location.Location;
 import org.microg.nlp.Provider;
 
 interface LocationProvider extends Provider {
+    int FASTEST_REFRESH_INTERVAL = 2500; // in milliseconds
+
     void onEnable();
 
     void onDisable();

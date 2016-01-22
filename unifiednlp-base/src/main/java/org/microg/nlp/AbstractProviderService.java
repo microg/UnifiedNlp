@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public abstract class AbstractProviderService<T extends Provider> extends IntentService {
+    protected String TAG;
+
     /**
      * Creates an ProviderService.  Invoked by your subclass's constructor.
      *
@@ -28,6 +30,7 @@ public abstract class AbstractProviderService<T extends Provider> extends Intent
      */
     public AbstractProviderService(String tag) {
         super(tag);
+        this.TAG = tag;
     }
 
     @Override
