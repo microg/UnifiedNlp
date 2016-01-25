@@ -24,10 +24,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.microg.nlp.Preferences;
+import org.microg.nlp.R;
 import org.microg.nlp.location.AbstractLocationService;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static android.content.Context.LOCATION_SERVICE;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Negative;
@@ -37,39 +39,52 @@ import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Unknown;
 public class NlpStatusChecks implements SelfCheckGroup {
     @Override
     public String getGroupName(Context context) {
-        return "UnifiedNlp status";
+        return context.getString(R.string.self_check_cat_nlp_status);
     }
 
     @Override
     public void doChecks(Context context, ResultCollector collector) {
         providerWasBound(context, collector);
         isLocationProviderSetUp(context, collector);
-        isProvidingLastLocation(context, collector);
-        isProvidingLocation(context, collector);
+        if (isNetworkLocationEnabled(context, collector)) {
+            isProvidingLastLocation(context, collector);
+            isProvidingLocation(context, collector);
+        }
     }
 
     private boolean providerWasBound(Context context, ResultCollector collector) {
-        collector.addResult("UnifiedNlp is registered in system:", AbstractLocationService.WAS_BOUND ? Positive : Negative, "The system did not bind the UnifiedNlp service. If you just installed UnifiedNlp you should try to reboot this device.");
+        collector.addResult(context.getString(R.string.self_check_name_nlp_bound),
+                AbstractLocationService.WAS_BOUND ? Positive : Negative, context.getString(R.string.self_check_resolution_nlp_bound));
         return AbstractLocationService.WAS_BOUND;
     }
 
     private boolean isLocationProviderSetUp(Context context, ResultCollector collector) {
         boolean setupLocationProvider = !TextUtils.isEmpty(new Preferences(context).getLocationBackends());
-        collector.addResult("Location backend(s) set up:", setupLocationProvider ? Positive : Negative, "Install and configure a UnifiedNlp location backend to use network-based geolocation,");
+        collector.addResult(context.getString(R.string.self_check_name_nlp_setup),
+                setupLocationProvider ? Positive : Negative, context.getString(R.string.self_check_resolution_nlp_setup));
         return setupLocationProvider;
     }
 
+    private boolean isNetworkLocationEnabled(Context context, ResultCollector collector) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        boolean networkEnabled = locationManager.getProviders(true).contains(NETWORK_PROVIDER);
+        collector.addResult(context.getString(R.string.self_check_name_network_enabled),
+                networkEnabled ? Positive : Negative, context.getString(R.string.self_check_resolution_network_enabled));
+        return networkEnabled;
+    }
+
     private boolean isProvidingLastLocation(Context context, ResultCollector collector) {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         boolean hasKnown = location != null && location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER);
-        collector.addResult("UnifiedNlp has known location:", hasKnown ? Positive : Unknown, "UnifiedNlp has no last known location. This will cause some apps to fail.");
+        collector.addResult(context.getString(R.string.self_check_name_last_location),
+                hasKnown ? Positive : Unknown, context.getString(R.string.self_check_resolution_last_location));
         return hasKnown;
     }
 
-    private void isProvidingLocation(Context context, final ResultCollector collector) {
+    private void isProvidingLocation(final Context context, final ResultCollector collector) {
         final AtomicBoolean result = new AtomicBoolean(false);
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -78,7 +93,8 @@ public class NlpStatusChecks implements SelfCheckGroup {
                         result.wait(10000);
                     } catch (InterruptedException e) {
                     }
-                    collector.addResult("UnifiedNlp provides location updates:", result.get() ? Positive : Unknown, "No UnifiedNlp location was provided by the system within 10 seconds.");
+                    collector.addResult(context.getString(R.string.self_check_name_nlp_is_providing),
+                            result.get() ? Positive : Unknown, context.getString(R.string.self_check_resolution_nlp_is_providing));
                 }
             }
         }).start();

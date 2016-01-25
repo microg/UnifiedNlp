@@ -34,12 +34,22 @@ String getMyVersionName() {
     return stdout.toString().trim()
 }
 
+int getMyVersionCode() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-list', '--count', "HEAD"
+        standardOutput = stdout
+    }
+    return Integer.parseInt(stdout.toString().trim())
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
     defaultConfig {
         versionName getMyVersionName()
+        versionCode(20000 + getMyVersionCode())
     }
 
     productFlavors {

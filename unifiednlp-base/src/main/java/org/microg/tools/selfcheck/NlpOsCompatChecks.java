@@ -18,6 +18,8 @@ package org.microg.tools.selfcheck;
 
 import android.content.Context;
 
+import org.microg.nlp.R;
+
 import java.util.Arrays;
 
 import static android.os.Build.VERSION.SDK_INT;
@@ -28,9 +30,14 @@ import static android.os.Build.VERSION_CODES.M;
 
 public class NlpOsCompatChecks implements SelfCheckGroup {
 
+    public static final String CONFIG_NL_PROVIDER = "config_networkLocationProvider";
+    public static final String CONFIG_NL_PROVIDER_PACKAGE_NAME = "config_networkLocationProviderPackageName";
+    public static final String CONFIG_ENABLE_NL_OVERLAY = "config_enableNetworkLocationOverlay";
+    public static final String CONFIG_NL_PROVIDER_PACKAGE_NAMES = "config_locationProviderPackageNames";
+
     @Override
     public String getGroupName(Context context) {
-        return "Network location provider support";
+        return context.getString(R.string.self_check_cat_nlpcompat);
     }
 
     @Override
@@ -41,7 +48,8 @@ public class NlpOsCompatChecks implements SelfCheckGroup {
 
     private boolean checkSystemIsSupported(Context context, ResultCollector collector) {
         boolean isSupported = (SDK_INT >= KITKAT && SDK_INT <= M);
-        collector.addResult("Android version supported:", isSupported ? Result.Positive : Result.Unknown, "Your Android version is not officially supported. This does not necessarily mean anything.");
+        collector.addResult(context.getString(R.string.self_check_name_system_supported),
+                isSupported ? Result.Positive : Result.Unknown, context.getString(R.string.self_check_resolution_system_supported));
         return isSupported;
     }
 
@@ -54,17 +62,18 @@ public class NlpOsCompatChecks implements SelfCheckGroup {
         //      com.android.internal.R.bool.config_enableNetworkLocationOverlay
         boolean systemMatchesPackage = false;
         if (SDK_INT < JELLY_BEAN) {
-            systemMatchesPackage |= context.getPackageName().equals(getResourceString(context, "config_networkLocationProvider"));
+            systemMatchesPackage |= context.getPackageName().equals(getResourceString(context, CONFIG_NL_PROVIDER));
         } else {
-            boolean overlay = getResourceBool(context, "config_enableNetworkLocationOverlay");
+            boolean overlay = getResourceBool(context, CONFIG_ENABLE_NL_OVERLAY);
             if (SDK_INT < JELLY_BEAN_MR1 || (SDK_INT > JELLY_BEAN_MR1 && !overlay)) {
-                systemMatchesPackage |= context.getPackageName().equals(getResourceString(context, "config_networkLocationProviderPackageName"));
+                systemMatchesPackage |= context.getPackageName().equals(getResourceString(context, CONFIG_NL_PROVIDER_PACKAGE_NAME));
             }
             if (SDK_INT == JELLY_BEAN_MR1 || (SDK_INT > JELLY_BEAN_MR1 && overlay)) {
-                systemMatchesPackage |= Arrays.asList(getResourceArray(context, "config_locationProviderPackageNames")).contains(context.getPackageName());
+                systemMatchesPackage |= Arrays.asList(getResourceArray(context, CONFIG_NL_PROVIDER_PACKAGE_NAMES)).contains(context.getPackageName());
             }
         }
-        collector.addResult("System supports location provider:", systemMatchesPackage ? Result.Positive : Result.Negative, "Your system does not support this UnifiedNlp package. Either install a matching package or a compatibility Xposed module.");
+        collector.addResult(context.getString(R.string.self_check_name_nlp_package_name),
+                systemMatchesPackage ? Result.Positive : Result.Negative, context.getString(R.string.self_check_resolution_nlp_package_name));
         return systemMatchesPackage;
     }
 
