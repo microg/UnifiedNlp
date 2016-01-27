@@ -16,6 +16,7 @@
 
 package org.microg.nlp.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.support.v4.app.FragmentTransaction;
@@ -23,10 +24,12 @@ import android.support.v4.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import org.microg.nlp.BuildConfig;
 import org.microg.nlp.R;
 import org.microg.tools.selfcheck.NlpOsCompatChecks;
 import org.microg.tools.selfcheck.NlpStatusChecks;
 import org.microg.tools.selfcheck.SelfCheckGroup;
+import org.microg.tools.ui.AbstractAboutFragment;
 import org.microg.tools.ui.AbstractSelfCheckFragment;
 
 import java.util.List;
@@ -41,13 +44,17 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.content_wrapper, new MyPreferenceFragment()).commit();
     }
 
+    private static boolean isUnifiedNlpAppRelease(Context context) {
+        int resId = context.getResources().getIdentifier("is_unifiednlp_app", "bool", context.getPackageName());
+        return resId != 0 && context.getResources().getBoolean(resId);
+    }
+
     public static class MyPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            if (!getContext().getPackageName().equals("com.google.android.gms")
-                    || getResources().getIdentifier("is_gmscore", "bool", "com.google.android.gms") == 0) {
+            if (isUnifiedNlpAppRelease(getContext())) {
                 addPreferencesFromResource(R.xml.nlp_setup_preferences);
 
                 findPreference(getString(R.string.self_check_title))
@@ -64,6 +71,22 @@ public class SettingsActivity extends AppCompatActivity {
                         });
             }
             addPreferencesFromResource(R.xml.nlp_preferences);
+            if (isUnifiedNlpAppRelease(getContext())) {
+                addPreferencesFromResource(R.xml.nlp_about_preferences);
+
+                findPreference(getString(R.string.pref_about_title))
+                        .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                            @Override
+                            public boolean onPreferenceClick(Preference preference) {
+                                getFragmentManager().beginTransaction()
+                                        .addToBackStack("root")
+                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                        .replace(R.id.content_wrapper, new MyAboutFragment())
+                                        .commit();
+                                return true;
+                            }
+                        });
+            }
         }
     }
 
@@ -73,6 +96,32 @@ public class SettingsActivity extends AppCompatActivity {
         protected void prepareSelfCheckList(List<SelfCheckGroup> checks) {
             checks.add(new NlpOsCompatChecks());
             checks.add(new NlpStatusChecks());
+        }
+    }
+
+    public static class MyAboutFragment extends AbstractAboutFragment {
+
+        @Override
+        protected String getSummary() {
+            String packageName = getContext().getPackageName();
+            if (packageName.equals("com.google.android.gms")) {
+                return getString(R.string.nlp_version_default);
+            } else if (packageName.equals("com.google.android.location")) {
+                return getString(R.string.nlp_version_legacy);
+            } else if (packageName.equals("org.microg.nlp")) {
+                return getString(R.string.nlp_version_custom);
+            }
+            return null;
+        }
+
+        @Override
+        protected String getSelfVersion() {
+            return BuildConfig.VERSION_NAME;
+        }
+
+        @Override
+        protected void collectLibraries(List<Library> libraries) {
+            libraries.add(new Library("org.microg.nlp.api", "microG UnifiedNlp Api", "Apache License 2.0, Copyright © microG Team"));
         }
     }
 }
