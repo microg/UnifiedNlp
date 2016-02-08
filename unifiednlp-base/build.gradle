@@ -45,6 +45,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
     }
+
+    lintOptions {
+        // TODO: Remove MissingTranslation once we have stable strings and proper translations.
+        // TODO: Remove ManifestResource once gradle build tools > 1.5.0 (Issue 194705)
+        disable 'MissingTranslation', 'ManifestResource'
+    }
 }
 
 dependencies {
