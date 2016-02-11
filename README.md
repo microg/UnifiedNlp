@@ -1,6 +1,8 @@
-UnifiedNlp
+<img src="http://i.imgur.com/hXY4lcC.png" height="42px" alt="microG" /> Unified Network Location Provider
 ==========
-The next generation NetworkLocationProvider, based on plugins
+[![Build Status](https://travis-ci.org/microg/android_packages_apps_UnifiedNlp.svg?branch=master)](https://travis-ci.org/microg/android_packages_apps_UnifiedNlp)
+
+The next generation Network Location Provider, based on plugins. Usually abbreviated as UnifiedNlp.
 
 Installation
 ------------
@@ -64,8 +66,7 @@ UnifiedNlp can be built using Gradle. Current builds are done using Gradle 2.2, 
 
 To build with Gradle, first download git submodules:
 
-	git submodule init
-	git submodule update
+	git submodule update --init
 
 AOSP Build system integration
 -----------------------------
@@ -73,7 +74,7 @@ UnifiedNlp can be build as part of Android when building an Android ROM from sou
 Add this repo to your (local) manifest.xml, as well as the UnifiedNlpApi and extend the `PRODUCT_PACKAGES` variable with `NetworkLocation` for KitKat and `LegacyNetworkLocation` for Jelly Bean.
 
 You can also directly invoke the compilation of UnifiedNlp by calling `make UnifiedNlp` or `make NetworkLocation` (respectively `make LegacyNetworkLocation`) from the build system root.
-
+Note that you need to add [UnifiedNlpApi](https://github.com/microg/android_external_UnifiedNlpApi) and [MicroGUiTools](https://github.com/microg/android_external_MicroGUiTools) to the build system for UnifiedNlp to compile.
 
 Attribution
 -----------
