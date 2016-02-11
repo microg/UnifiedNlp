@@ -74,7 +74,12 @@ UnifiedNlp can be build as part of Android when building an Android ROM from sou
 Add this repo to your (local) manifest.xml, as well as the UnifiedNlpApi and extend the `PRODUCT_PACKAGES` variable with `NetworkLocation` for KitKat and `LegacyNetworkLocation` for Jelly Bean.
 
 You can also directly invoke the compilation of UnifiedNlp by calling `make UnifiedNlp` or `make NetworkLocation` (respectively `make LegacyNetworkLocation`) from the build system root.
-Note that you need to add [UnifiedNlpApi](https://github.com/microg/android_external_UnifiedNlpApi) and [MicroGUiTools](https://github.com/microg/android_external_MicroGUiTools) to the build system for UnifiedNlp to compile.
+Note that you need to add [UnifiedNlpApi](https://github.com/microg/android_external_UnifiedNlpApi) and [MicroGUiTools](https://github.com/microg/android_external_MicroGUiTools) to the build system for UnifiedNlp to compile:
+```
+  <project name="microg/android_packages_apps_UnifiedNlp" path="packages/apps/UnifiedNlp" remote="github" revision="master"/>
+  <project name="microg/android_external_UnifiedNlpApi" path="external/UnifiedNlpApi" remote="github" revision="master"/>
+  <project name="microg/android_external_MicroGUiTools" path="external/MicroGUiTools" remote="github" revision="master"/>
+```
 
 Attribution
 -----------
