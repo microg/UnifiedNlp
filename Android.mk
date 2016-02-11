@@ -15,7 +15,8 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 appcompat_dir := ../../../frameworks/support/v7/appcompat
-res_dir := unifiednlp-base/src/main/res $(appcompat_dir)/res
+uitools_dir := ../../../external/MicroGUiTools
+res_dir := unifiednlp-base/src/main/res $(appcompat_dir)/res $(uitools_dir)/microg-ui-tools/src/main/res
 
 ##
 # NetworkLocation
@@ -38,7 +39,7 @@ ifeq ($(shell [ $(PLATFORM_SDK_VERSION) -ge 17 ] && echo true), true)
 LOCAL_JAVA_LIBRARIES += UnifiedNlpCompatV9
 endif
 
-LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi android-support-v4 android-support-v7-appcompat
+LOCAL_STATIC_JAVA_LIBRARIES := UnifiedNlpApi MicroGUiTools android-support-v4 android-support-v7-appcompat
 LOCAL_PACKAGE_NAME := NetworkLocation
 LOCAL_SDK_VERSION := current
 LOCAL_PRIVILEGED_MODULE := true
@@ -48,6 +49,7 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 LOCAL_AAPT_FLAGS := --auto-add-overlay \
     --rename-manifest-package com.google.android.gms \
     --extra-packages org.microg.nlp \
+    --extra-packages org.microg.tools.ui \
     --extra-packages android.support.v7.appcompat
 
 include $(BUILD_PACKAGE)
