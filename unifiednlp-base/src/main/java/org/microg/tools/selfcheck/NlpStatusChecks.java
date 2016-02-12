@@ -76,7 +76,8 @@ public class NlpStatusChecks implements SelfCheckGroup {
     private boolean isProvidingLastLocation(Context context, ResultCollector collector) {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        boolean hasKnown = location != null && location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER);
+        boolean hasKnown = location != null && location.getExtras() != null &&
+                location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER);
         collector.addResult(context.getString(R.string.self_check_name_last_location),
                 hasKnown ? Positive : Unknown, context.getString(R.string.self_check_resolution_last_location));
         return hasKnown;
