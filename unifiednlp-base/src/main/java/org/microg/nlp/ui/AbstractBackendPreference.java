@@ -16,11 +16,14 @@
 
 package org.microg.nlp.ui;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.os.IBinder;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -37,7 +40,10 @@ import org.microg.nlp.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.BIND_AUTO_CREATE;
+import static android.content.Intent.ACTION_VIEW;
 import static org.microg.nlp.api.Constants.METADATA_BACKEND_ABOUT_ACTIVITY;
+import static org.microg.nlp.api.Constants.METADATA_BACKEND_INIT_ACTIVITY;
 import static org.microg.nlp.api.Constants.METADATA_BACKEND_SETTINGS_ACTIVITY;
 import static org.microg.nlp.api.Constants.METADATA_BACKEND_SUMMARY;
 
@@ -126,7 +132,7 @@ abstract class AbstractBackendPreference extends DialogPreference {
     }
 
     private Intent createExternalIntent(BackendInfo backendInfo, String metaName) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Intent intent = new Intent(ACTION_VIEW);
         intent.setPackage(backendInfo.serviceInfo.packageName);
         intent.setClassName(backendInfo.serviceInfo.packageName, backendInfo.getMeta(metaName));
         return intent;
@@ -166,6 +172,7 @@ abstract class AbstractBackendPreference extends DialogPreference {
                 @Override
                 public void onClick(View v) {
                     backend.enabled = checkbox.isChecked();
+                    if (backend.enabled) enableBackend(backend);
                 }
             });
             configureExternalButton(backend, v.findViewById(android.R.id.button1),
@@ -191,6 +198,31 @@ abstract class AbstractBackendPreference extends DialogPreference {
         }
     }
 
+    protected void enableBackend(BackendInfo backendInfo) {
+        if (backendInfo.getMeta(METADATA_BACKEND_INIT_ACTIVITY) != null) {
+            getContext().startActivity(createExternalIntent(backendInfo, METADATA_BACKEND_INIT_ACTIVITY));
+        } else {
+            Intent intent = buildBackendIntent();
+            intent.setPackage(backendInfo.serviceInfo.packageName);
+            intent.setClassName(backendInfo.serviceInfo.packageName, backendInfo.serviceInfo.name);
+            getContext().bindService(intent, new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    Intent i = getBackendInitIntent(service);
+                    if (i != null) {
+                        getContext().startActivity(i);
+                    }
+                    getContext().unbindService(this);
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+
+                }
+            }, BIND_AUTO_CREATE);
+        }
+    }
+
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
@@ -204,6 +236,8 @@ abstract class AbstractBackendPreference extends DialogPreference {
     protected abstract Intent buildBackendIntent();
 
     protected abstract String defaultValue();
+
+    protected abstract Intent getBackendInitIntent(IBinder service);
 
     private class BackendInfo {
         private final ServiceInfo serviceInfo;

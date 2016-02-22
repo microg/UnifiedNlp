@@ -38,7 +38,7 @@ public class PackageReceiver extends BroadcastReceiver {
         }
         if (preferences.getGeocoderBackends().contains(packageName)) {
             Log.d(TAG, "Reloading geocoding service for " + packageName);
-            AbstractGeocodeService.reloadLocationService(context);
+            AbstractGeocodeService.reloadGeocodeService(context);
         }
     }
 }
