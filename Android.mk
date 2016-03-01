@@ -22,13 +22,32 @@ res_dir := unifiednlp-base/src/main/res $(appcompat_dir)/res $(uitools_dir)/micr
 # NetworkLocation
 # Target using com.google.android.gms as package name
 
-include $(CLEAR_VARS)
+# Generate Gradle BuildConfig.mk file since AOSP does not handle that
+# Remove the generated file if you want it to be regenerated with new values
+
+UNIFIEDNLP_BUILDCONFIG_CLASS := unifiednlp-base/src/main/java/org/microg/nlp/BuildConfig.java
+UNIFIEDNLP_BC_PATH := $(LOCAL_PATH)/$(UNIFIEDNLP_BUILDCONFIG_CLASS)
+UNIFIEDNLP_BC_APPLICATION_ID := "org.microg.nlp"
+UNIFIEDNLP_BC_VERSION_NAME := "-1"
+
+$(UNIFIEDNLP_BC_PATH):
+	echo "/**" > $(UNIFIEDNLP_BC_PATH)
+	echo "* Automatically generated file. DO NOT MODIFY" >> $(UNIFIEDNLP_BC_PATH)
+	echo "*/" >> $(UNIFIEDNLP_BC_PATH)
+	echo "package "$(UNIFIEDNLP_BC_APPLICATION_ID)";" >> $(UNIFIEDNLP_BC_PATH)
+	echo "public final class BuildConfig {" >> $(UNIFIEDNLP_BC_PATH)
+	echo "    public static final String APPLICATION_ID = \""$(UNIFIEDNLP_BC_APPLICATION_ID)"\";" >> $(UNIFIEDNLP_BC_PATH)
+	echo "    public static final String VERSION_NAME = \""$(UNIFIEDNLP_BC_VERSION_NAME)"\";" >> $(UNIFIEDNLP_BC_PATH)
+	echo "    private BuildConfig() {}" >> $(UNIFIEDNLP_BC_PATH)
+	echo "}" >> $(UNIFIEDNLP_BC_PATH)
 
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
 LOCAL_SRC_FILES := $(call all-java-files-under, unifiednlp-app/src/main/java) \
                    $(call all-java-files-under, unifiednlp-base/src/main/java)
+LOCAL_SRC_FILES += $(UNIFIEDNLP_BUILDCONFIG_CLASS)
+
 LOCAL_MANIFEST_FILE := unifiednlp-app/src/main/AndroidManifest.xml
 LOCAL_FULL_LIBS_MANIFEST_FILES := $(LOCAL_PATH)/unifiednlp-base/src/main/AndroidManifest.xml
 

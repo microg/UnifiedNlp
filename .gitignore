@@ -6,3 +6,4 @@ user.gradle
 .gradle/
 local.properties
 .idea/
+BuildConfig.java
