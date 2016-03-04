@@ -28,11 +28,16 @@ import org.microg.nlp.BuildConfig;
 import org.microg.nlp.R;
 import org.microg.tools.selfcheck.NlpOsCompatChecks;
 import org.microg.tools.selfcheck.NlpStatusChecks;
+import org.microg.tools.selfcheck.PermissionCheckGroup;
 import org.microg.tools.selfcheck.SelfCheckGroup;
 import org.microg.tools.ui.AbstractAboutFragment;
 import org.microg.tools.ui.AbstractSelfCheckFragment;
 
 import java.util.List;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override
@@ -94,6 +99,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         protected void prepareSelfCheckList(List<SelfCheckGroup> checks) {
+            if (SDK_INT > LOLLIPOP_MR1) {
+                checks.add(new PermissionCheckGroup(ACCESS_COARSE_LOCATION));
+            }
             checks.add(new NlpOsCompatChecks());
             checks.add(new NlpStatusChecks());
         }

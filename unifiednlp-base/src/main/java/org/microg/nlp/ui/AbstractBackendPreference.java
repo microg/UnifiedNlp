@@ -26,6 +26,7 @@ import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
@@ -199,27 +201,33 @@ abstract class AbstractBackendPreference extends DialogPreference {
     }
 
     protected void enableBackend(BackendInfo backendInfo) {
-        if (backendInfo.getMeta(METADATA_BACKEND_INIT_ACTIVITY) != null) {
-            getContext().startActivity(createExternalIntent(backendInfo, METADATA_BACKEND_INIT_ACTIVITY));
-        } else {
-            Intent intent = buildBackendIntent();
-            intent.setPackage(backendInfo.serviceInfo.packageName);
-            intent.setClassName(backendInfo.serviceInfo.packageName, backendInfo.serviceInfo.name);
-            getContext().bindService(intent, new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service) {
-                    Intent i = getBackendInitIntent(service);
-                    if (i != null) {
-                        getContext().startActivity(i);
+        try {
+            if (backendInfo.getMeta(METADATA_BACKEND_INIT_ACTIVITY) != null) {
+                getContext().startActivity(createExternalIntent(backendInfo, METADATA_BACKEND_INIT_ACTIVITY));
+            } else {
+                Intent intent = buildBackendIntent();
+                intent.setPackage(backendInfo.serviceInfo.packageName);
+                intent.setClassName(backendInfo.serviceInfo.packageName, backendInfo.serviceInfo.name);
+                getContext().bindService(intent, new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder service) {
+                        Intent i = getBackendInitIntent(service);
+                        if (i != null) {
+                            getContext().startActivity(i);
+                        }
+                        getContext().unbindService(this);
                     }
-                    getContext().unbindService(this);
-                }
 
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
 
-                }
-            }, BIND_AUTO_CREATE);
+                    }
+                }, BIND_AUTO_CREATE);
+            }
+        } catch (Exception e) {
+            backendInfo.enabled = false;
+            Toast.makeText(getContext(), "Error initializing backend", Toast.LENGTH_SHORT).show();
+            resetAdapter();
         }
     }
 
