@@ -103,7 +103,8 @@ public class NlpStatusChecks implements SelfCheckGroup {
             @Override
             public void onLocationChanged(Location location) {
                 synchronized (result) {
-                    result.set(location != null && location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER));
+                    result.set(location != null && location.getExtras() != null &&
+                            location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER));
                     result.notifyAll();
                 }
             }
