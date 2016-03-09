@@ -4,6 +4,8 @@
 
 The next generation Network Location Provider, based on plugins. Usually abbreviated as UnifiedNlp.
 
+[![Get it on F-Droid](get_it_on_f-droid.png?raw=true)](https://f-droid.org/repository/browse/?fdid=com.google.android.gms)
+
 Installation
 ------------
 Release builds may be found on the [release page](https://github.com/microg/android_packages_apps_UnifiedNlp/releases).
