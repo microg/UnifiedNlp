@@ -90,8 +90,9 @@ class BackendHelper extends AbstractBackendHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             updateElapsedRealtimeNanos(location);
         }
-        location.getExtras()
-                .putParcelable(LocationProviderBase.EXTRA_NO_GPS_LOCATION, new Location(location));
+        Location noGpsLocation = new Location(location);
+        noGpsLocation.setExtras(null);
+        location.getExtras().putParcelable(LocationProviderBase.EXTRA_NO_GPS_LOCATION, noGpsLocation);
         lastLocation = location;
     }
 
