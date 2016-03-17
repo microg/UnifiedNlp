@@ -78,12 +78,15 @@ class BackendFuser {
     }
 
     public void update() {
+        Boolean hasUpdates = false;
         fusing = true;
         for (BackendHelper handler : backendHelpers) {
-            handler.update();
+            if (handler.update() != null)
+                hasUpdates = true;
         }
         fusing = false;
-        updateLocation();
+        if (hasUpdates)
+            updateLocation();
     }
 
     void updateLocation() {
