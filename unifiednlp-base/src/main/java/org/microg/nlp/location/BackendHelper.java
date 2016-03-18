@@ -54,20 +54,31 @@ class BackendHelper extends AbstractBackendHelper {
         return lastLocation;
     }
 
-    public void update() {
+    /**
+     * @brief Requests a location update from the backend.
+     * 
+     * @return The location reported by the backend. This may be null if a backend cannot determine its
+     * location, or if it is going to return a location asynchronously.
+     */
+    public Location update() {
+        Location result = null;
         if (backend == null) {
             Log.d(TAG, "Not (yet) bound.");
             updateWaiting = true;
         } else {
             updateWaiting = false;
             try {
-                setLastLocation(backend.update());
-                backendFuser.reportLocation();
+                result = backend.update();
+                if ((result != null) && (result.getTime() > lastLocation.getTime())) {
+                    setLastLocation(result);
+                    backendFuser.reportLocation();
+                }
             } catch (Exception e) {
                 Log.w(TAG, e);
                 unbind();
             }
         }
+        return result;
     }
 
     private void setLastLocation(Location location) {
@@ -139,6 +150,8 @@ class BackendHelper extends AbstractBackendHelper {
     private class Callback extends LocationCallback.Stub {
         @Override
         public void report(Location location) throws RemoteException {
+            if ((location == null) || (location.getTime() <= lastLocation.getTime()))
+                return;
             setLastLocation(location);
             backendFuser.reportLocation();
         }

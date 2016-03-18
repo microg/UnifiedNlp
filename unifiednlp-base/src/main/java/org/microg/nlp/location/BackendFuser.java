@@ -78,12 +78,15 @@ class BackendFuser {
     }
 
     public void update() {
+        boolean hasUpdates = false;
         fusing = true;
         for (BackendHelper handler : backendHelpers) {
-            handler.update();
+            if (handler.update() != null)
+                hasUpdates = true;
         }
         fusing = false;
-        updateLocation();
+        if (hasUpdates)
+            updateLocation();
     }
 
     void updateLocation() {
@@ -132,11 +135,14 @@ class BackendFuser {
     }
 
     public void forceLocation(Location location) {
+    	if ((forcedLocation != null) && (location != null) && (forcedLocation.getTime() >= location.getTime()))
+    		return;
         forcedLocation = location;
         if (forcedLocation != null) {
             Bundle extras = new Bundle();
             extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
             location.setExtras(extras);
+            reportLocation();
         }
     }
 
