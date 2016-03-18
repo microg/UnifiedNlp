@@ -10,7 +10,7 @@ Installation
 ------------
 Release builds may be found on the [release page](https://github.com/microg/android_packages_apps_UnifiedNlp/releases).
 
-### Android 4.4 - 5.0 (KitKat / Lollipop)
+### Android 4.4 - 6.0 (KitKat / Lollipop / Marshmallow)
 Most modern ROMs come with support for non-Google geolocation providers. On these systems installation is easy:
 
 1. Make sure that no Google geolocation tool is installed (it is usually listed as Google Play Services in Apps)
