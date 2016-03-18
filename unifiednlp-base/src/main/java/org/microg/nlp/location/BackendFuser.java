@@ -135,11 +135,14 @@ class BackendFuser {
     }
 
     public void forceLocation(Location location) {
+    	if ((forcedLocation != null) && (location != null) && (forcedLocation.getTime() >= location.getTime()))
+    		return;
         forcedLocation = location;
         if (forcedLocation != null) {
             Bundle extras = new Bundle();
             extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
             location.setExtras(extras);
+            reportLocation();
         }
     }
 
