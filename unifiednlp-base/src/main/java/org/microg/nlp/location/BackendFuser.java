@@ -78,7 +78,7 @@ class BackendFuser {
     }
 
     public void update() {
-        Boolean hasUpdates = false;
+        boolean hasUpdates = false;
         fusing = true;
         for (BackendHelper handler : backendHelpers) {
             if (handler.update() != null)
