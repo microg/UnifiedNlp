@@ -150,7 +150,7 @@ class BackendHelper extends AbstractBackendHelper {
     private class Callback extends LocationCallback.Stub {
         @Override
         public void report(Location location) throws RemoteException {
-            if ((location == null) || (location.getTime() <= lastLocation.getTime()))
+            if ((location == null) || (lastLocation != null && location.getTime() <= lastLocation.getTime()))
                 return;
             setLastLocation(location);
             backendFuser.reportLocation();
