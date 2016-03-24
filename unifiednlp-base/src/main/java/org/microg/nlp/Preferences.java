@@ -35,8 +35,7 @@ public class Preferences {
     }
 
     public String getDefaultLocationBackends() {
-        String defBackends = Settings.System
-                .getString(context.getContentResolver(), DEFAULT_LOCATION_BACKENDS);
+        String defBackends = Settings.Secure.getString(context.getContentResolver(), DEFAULT_LOCATION_BACKENDS);
         return defBackends == null ? "" : defBackends;
     }
 
@@ -46,8 +45,7 @@ public class Preferences {
     }
 
     public String getDefaultGeocoderBackends() {
-        String defBackends = Settings.System
-                .getString(context.getContentResolver(), DEFAULT_GEOCODER_BACKENDS);
+        String defBackends = Settings.Secure.getString(context.getContentResolver(), DEFAULT_GEOCODER_BACKENDS);
         return defBackends == null ? "" : defBackends;
     }
 
