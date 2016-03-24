@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import org.microg.nlp.Preferences;
@@ -31,7 +30,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND;
-import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
 import static org.microg.nlp.api.Constants.LOCATION_EXTRA_OTHER_BACKENDS;
 
 class BackendFuser {
@@ -56,11 +54,11 @@ class BackendFuser {
         for (String backend : Preferences
                 .splitBackendString(new Preferences(context).getLocationBackends())) {
             String[] parts = backend.split("/");
-            if (parts.length == 2) {
+            if (parts.length >= 2) {
                 Intent intent = new Intent(ACTION_LOCATION_BACKEND);
                 intent.setPackage(parts[0]);
                 intent.setClassName(parts[0], parts[1]);
-                backendHelpers.add(new BackendHelper(context, this, intent));
+                backendHelpers.add(new BackendHelper(context, this, intent, parts.length >= 3 ? parts[2] : null));
             }
         }
     }
@@ -123,8 +121,7 @@ class BackendFuser {
                 backendResults.add(backendResult);
         }
         if (!backendResults.isEmpty()) {
-            location.getExtras()
-                    .putParcelableArrayList(LOCATION_EXTRA_OTHER_BACKENDS, backendResults);
+            location.getExtras().putParcelableArrayList(LOCATION_EXTRA_OTHER_BACKENDS, backendResults);
         }
         return location;
     }

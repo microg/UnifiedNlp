@@ -87,11 +87,11 @@ class BackendFuser {
         for (String backend : Preferences
                 .splitBackendString(new Preferences(context).getGeocoderBackends())) {
             String[] parts = backend.split("/");
-            if (parts.length == 2) {
+            if (parts.length >= 2) {
                 Intent intent = new Intent(ACTION_GEOCODER_BACKEND);
                 intent.setPackage(parts[0]);
                 intent.setClassName(parts[0], parts[1]);
-                backendHelpers.add(new BackendHelper(context, intent));
+                backendHelpers.add(new BackendHelper(context, intent, parts.length >= 3 ? parts[2] : null));
             }
         }
     }

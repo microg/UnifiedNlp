@@ -26,7 +26,6 @@ import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,8 +97,7 @@ abstract class AbstractBackendPreference extends DialogPreference {
                 if (sb.length() != 0) {
                     sb.append("|");
                 }
-                sb.append(backend.serviceInfo.packageName).append("/")
-                        .append(backend.serviceInfo.name);
+                sb.append(backend.toSettingsString());
             }
         }
         return sb.toString();
@@ -108,12 +106,13 @@ abstract class AbstractBackendPreference extends DialogPreference {
     void markBackendsAsEnabled() {
         for (String backend : Preferences.splitBackendString(getPersistedString(defaultValue()))) {
             String[] parts = backend.split("/");
-            if (parts.length == 2) {
+            if (parts.length >= 2) {
                 for (BackendInfo backendInfo : knownBackends) {
                     ServiceInfo serviceInfo = backendInfo.serviceInfo;
-                    if (serviceInfo.packageName.equals(parts[0]) &&
-                            serviceInfo.name.equals(parts[1])) {
-                        backendInfo.enabled = true;
+                    if (serviceInfo.packageName.equals(parts[0]) && serviceInfo.name.equals(parts[1])) {
+                        if (parts.length == 2 || parts[2].equals(backendInfo.signatureDigest)) {
+                            backendInfo.enabled = true;
+                        }
                     }
                 }
             }
@@ -126,9 +125,9 @@ abstract class AbstractBackendPreference extends DialogPreference {
                 .queryIntentServices(intent, PackageManager.GET_META_DATA);
         for (ResolveInfo info : resolveInfos) {
             ServiceInfo serviceInfo = info.serviceInfo;
-            String simpleName = String
-                    .valueOf(serviceInfo.loadLabel(getContext().getPackageManager()));
-            knownBackends.add(new BackendInfo(serviceInfo, simpleName));
+            String simpleName = String.valueOf(serviceInfo.loadLabel(getContext().getPackageManager()));
+            String signatureDigest = Preferences.firstSignatureDigest(getContext(), serviceInfo.packageName);
+            knownBackends.add(new BackendInfo(serviceInfo, simpleName, signatureDigest));
         }
         return knownBackends;
     }
@@ -250,11 +249,13 @@ abstract class AbstractBackendPreference extends DialogPreference {
     private class BackendInfo {
         private final ServiceInfo serviceInfo;
         private final String simpleName;
+        private final String signatureDigest;
         private boolean enabled = false;
 
-        public BackendInfo(ServiceInfo serviceInfo, String simpleName) {
+        public BackendInfo(ServiceInfo serviceInfo, String simpleName, String signatureDigest) {
             this.serviceInfo = serviceInfo;
             this.simpleName = simpleName;
+            this.signatureDigest = signatureDigest;
         }
 
         public String getMeta(String metaName) {
@@ -264,6 +265,10 @@ abstract class AbstractBackendPreference extends DialogPreference {
         @Override
         public String toString() {
             return simpleName;
+        }
+
+        public String toSettingsString() {
+            return serviceInfo.packageName + "/" + serviceInfo.name + "/" + signatureDigest;
         }
     }
 }

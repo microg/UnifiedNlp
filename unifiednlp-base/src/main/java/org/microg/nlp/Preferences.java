@@ -18,8 +18,14 @@ package org.microg.nlp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Preferences {
     private static final String DEFAULT_LOCATION_BACKENDS = "default_location_backends";
@@ -56,5 +62,44 @@ public class Preferences {
 
     public static String[] splitBackendString(String backendString) {
         return backendString.split("\\|");
+    }
+
+    public static String firstSignatureDigest(Context context, String packageName) {
+        PackageManager packageManager = context.getPackageManager();
+        final PackageInfo info;
+        try {
+            info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (info != null && info.signatures != null && info.signatures.length > 0) {
+            for (Signature sig : info.signatures) {
+                String digest = sha1sum(sig.toByteArray());
+                if (digest != null) {
+                    return digest;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String sha1sum(byte[] bytes) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA1");
+        } catch (final NoSuchAlgorithmException e) {
+            return null;
+        }
+        if (md != null) {
+            bytes = md.digest(bytes);
+            if (bytes != null) {
+                StringBuilder sb = new StringBuilder(2 * bytes.length);
+                for (byte b : bytes) {
+                    sb.append(String.format("%02x", b));
+                }
+                return sb.toString();
+            }
+        }
+        return null;
     }
 }

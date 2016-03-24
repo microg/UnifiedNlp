@@ -29,11 +29,17 @@ public abstract class AbstractBackendHelper implements ServiceConnection {
     protected final Intent serviceIntent;
     private boolean bound;
     private final String TAG;
+    private final String signatureDigest;
 
     protected AbstractBackendHelper(String tag, Context context, Intent serviceIntent) {
+        this(tag, context, serviceIntent, null);
+    }
+
+    protected AbstractBackendHelper(String tag, Context context, Intent serviceIntent, String signatureDigest) {
         TAG = tag;
         this.context = context;
         this.serviceIntent = serviceIntent;
+        this.signatureDigest = signatureDigest;
     }
 
     protected abstract void close() throws RemoteException;
@@ -74,6 +80,15 @@ public abstract class AbstractBackendHelper implements ServiceConnection {
     public void bind() {
         if (!bound) {
             Log.d(TAG, "Binding to: " + serviceIntent);
+            if (signatureDigest != null) {
+                if (serviceIntent.getPackage() == null) {
+                    Log.w(TAG, "Intent is not properly resolved, can't verify signature. Aborting.");
+                    return;
+                }
+                if (!signatureDigest.equals(Preferences.firstSignatureDigest(context, serviceIntent.getPackage()))) {
+                    Log.w(TAG, "Target signature does not match selected package. Aborting.");
+                }
+            }
             try {
                 context.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
             } catch (Exception e) {

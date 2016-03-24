@@ -33,8 +33,8 @@ class BackendHelper extends AbstractBackendHelper {
     private static final String TAG = "NlpGeoBackendHelper";
     private GeocoderBackend backend;
 
-    public BackendHelper(Context context, Intent serviceIntent) {
-        super(TAG, context, serviceIntent);
+    public BackendHelper(Context context, Intent serviceIntent, String signatureDigest) {
+        super(TAG, context, serviceIntent, signatureDigest);
     }
 
     public List<Address> getFromLocation(double latitude, double longitude, int maxResults,

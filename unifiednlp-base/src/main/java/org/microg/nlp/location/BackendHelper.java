@@ -45,8 +45,8 @@ class BackendHelper extends AbstractBackendHelper {
     private boolean updateWaiting;
     private Location lastLocation;
 
-    public BackendHelper(Context context, BackendFuser backendFuser, Intent serviceIntent) {
-        super(TAG, context, serviceIntent);
+    public BackendHelper(Context context, BackendFuser backendFuser, Intent serviceIntent, String signatureDigest) {
+        super(TAG, context, serviceIntent, signatureDigest);
         this.backendFuser = backendFuser;
     }
 
