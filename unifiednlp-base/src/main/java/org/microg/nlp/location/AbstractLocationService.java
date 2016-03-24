@@ -42,13 +42,6 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
         return context.startService(intent);
     }
 
-    public static ComponentName forceLocation(Context context, Location location) {
-        Intent intent = new Intent(ACTION_FORCE_LOCATION);
-        setIntentTarget(context, intent);
-        intent.putExtra(INTENT_EXTRA_LOCATION, location);
-        return context.startService(intent);
-    }
-
     private static void setIntentTarget(Context context, Intent intent) {
         if (SDK_INT >= JELLY_BEAN_MR1) {
             intent.setClass(context, LocationServiceV2.class);
@@ -78,18 +71,6 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
     @Override
     protected void onHandleIntent(Intent intent) {
         LocationProvider provider = getProvider();
-
-        if (ACTION_FORCE_LOCATION.equals(intent.getAction())) {
-            if (checkCallingPermission(PERMISSION_FORCE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                if (provider != null && intent.hasExtra(INTENT_EXTRA_LOCATION)) {
-                    provider.forceLocation(
-                            (Location) intent.getParcelableExtra(INTENT_EXTRA_LOCATION));
-                } else {
-                    Log.d(TAG, "Cannot force location, provider not ready");
-                }
-            }
-        }
 
         if (ACTION_RELOAD_SETTINGS.equals(intent.getAction())) {
             if (provider != null) {

@@ -45,11 +45,6 @@ public class LocationProviderV1 extends com.android.location.provider.LocationPr
     }
 
     @Override
-    public void forceLocation(Location location) {
-        helper.forceLocation(location);
-    }
-
-    @Override
     public void reload() {
         helper.reload();
     }

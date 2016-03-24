@@ -28,6 +28,4 @@ interface LocationProvider extends Provider {
     void onDisable();
 
     void reportLocation(Location location);
-
-    void forceLocation(Location location);
 }

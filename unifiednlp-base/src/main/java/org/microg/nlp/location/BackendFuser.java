@@ -40,7 +40,6 @@ class BackendFuser {
     private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
     private final LocationProvider locationProvider;
     private final Context context;
-    private Location forcedLocation;
     private boolean fusing = false;
     private long lastLocationReportTime = 0;
 
@@ -96,9 +95,6 @@ class BackendFuser {
         for (BackendHelper handler : backendHelpers) {
             locations.add(handler.getLastLocation());
         }
-        if (forcedLocation != null) {
-            locations.add(forcedLocation);
-        }
         Location location = mergeLocations(locations);
         if (location != null) {
             location.setProvider(LocationManager.NETWORK_PROVIDER);
@@ -137,20 +133,6 @@ class BackendFuser {
         if (fusing)
             return;
         updateLocation();
-    }
-
-    public void forceLocation(Location location) {
-        forcedLocation = location;
-        if (forcedLocation != null) {
-            Bundle extras = new Bundle();
-            extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
-            forcedLocation.setExtras(extras);
-            reportLocation();
-        }
-    }
-
-    public Location getForcedLocation() {
-        return forcedLocation;
     }
 
     public void destroy() {

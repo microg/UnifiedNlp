@@ -33,10 +33,6 @@ class ThreadHelper implements Runnable {
         backendFuser = new BackendFuser(context, locationProvider);
     }
 
-    public void forceLocation(Location location) {
-        backendFuser.forceLocation(location);
-    }
-
     public void reload() {
         disable();
         backendFuser.reset();
