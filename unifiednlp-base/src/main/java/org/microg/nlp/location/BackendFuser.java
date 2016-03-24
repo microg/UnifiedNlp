@@ -42,6 +42,7 @@ class BackendFuser {
     private final Context context;
     private Location forcedLocation;
     private boolean fusing = false;
+    private long lastLocationReportTime = 0;
 
     public BackendFuser(Context context, LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
@@ -52,6 +53,7 @@ class BackendFuser {
     public void reset() {
         unbind();
         backendHelpers.clear();
+        lastLocationReportTime = 0;
         for (String backend : Preferences
                 .splitBackendString(new Preferences(context).getLocationBackends())) {
             String[] parts = backend.split("/");
@@ -97,12 +99,15 @@ class BackendFuser {
         if (forcedLocation != null) {
             locations.add(forcedLocation);
         }
-        if (!locations.isEmpty()) {
-            Location location = mergeLocations(locations);
-            if (location != null) {
-                location.setProvider(LocationManager.NETWORK_PROVIDER);
+        Location location = mergeLocations(locations);
+        if (location != null) {
+            location.setProvider(LocationManager.NETWORK_PROVIDER);
+            if (lastLocationReportTime < location.getTime()) {
+                lastLocationReportTime = location.getTime();
                 locationProvider.reportLocation(location);
                 Log.v(TAG, "location=" + location);
+            } else {
+                Log.v(TAG, "Ignoring location update as it's older than other provider.");
             }
         }
     }
@@ -135,13 +140,11 @@ class BackendFuser {
     }
 
     public void forceLocation(Location location) {
-    	if ((forcedLocation != null) && (location != null) && (forcedLocation.getTime() >= location.getTime()))
-    		return;
         forcedLocation = location;
         if (forcedLocation != null) {
             Bundle extras = new Bundle();
             extras.putString(LOCATION_EXTRA_BACKEND_PROVIDER, "forced");
-            location.setExtras(extras);
+            forcedLocation.setExtras(extras);
             reportLocation();
         }
     }
