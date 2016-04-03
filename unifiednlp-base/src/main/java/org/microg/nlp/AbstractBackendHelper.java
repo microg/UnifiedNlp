@@ -87,6 +87,7 @@ public abstract class AbstractBackendHelper implements ServiceConnection {
                 }
                 if (!signatureDigest.equals(Preferences.firstSignatureDigest(context, serviceIntent.getPackage()))) {
                     Log.w(TAG, "Target signature does not match selected package. Aborting.");
+                    return;
                 }
             }
             try {
