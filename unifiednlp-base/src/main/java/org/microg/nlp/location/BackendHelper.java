@@ -69,7 +69,7 @@ class BackendHelper extends AbstractBackendHelper {
             updateWaiting = false;
             try {
                 result = backend.update();
-                if ((result != null) && (result.getTime() > lastLocation.getTime())) {
+                if (result != null && (lastLocation == null || result.getTime() > lastLocation.getTime())) {
                     setLastLocation(result);
                     backendFuser.reportLocation();
                 }
