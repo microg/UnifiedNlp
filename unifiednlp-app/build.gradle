@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 microG Project Team
+ * Copyright 2013-2016 microG Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,14 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
+
+/* This is a hack, trying to provide release updates to F-Droid until it can properly handle Gradle
+applicationId "org.microg.nlp"
+applicationId "com.google.android.gms"
+applicationId "com.google.android.location"
+versionName "1.6.5"
+versionCode "20160"
+ */
 
 String getMyVersionName() {
     def stdout = new ByteArrayOutputStream()
