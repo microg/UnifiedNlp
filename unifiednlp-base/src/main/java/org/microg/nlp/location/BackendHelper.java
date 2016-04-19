@@ -98,7 +98,7 @@ class BackendHelper extends AbstractBackendHelper {
         if (location.getTime() <= 0) {
             location.setTime(System.currentTimeMillis());
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             updateElapsedRealtimeNanos(location);
         }
         Location noGpsLocation = new Location(location);
