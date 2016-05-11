@@ -129,7 +129,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         protected void collectLibraries(List<Library> libraries) {
-            libraries.add(new Library("org.microg.nlp.api", "microG UnifiedNlp Api", "Apache License 2.0, Copyright © microG Team"));
+            libraries.add(new Library("org.microg.nlp.api", "microG UnifiedNlp Api", "Apache License 2.0 by microG Team"));
         }
     }
 }
