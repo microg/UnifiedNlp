@@ -30,7 +30,7 @@ It is required to have a rooted system to install on Jelly Bean and older.
 
 1. Download `LegacyNetworkLocation.apk`
 2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `LegacyNetworkLocation.apk` to `/system/app` (from ypur PC, call `adb push LegacyNetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
+3. Copy `LegacyNetworkLocation.apk` to `/system/app` (from your PC, call `adb push LegacyNetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
 4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
 
 
