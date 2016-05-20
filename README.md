@@ -21,7 +21,7 @@ Some ROMs, especially those not based on AOSP might have problems using this met
 
 1. Download `NetworkLocation.apk`
 2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `NetworkLocation.apk` to `/system/priv-app` (from ypur PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
+3. Copy `NetworkLocation.apk` to `/system/priv-app` (from your PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
 4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
 
 ### Android 2.3 - 4.3 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
