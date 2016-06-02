@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static android.location.LocationManager.NETWORK_PROVIDER;
-import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER;
+import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Negative;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Positive;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Unknown;
@@ -77,7 +77,7 @@ public class NlpStatusChecks implements SelfCheckGroup {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         boolean hasKnown = location != null && location.getExtras() != null &&
-                location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER);
+                location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT);
         collector.addResult(context.getString(R.string.self_check_name_last_location),
                 hasKnown ? Positive : Unknown, context.getString(R.string.self_check_resolution_last_location));
         return hasKnown;
@@ -104,7 +104,7 @@ public class NlpStatusChecks implements SelfCheckGroup {
             public void onLocationChanged(Location location) {
                 synchronized (result) {
                     result.set(location != null && location.getExtras() != null &&
-                            location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_PROVIDER));
+                            location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT));
                     result.notifyAll();
                 }
             }

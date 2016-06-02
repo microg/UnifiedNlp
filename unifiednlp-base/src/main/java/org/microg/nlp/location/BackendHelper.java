@@ -151,7 +151,7 @@ class BackendHelper extends AbstractBackendHelper {
         @Override
         public void report(Location location) throws RemoteException {
             if ((location == null) ||
-                    (lastLocation != null && location.getTime() > 0 && location.getTime() < lastLocation.getTime()))
+                    (lastLocation != null && location.getTime() > 0 && location.getTime() <= lastLocation.getTime()))
                 return;
             setLastLocation(location);
             backendFuser.reportLocation();
