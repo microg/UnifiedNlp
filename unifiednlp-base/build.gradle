@@ -19,7 +19,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:2.1.2'
     }
 }
 
@@ -36,7 +36,7 @@ String getMyVersionName() {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         versionName getMyVersionName()
@@ -48,8 +48,7 @@ android {
 
     lintOptions {
         // TODO: Remove MissingTranslation once we have stable strings and proper translations.
-        // TODO: Remove ManifestResource once gradle build tools > 1.5.0 (Issue 194705)
-        disable 'MissingTranslation', 'ManifestResource'
+        disable 'MissingTranslation'
     }
 }
 
