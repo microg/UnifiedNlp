@@ -16,11 +16,18 @@
 
 package org.microg.tools.selfcheck;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import org.microg.nlp.Preferences;
@@ -37,6 +44,9 @@ import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Positive;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Unknown;
 
 public class NlpStatusChecks implements SelfCheckGroup {
+
+    public static final int REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = 417;
+
     @Override
     public String getGroupName(Context context) {
         return context.getString(R.string.self_check_cat_nlp_status);
@@ -45,6 +55,9 @@ public class NlpStatusChecks implements SelfCheckGroup {
     @Override
     public void doChecks(Context context, ResultCollector collector) {
         providerWasBound(context, collector);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            isBatterySavingDisabled(context, collector);
+        }
         isLocationProviderSetUp(context, collector);
         if (isNetworkLocationEnabled(context, collector)) {
             isProvidingLastLocation(context, collector);
@@ -57,6 +70,25 @@ public class NlpStatusChecks implements SelfCheckGroup {
                 AbstractLocationService.WAS_BOUND ? Positive : Negative, context.getString(R.string.self_check_resolution_nlp_bound));
         return AbstractLocationService.WAS_BOUND;
     }
+
+    @TargetApi(23)
+    private boolean isBatterySavingDisabled(final Context context, ResultCollector collector) {
+        boolean setupLocationProvider = !TextUtils.isEmpty(new Preferences(context).getLocationBackends());
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        collector.addResult(context.getString(R.string.self_check_name_battery_optimizations),
+                pm.isIgnoringBatteryOptimizations(context.getPackageName()) ? Positive : Negative,
+                context.getString(R.string.self_check_resolution_battery_optimizations),
+                new CheckResolver() {
+                    @Override
+                    public void tryResolve(Fragment fragment) {
+                            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                        intent.setData(Uri.parse("package:" + context.getPackageName()));
+                        fragment.startActivityForResult(intent, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    }
+                });
+        return setupLocationProvider;
+    }
+
 
     private boolean isLocationProviderSetUp(Context context, ResultCollector collector) {
         boolean setupLocationProvider = !TextUtils.isEmpty(new Preferences(context).getLocationBackends());
