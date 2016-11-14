@@ -75,12 +75,17 @@ public class NlpStatusChecks implements SelfCheckGroup {
 
     private boolean isProvidingLastLocation(Context context, ResultCollector collector) {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        boolean hasKnown = location != null && location.getExtras() != null &&
-                location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT);
-        collector.addResult(context.getString(R.string.self_check_name_last_location),
-                hasKnown ? Positive : Unknown, context.getString(R.string.self_check_resolution_last_location));
-        return hasKnown;
+        try {
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            boolean hasKnown = location != null && location.getExtras() != null &&
+                    location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT);
+            collector.addResult(context.getString(R.string.self_check_name_last_location),
+                    hasKnown ? Positive : Unknown, context.getString(R.string.self_check_resolution_last_location));
+            return hasKnown;
+        } catch (SecurityException e) {
+            collector.addResult(context.getString(R.string.self_check_name_last_location), Unknown, context.getString(R.string.self_check_loc_perm_missing));
+            return false;
+        }
     }
 
     private void isProvidingLocation(final Context context, final ResultCollector collector) {
@@ -99,27 +104,31 @@ public class NlpStatusChecks implements SelfCheckGroup {
                 }
             }
         }).start();
-        locationManager.requestSingleUpdate(NETWORK_PROVIDER, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                synchronized (result) {
-                    result.set(location != null && location.getExtras() != null &&
-                            location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT));
-                    result.notifyAll();
+        try {
+            locationManager.requestSingleUpdate(NETWORK_PROVIDER, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    synchronized (result) {
+                        result.set(location != null && location.getExtras() != null &&
+                                location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT));
+                        result.notifyAll();
+                    }
                 }
-            }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
 
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
 
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        }, null);
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            }, null);
+        } catch (SecurityException e) {
+            collector.addResult(context.getString(R.string.self_check_name_last_location), Unknown, context.getString(R.string.self_check_loc_perm_missing));
+        }
     }
 }

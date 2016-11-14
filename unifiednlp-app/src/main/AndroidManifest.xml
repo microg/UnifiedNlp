@@ -17,10 +17,6 @@
 <manifest package="org.microg.nlp.app"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="23"/>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_nlp_app"

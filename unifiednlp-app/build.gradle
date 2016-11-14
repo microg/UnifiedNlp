@@ -49,6 +49,8 @@ android {
     defaultConfig {
         versionName getMyVersionName()
         versionCode(20000 + getMyVersionCode())
+        minSdkVersion androidMinSdk()
+        targetSdkVersion androidTargetSdk()
     }
 
     productFlavors {

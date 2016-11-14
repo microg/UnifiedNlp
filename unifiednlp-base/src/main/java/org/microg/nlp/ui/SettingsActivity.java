@@ -18,10 +18,10 @@ package org.microg.nlp.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
 import android.support.v7.widget.Toolbar;
 
 import org.microg.nlp.BuildConfig;
@@ -32,6 +32,7 @@ import org.microg.tools.selfcheck.PermissionCheckGroup;
 import org.microg.tools.selfcheck.SelfCheckGroup;
 import org.microg.tools.ui.AbstractAboutFragment;
 import org.microg.tools.ui.AbstractSelfCheckFragment;
+import org.microg.tools.ui.AbstractSettingsFragment;
 
 import java.util.List;
 
@@ -54,11 +55,9 @@ public class SettingsActivity extends AppCompatActivity {
         return resId != 0 && context.getResources().getBoolean(resId);
     }
 
-    public static class MyPreferenceFragment extends PreferenceFragment {
+    public static class MyPreferenceFragment extends AbstractSettingsFragment {
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
+        public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
             if (isUnifiedNlpAppRelease(getContext())) {
                 addPreferencesFromResource(R.xml.nlp_setup_preferences);
 

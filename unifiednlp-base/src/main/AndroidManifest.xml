@@ -14,64 +14,64 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="org.microg.nlp">
-
-    <uses-sdk android:minSdkVersion="9" />
+<manifest package="org.microg.nlp"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
     <permission
-        android:permissionGroup="android.permission-group.LOCATION"
-        android:label="@string/perm_force_coarse_location_label"
-        android:description="@string/perm_force_coarse_location_desc"
         android:name="org.microg.permission.FORCE_COARSE_LOCATION"
-        android:protectionLevel="dangerous" />
+        android:description="@string/perm_force_coarse_location_desc"
+        android:label="@string/perm_force_coarse_location_label"
+        android:permissionGroup="android.permission-group.LOCATION"
+        android:protectionLevel="dangerous"/>
 
-    <uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="org.microg.permission.FORCE_COARSE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.INSTALL_LOCATION_PROVIDER"
+        tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="org.microg.permission.FORCE_COARSE_LOCATION"/>
 
-    <uses-permission android:name="com.android.settings.INJECT_SETTINGS" />
+    <uses-permission android:name="com.android.settings.INJECT_SETTINGS"/>
 
     <application>
-        <uses-library android:name="com.android.location.provider" />
+        <uses-library android:name="com.android.location.provider"/>
 
         <!-- Gingerbread / Ice Cream Sandwich -->
         <service
             android:name="org.microg.nlp.location.LocationServiceV1"
-            android:permission="android.permission.ACCESS_COARSE_LOCATION"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.ACCESS_COARSE_LOCATION">
             <intent-filter>
-                <action android:name="com.google.android.location.NetworkLocationProvider" />
+                <action android:name="com.google.android.location.NetworkLocationProvider"/>
             </intent-filter>
 
             <meta-data
                 android:name="serviceVersion"
-                android:value="1" />
+                android:value="1"/>
             <meta-data
                 android:name="version"
-                android:value="1" />
+                android:value="1"/>
         </service>
 
         <!-- Jelly Bean / KitKat -->
         <service
             android:name="org.microg.nlp.location.LocationServiceV2"
-            android:permission="android.permission.ACCESS_COARSE_LOCATION"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.ACCESS_COARSE_LOCATION">
             <intent-filter>
                 <!-- KitKat changed the action name but nothing else, hence we handle it the same -->
-                <action android:name="com.android.location.service.v3.NetworkLocationProvider" />
-                <action android:name="com.android.location.service.v2.NetworkLocationProvider" />
+                <action android:name="com.android.location.service.v3.NetworkLocationProvider"/>
+                <action android:name="com.android.location.service.v2.NetworkLocationProvider"/>
             </intent-filter>
 
             <meta-data
                 android:name="serviceVersion"
-                android:value="2" />
+                android:value="2"/>
             <meta-data
                 android:name="serviceIsMultiuser"
-                android:value="false" />
+                android:value="false"/>
         </service>
 
         <service
@@ -79,42 +79,42 @@
             android:exported="true">
             <intent-filter>
                 <!-- Jelly Bean changed the action name but nothing else, hence we handle it the same -->
-                <action android:name="com.android.location.service.GeocodeProvider" />
-                <action android:name="com.google.android.location.GeocodeProvider" />
+                <action android:name="com.android.location.service.GeocodeProvider"/>
+                <action android:name="com.google.android.location.GeocodeProvider"/>
             </intent-filter>
 
             <meta-data
                 android:name="serviceVersion"
-                android:value="2" />
+                android:value="2"/>
             <meta-data
                 android:name="serviceIsMultiuser"
-                android:value="false" />
+                android:value="false"/>
         </service>
 
         <service android:name=".ui.SettingInjectorService">
             <intent-filter>
-                <action android:name="android.location.SettingInjectorService" />
+                <action android:name="android.location.SettingInjectorService"/>
             </intent-filter>
             <meta-data
                 android:name="android.location.SettingInjectorService"
-                android:resource="@xml/nlp_injected_setting" />
+                android:resource="@xml/nlp_injected_setting"/>
         </service>
 
         <activity
-            android:theme="@style/SettingsTheme"
             android:name=".ui.SettingsActivity"
             android:icon="@mipmap/ic_nlp_settings"
-            android:label="@string/nlp_settings_label" />
+            android:label="@string/nlp_settings_label"
+            android:theme="@style/Theme.AppCompat.Settings"/>
 
         <receiver android:name="org.microg.nlp.PackageReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_CHANGED" />
-                <action android:name="android.intent.action.PACKAGE_UPGRADED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+                <action android:name="android.intent.action.PACKAGE_UPGRADED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_RESTARTED"/>
 
-                <data android:scheme="package" />
+                <data android:scheme="package"/>
             </intent-filter>
         </receiver>
     </application>

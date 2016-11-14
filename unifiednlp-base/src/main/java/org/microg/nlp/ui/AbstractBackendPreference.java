@@ -24,7 +24,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
-import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +36,7 @@ import android.widget.Toast;
 
 import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
+import org.microg.tools.ui.DialogPreference;
 
 import java.util.ArrayList;
 import java.util.List;
