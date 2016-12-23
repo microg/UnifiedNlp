@@ -44,6 +44,7 @@
             android:exported="true"
             android:permission="android.permission.ACCESS_COARSE_LOCATION">
             <intent-filter>
+                <action android:name="com.android.location.service.NetworkLocationProvider"/>
                 <action android:name="com.google.android.location.NetworkLocationProvider"/>
             </intent-filter>
 
