@@ -10,7 +10,7 @@ Installation
 ------------
 Release builds may be found on the [release page](https://github.com/microg/android_packages_apps_UnifiedNlp/releases).
 
-### Android 4.4 - 6.0 (KitKat / Lollipop / Marshmallow)
+### Android 4.4 - 7.1.1 (KitKat / Lollipop / Marshmallow / Nougat)
 Most modern ROMs come with support for non-Google geolocation providers. On these systems installation is easy:
 
 1. Make sure that no Google geolocation tool is installed (it is usually listed as Google Play Services in Apps)
@@ -24,39 +24,39 @@ Some ROMs, especially those not based on AOSP might have problems using this met
 3. Copy `NetworkLocation.apk` to `/system/priv-app` (from your PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
 4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
 
-### Android 2.3 - 4.3 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
+### Android 2.3 - 4.3.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
 Older Android versions are no longer officially supported. However I still provide a legacy build, that should be compatible with those systems.
 It is required to have a rooted system to install on Jelly Bean and older.
 
 1. Download `LegacyNetworkLocation.apk`
 2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `LegacyNetworkLocation.apk` to `/system/app` (from your PC, call `adb push LegacyNetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
+3. Copy `LegacyNetworkLocation.apk` to `/system/app` (from your PC, call `adb push LegacyNetworkLocation.apk /system/app/LegacyNetworkLocation.apk`)
 4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
 
 
 Usage
 -----
-UnifiedNlp alone does not provide any features, but acts as a middleware for multiple backends.Most of them can be downloaded and updated using [F-Droid](https://f-droid.org)
+UnifiedNlp alone does not provide any features, but acts as a middleware for multiple backends. Most of them can be downloaded and updated using [F-Droid](https://f-droid.org)
 Here is a list of backends for geolocation and (reverse) geocoding known to me:
 
-- [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - backend that uses Apple's service to resolve wifi locations
-- [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - backend that uses OpenWlanMap.org to resolve user location.
-- [OpenBmapNlpBackend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - backend that uses openBmap to resolve user location.
-- [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - backend that uses the Mozilla Location Service to resolve user location.
-- [PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for WiFi APs using on-phone generated database.
-- [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend
-- [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for gsm cells with separate database file (lacells.db)
+- [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - Uses Apple's service to resolve Wi-Fi locations. It has excellent coverage but the database is proprietary.
+- [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - Uses OpenWlanMap.org to resolve user location but the NLP backend did not reach release-quality, yet. Users interested in a freely licensed and downloadable database for offline use should stick with openBmap for now.
+- [OpenBmapNlpBackend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - Uses [openBmap](https://radiocells.org/) to resolve user location. Community-created, freely licensed database that can optionally be downloaded for offline operation. The coverage [varies from country to country](https://radiocells.org/stats/countries) (it's best in central Europe).
+- [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - Uses the Mozilla Location Service to resolve user location. The coverage is OK. Only the cell tower database is free.
+- [PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for Wi-Fi APs using on-phone generated database.
+- [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend. Has been surpassed by LocalGSMBackend which also has an OpenCellID option.
+- [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for GSM cells. It works offline by downloading freely licensed database files from Mozilla, OpenCellID, or lacells.db.
 
- 
+ 
 
-- [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService)
+- [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService) - Address lookup backend.
 - (...) Create issue or pull request to extend either list :)
 
 After installing a backend, you can use UnifiedNlp by activating network-based geolocation in Settings->Location. 
 Since KitKat, you need to select any mode but "device only", on older Android version this setting is called "Wi-Fi & mobile network location" 
 (ignore any misleading texts saying this is for Google's location service, you don't have Google's service installed but UnifiedNlp :smile:) 
 
-Backend-development
+Backend development
 -------------------
 The API is available [here](https://github.com/microg/android_external_UnifiedNlpApi). Documentation may be found in the README provided with the API.
 
@@ -85,13 +85,13 @@ Note that you need to add [UnifiedNlpApi](https://github.com/microg/android_exte
 
 Attribution
 -----------
-Some components: Copyright (C) 2013 The Android Open Source Project
+Some components: Copyright © 2013 The Android Open Source Project
 
 `compat`-folder is extracted from different AOSP versions for cross-version compatibility
 
 License
 -------
-    Copyright 2013-2015 microG Project Team
+    Copyright © 2013-2016 microG Project Team
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
