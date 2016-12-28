@@ -24,6 +24,8 @@ Some ROMs, especially those not based on AOSP might have problems using this met
 3. Copy `NetworkLocation.apk` to `/system/priv-app` (from your PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
 4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
 
+**Note:** On Android 7 (or later) an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch) is needed to make it working, or alternatively, you can install it in `/system/priv-app` as explained above.
+
 ### Android 2.3 - 4.3.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
 Older Android versions are no longer officially supported. However I still provide a legacy build, that should be compatible with those systems.
 It is required to have a rooted system to install on Jelly Bean and older.
@@ -41,11 +43,11 @@ Here is a list of backends known to me.
 
 List of backends for geolocation:
 * [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - Uses Apple's service to resolve Wi-Fi locations. It has excellent coverage but the database is proprietary.
-* [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - Uses OpenWlanMap.org to resolve user location but the NLP backend did not reach release-quality, yet. Users interested in a freely licensed and downloadable database for offline use should stick with openBmap for now.
+* [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - Uses OpenWlanMap.org to resolve user location but the NLP backend did not reach release-quality, yet. Users interested in a freely licensed and downloadable database for offline use should stick with openBmap for now - *Last updated in 2015*
 * [OpenBmapNlpBackend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - Uses [openBmap](https://radiocells.org/) to resolve user location. Community-created, freely licensed database that can optionally be downloaded for offline operation. The coverage [varies from country to country](https://radiocells.org/stats/countries) (it's best in central Europe).
 * [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - Uses the Mozilla Location Service to resolve user location. The coverage is OK. Only the cell tower database is free.
-* [PersonalWifiBackend](https://github.com/n76/wifi_backend) - Local location provider for Wi-Fi APs using on-phone generated database.
-* [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend. Has been surpassed by LocalGSMBackend which also has an OpenCellID option.
+* [LocalWifiNlpBackend](https://github.com/n76/wifi_backend) - Local location provider for Wi-Fi APs using on-phone generated database.
+* [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend. Has been surpassed by LocalGSMBackend which also has an OpenCellID option - *Last update in 2014*
 * [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for GSM cells. It works offline by downloading freely licensed database files from Mozilla, OpenCellID, or lacells.db.
 
 List of backends for (reverse) geocoding:
