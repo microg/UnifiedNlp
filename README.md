@@ -88,13 +88,13 @@ Note that you need to add [UnifiedNlpApi](https://github.com/microg/android_exte
 
 Attribution
 -----------
-Some components: Copyright © 2013 The Android Open Source Project
+Some components: Copyright (C) 2013 The Android Open Source Project
 
 `compat`-folder is extracted from different AOSP versions for cross-version compatibility
 
 License
 -------
-    Copyright © 2013-2016 microG Project Team
+    Copyright (C) 2013-2016 microG Project Team
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
