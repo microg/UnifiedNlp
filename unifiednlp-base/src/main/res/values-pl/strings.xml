@@ -31,4 +31,31 @@
     </string>
     <string name="perm_force_coarse_location_label">wymuś przybliżoną lokalizację</string>
     <string name="perm_force_coarse_location_desc">Wymuś rapotowanie przez dostawcę lokalizacji opartej o sieć</string>
+	
+	 <string name="self_check_cat_nlpcompat">Wsparcie dla dostawcy lokalizacji opartej o sieć</string>
+    <string name="self_check_name_system_supported">Wspierana wersja Androida:</string>
+    <string name="self_check_resolution_system_supported">Twoja wersja systemu Android nie jest oficjalnie wspierana. W gruncie rzeczy nie ma to znaczenia.</string>
+    <string name="self_check_name_nlp_package_name">System wspiera dostawcę lokalizacji:</string>
+    <string name="self_check_resolution_nlp_package_name">Twój system nie wspiera tej paczki UnifieldNlp. Albo zainstaluj odpowiednią paczkę, albo moduł kompatybilności Xposed.</string>
+
+    <string name="self_check_cat_nlp_status">Stan UnifiedNlp</string>
+    <string name="self_check_name_nlp_bound">UnifiedNlp jest zarejestrowany w systemie:</string>
+    <string name="self_check_resolution_nlp_bound">Usługa UnifieldNlp nie została powiązana z systemem. Jeżeli dopiero co zainstalowałeś UnifildNlp, powinieneś spróbować zrestartować urządzenie.</string>
+    <string name="self_check_name_nlp_setup">Usługa lokalizacji skonfigurowana:</string>
+    <string name="self_check_resolution_nlp_setup">Zainstaluj i skonfiguruj usługę dostawcy lokalizacji UnifieldNlp, aby móc korzystać z lokalizacji opartej na sieć.</string>
+    <string name="self_check_name_last_location">UnifiedNlp określił lokalizację:</string>
+    <string name="self_check_resolution_last_location">UnifiedNlp nie określił ostatnio lokalizacji. To sprawi problemy w niektórych aplikacjach.</string>
+    <string name="self_check_name_nlp_is_providing">UnifiedNlp dostarcza aktualizacje lokalizacji:</string>
+    <string name="self_check_resolution_nlp_is_providing">Nie została dostarczona żadna lokalizacja UnifieldNlp przez system w ciągu ostatnich 10 sekund.</string>
+    <string name="self_check_name_network_enabled">Lokalizacja oparta o sieć włączona:</string>
+    <string name="self_check_resolution_network_enabled">Albo wyłączyłeś lokalizację opartą o sieć (w ustawieniach systemu), albo Twój system nie jest wspierany.</string>
+    <string name="self_check_loc_perm_missing">Uprawnienie lokalizacji nie zostało jeszcze przydzielone</string>
+
+    <string name="prefcat_about">O programie</string>
+    <string name="pref_about_title">O microG UnifiedNlp</string>
+    <string name="pref_about_summary">Informacje o wersji i użytych bibliotekach</string>
+    
+    <string name="nlp_version_default">dla nowszych systemów bez GAPPS</string>
+    <string name="nlp_version_legacy">dla starszych systemów bez GAPPS</string>
+    <string name="nlp_version_custom">dla dostosowanych systemów</string>
 </resources>
