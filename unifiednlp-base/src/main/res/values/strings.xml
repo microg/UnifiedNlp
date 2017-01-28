@@ -61,4 +61,11 @@
     <string name="nlp_version_default">for default systems without GAPPS</string>
     <string name="nlp_version_legacy">for legacy systems without GAPPS</string>
     <string name="nlp_version_custom">for custom systems</string>
+
+    <string name="self_check_geocoder_no_location">UnifiedNlp do not have Location to test Geocoder</string>
+    <string name="self_check_geocoder_verify_backend">Please verify your location Backend</string>
+
+    <string name="self_check_name_nlp_geocoder_is_providing_addresses">Geocoder provide address resolution from location:</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address">Geocoder did not provide address resolution. Please install and configure an address lookup Backend.</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address_timeout">Geocoder did not provide address resolution within 10 seconds.</string>
 </resources>
