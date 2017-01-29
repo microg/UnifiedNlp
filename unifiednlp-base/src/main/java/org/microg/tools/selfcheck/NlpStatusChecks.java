@@ -17,6 +17,7 @@
 package org.microg.tools.selfcheck;
 
 import android.content.Context;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,6 +28,8 @@ import org.microg.nlp.Preferences;
 import org.microg.nlp.R;
 import org.microg.nlp.location.AbstractLocationService;
 
+import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -37,6 +40,8 @@ import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Positive;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Unknown;
 
 public class NlpStatusChecks implements SelfCheckGroup {
+    private Location mLastLocation;
+
     @Override
     public String getGroupName(Context context) {
         return context.getString(R.string.self_check_cat_nlp_status);
@@ -49,6 +54,7 @@ public class NlpStatusChecks implements SelfCheckGroup {
         if (isNetworkLocationEnabled(context, collector)) {
             isProvidingLastLocation(context, collector);
             isProvidingLocation(context, collector);
+            isGeocoderProvideAddress(context, collector);
         }
     }
 
@@ -81,6 +87,11 @@ public class NlpStatusChecks implements SelfCheckGroup {
                     location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT);
             collector.addResult(context.getString(R.string.self_check_name_last_location),
                     hasKnown ? Positive : Unknown, context.getString(R.string.self_check_resolution_last_location));
+
+            if (hasKnown) {
+                mLastLocation = location;
+            }
+
             return hasKnown;
         } catch (SecurityException e) {
             collector.addResult(context.getString(R.string.self_check_name_last_location), Unknown, context.getString(R.string.self_check_loc_perm_missing));
@@ -100,7 +111,8 @@ public class NlpStatusChecks implements SelfCheckGroup {
                     } catch (InterruptedException e) {
                     }
                     collector.addResult(context.getString(R.string.self_check_name_nlp_is_providing),
-                            result.get() ? Positive : Unknown, context.getString(R.string.self_check_resolution_nlp_is_providing));
+                            result.get() ? Positive : Unknown,
+                            context.getString(R.string.self_check_resolution_nlp_is_providing));
                 }
             }
         }).start();
@@ -112,6 +124,7 @@ public class NlpStatusChecks implements SelfCheckGroup {
                         result.set(location != null && location.getExtras() != null &&
                                 location.getExtras().containsKey(LOCATION_EXTRA_BACKEND_COMPONENT));
                         result.notifyAll();
+                        mLastLocation = location;
                     }
                 }
 
@@ -130,5 +143,64 @@ public class NlpStatusChecks implements SelfCheckGroup {
         } catch (SecurityException e) {
             collector.addResult(context.getString(R.string.self_check_name_last_location), Unknown, context.getString(R.string.self_check_loc_perm_missing));
         }
+    }
+
+    private void isGeocoderProvideAddress(final Context context, final ResultCollector collector) {
+        if (mLastLocation == null) {
+            collector.addResult(
+                    context.getString(R.string.self_check_geocoder_no_location),
+                    Negative,
+                    context.getString(R.string.self_check_geocoder_verify_backend));
+            return;
+        }
+
+        final AtomicBoolean result = new AtomicBoolean(false);
+        final AtomicBoolean timeout = new AtomicBoolean(true);
+
+        final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (result) {
+                    try {
+                        result.wait(10000);
+                    } catch (InterruptedException ignored) {
+                    }
+
+                    if (timeout.get()) {
+                        collector.addResult(
+                                context.getString(R.string.self_check_name_nlp_geocoder_is_providing_addresses),
+                                Unknown,
+                                context.getString(R.string.self_check_resolution_nlp_geocoder_no_address_timeout));
+                    } else {
+                        collector.addResult(
+                                context.getString(R.string.self_check_name_nlp_geocoder_is_providing_addresses),
+                                result.get() ? Positive : Negative,
+                                context.getString(R.string.self_check_resolution_nlp_geocoder_no_address));
+                    }
+                }
+            }
+        }).start();
+
+        // Threaded Geocoder Request
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (result) {
+                    try {
+                        geocoder.getFromLocation(
+                                mLastLocation.getLatitude(),
+                                mLastLocation.getLongitude(),
+                                1);
+                        result.set(true);
+                    } catch (IOException e) {
+                        result.set(false);
+                    }
+                    timeout.set(false);
+                    result.notifyAll();
+                }
+            }
+        }).start();
     }
 }
