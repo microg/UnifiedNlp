@@ -30,7 +30,7 @@
         Włącz, wyłącz i skonfiguruj usługi wyszukiwania adresów.
     </string>
     <string name="perm_force_coarse_location_label">wymuś przybliżoną lokalizację</string>
-    <string name="perm_force_coarse_location_desc">Wymuś rapotowanie przez dostawcę lokalizacji opartej o sieć</string>
+    <string name="perm_force_coarse_location_desc">Wymuś raportowanie przez dostawcę lokalizacji opartej o sieć</string>
 	
 	 <string name="self_check_cat_nlpcompat">Wsparcie dla dostawcy lokalizacji opartej o sieć</string>
     <string name="self_check_name_system_supported">Wspierana wersja Androida:</string>
@@ -58,4 +58,12 @@
     <string name="nlp_version_default">dla nowszych systemów bez GAPPS</string>
     <string name="nlp_version_legacy">dla starszych systemów bez GAPPS</string>
     <string name="nlp_version_custom">dla dostosowanych systemów</string>
+	
+	<string name="self_check_geocoder_no_location">UnifiedNlp nie dysponuje pozycją, aby sprawdzić usługę wyszukiwania adresów</string>
+    <string name="self_check_geocoder_verify_backend">Proszę skontrolować usługę geolokalizacji</string>
+
+    <string name="self_check_name_nlp_geocoder_is_providing_addresses">Usługa wyszukiwania adresów znalazła adres:</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address">Nie można odczytać adresu. Prosimy zainstalować i skonfigurować usługę wyszukiwania adresów.</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address_timeout">Usługa wyszukiwania adresów nie dostarczyła adresu w ciągu 10 sekund.</string>
+	
 </resources>
