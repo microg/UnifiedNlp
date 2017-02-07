@@ -25,5 +25,5 @@ if (!sdkDir) {
 
 sourceSets.main {
     java.srcDirs = ['src/current/java', 'src/v9/java']
-    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-24/android.jar")
+    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-25/android.jar")
 }
