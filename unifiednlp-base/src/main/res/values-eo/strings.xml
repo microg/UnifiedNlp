@@ -27,7 +27,7 @@
         Aktivigu, malaktivigu kaj agordu subservojn por ret-bazita pozici-trovado.
     </string>
     <string name="configure_geocoder_backends_summary">
-        Aktivigu, malaktivigu kaj agordu subservojn por elsrerĉado de adresoj.
+        Aktivigu, malaktivigu kaj agordu subservojn por elserĉado de adresoj.
     </string>
     <string name="perm_force_coarse_location_label">devigi proksimuman pozicion</string>
     <string name="perm_force_coarse_location_desc">Devigas al ret-bazita liverilo de pozicio raporti certan pozicion</string>
@@ -58,4 +58,12 @@
     <string name="nlp_version_default">por normaj sistemoj sen GAPPS</string>
     <string name="nlp_version_legacy">por malnovaj sistemoj sen GAPPS</string>
     <string name="nlp_version_custom">por tajloritaj sistemoj</string>
+	
+    <string name="self_check_geocoder_no_location">UnifiedNlp ne konas pozicion por testi adres-trovan subservon</string>
+    <string name="self_check_geocoder_verify_backend">Bonvolu kontroli vian pozici-trovan subservon</string>
+
+    <string name="self_check_name_nlp_geocoder_is_providing_addresses">Adres-trova servo liveras adreson el la pozicio:</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address">Ne povas trovi adreson. Bonvolu instali kaj agordi adres-trovan subservon.</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address_timeout">Adres-trova subservo ne liveris adreson dum 10 sekundoj.</string>
+	
 </resources>
