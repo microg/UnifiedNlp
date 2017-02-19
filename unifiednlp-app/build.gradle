@@ -51,6 +51,9 @@ android {
         versionCode(20000 + getMyVersionCode())
         minSdkVersion androidMinSdk()
         targetSdkVersion androidTargetSdk()
+        jackOptions {
+            enabled true
+        }
     }
 
     productFlavors {
