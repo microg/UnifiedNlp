@@ -31,4 +31,5 @@
     </string>
     <string name="perm_force_coarse_location_label">impunere locație aproximativă</string>
     <string name="perm_force_coarse_location_desc">Se impune furnizorului de locaţie bazată pe reţea să raporteze o anumită locație</string>
-</resources>
+
+    </resources>

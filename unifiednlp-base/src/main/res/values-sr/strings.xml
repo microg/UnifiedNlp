@@ -54,7 +54,7 @@
     <string name="prefcat_about">О програму</string>
     <string name="pref_about_title">О микроГ Обједињеном МПЛ-у</string>
     <string name="pref_about_summary">Подаци о издању и коришћеним библиотекама</string>
-    
+
     <string name="nlp_version_default">за преподешене системе без Гуглових апликација</string>
     <string name="nlp_version_legacy">за застареле системе без Гуглових апликација</string>
     <string name="nlp_version_custom">за прилагођене системе</string>

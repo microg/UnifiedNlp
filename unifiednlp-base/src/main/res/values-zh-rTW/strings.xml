@@ -54,7 +54,7 @@
     <string name="prefcat_about">關於</string>
     <string name="pref_about_title">關於microG UnifiedNlp</string>
     <string name="pref_about_summary">版本資訊和使用的程式庫</string>
-    
+
     <string name="nlp_version_default">給沒有GAPPS的支援系統</string>
     <string name="nlp_version_legacy">給沒有GAPPS的舊系統</string>
     <string name="nlp_version_custom">給第三方系統</string>

@@ -31,8 +31,8 @@
     </string>
     <string name="perm_force_coarse_location_label">wymuś przybliżoną lokalizację</string>
     <string name="perm_force_coarse_location_desc">Wymuś raportowanie przez dostawcę lokalizacji opartej o sieć</string>
-	
-	 <string name="self_check_cat_nlpcompat">Wsparcie dla dostawcy lokalizacji opartej o sieć</string>
+
+    <string name="self_check_cat_nlpcompat">Wsparcie dla dostawcy lokalizacji opartej o sieć</string>
     <string name="self_check_name_system_supported">Wspierana wersja Androida:</string>
     <string name="self_check_resolution_system_supported">Twoja wersja systemu Android nie jest oficjalnie wspierana. W gruncie rzeczy nie ma to znaczenia.</string>
     <string name="self_check_name_nlp_package_name">System wspiera dostawcę lokalizacji:</string>
@@ -54,16 +54,15 @@
     <string name="prefcat_about">O programie</string>
     <string name="pref_about_title">O microG UnifiedNlp</string>
     <string name="pref_about_summary">Informacje o wersji i użytych bibliotekach</string>
-    
+
     <string name="nlp_version_default">dla nowszych systemów bez GAPPS</string>
     <string name="nlp_version_legacy">dla starszych systemów bez GAPPS</string>
     <string name="nlp_version_custom">dla dostosowanych systemów</string>
-	
-	<string name="self_check_geocoder_no_location">UnifiedNlp nie dysponuje pozycją, aby sprawdzić usługę wyszukiwania adresów</string>
+
+    <string name="self_check_geocoder_no_location">UnifiedNlp nie dysponuje pozycją, aby sprawdzić usługę wyszukiwania adresów</string>
     <string name="self_check_geocoder_verify_backend">Proszę skontrolować usługę geolokalizacji</string>
 
     <string name="self_check_name_nlp_geocoder_is_providing_addresses">Usługa wyszukiwania adresów znalazła adres:</string>
     <string name="self_check_resolution_nlp_geocoder_no_address">Nie można odczytać adresu. Prosimy zainstalować i skonfigurować usługę wyszukiwania adresów.</string>
     <string name="self_check_resolution_nlp_geocoder_no_address_timeout">Usługa wyszukiwania adresów nie dostarczyła adresu w ciągu 10 sekund.</string>
-	
 </resources>
