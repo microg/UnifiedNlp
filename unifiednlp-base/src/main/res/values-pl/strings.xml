@@ -24,11 +24,9 @@
     <string name="geocoding">Wyszukiwanie adresów</string>
     <string name="configure_backends">Konfiguruj usługi</string>
     <string name="configure_location_backends_summary">
-        Włącz, wyłącz i skonfiguruj usługi geolokalizacji opartej o sieć.
-    </string>
+Włącz, wyłącz i skonfiguruj usługi geolokalizacji opartej o sieć.</string>
     <string name="configure_geocoder_backends_summary">
-        Włącz, wyłącz i skonfiguruj usługi wyszukiwania adresów.
-    </string>
+Włącz, wyłącz i skonfiguruj usługi wyszukiwania adresów.  </string>
     <string name="perm_force_coarse_location_label">wymuś przybliżoną lokalizację</string>
     <string name="perm_force_coarse_location_desc">Wymuś raportowanie przez dostawcę lokalizacji opartej o sieć</string>
 

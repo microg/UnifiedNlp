@@ -24,11 +24,9 @@
     <string name="geocoding">Adres-elserĉado</string>
     <string name="configure_backends">Agordi subservojn</string>
     <string name="configure_location_backends_summary">
-        Aktivigu, malaktivigu kaj agordu subservojn por ret-bazita pozici-trovado.
-    </string>
+Aktivigu, malaktivigu kaj agordu subservojn por ret-bazita pozici-trovado.   </string>
     <string name="configure_geocoder_backends_summary">
-        Aktivigu, malaktivigu kaj agordu subservojn por elserĉado de adresoj.
-    </string>
+Aktivigu, malaktivigu kaj agordu subservojn por elserĉado de adresoj.</string>
     <string name="perm_force_coarse_location_label">devigi proksimuman pozicion</string>
     <string name="perm_force_coarse_location_desc">Devigas al ret-bazita liverilo de pozicio raporti certan pozicion</string>
 
