@@ -18,8 +18,8 @@
     <string name="nlp_app_name">UnifiedNlp</string>
     <string name="nlp_settings_label">Настройки UnifiedNlp</string>
     <string name="add_backend">Добавить backend-программу</string>
-    <string name="configure_location_backends">Настроить программы определения местоположения</string>
-    <string name="configure_geocoder_backends">Настроить программы поиска адреса</string>
+    <string name="configure_location_backends">Backend-программы определения местоположения</string>
+    <string name="configure_geocoder_backends">Backend-программы поиска адреса</string>
     <string name="network_location">Местоположение по сети</string>
     <string name="geocoding">Поиск адреса</string>
     <string name="configure_backends">Настроить backend-программы</string>
@@ -46,7 +46,7 @@
     <string name="self_check_name_last_location">UnifiedNlp знает ваше местоположение:</string>
     <string name="self_check_resolution_last_location">UnifiedNlp не знает вашего местоположения. Это может вызвать ошибки в некоторых приложениях.</string>
     <string name="self_check_name_nlp_is_providing">UnifiedNlp обеспечивает обновление местоположения:</string>
-    <string name="self_check_resolution_nlp_is_providing">UnifiedNlp-местоположение не было предоставлено системой в течение 10 секунд.</string>
+    <string name="self_check_resolution_nlp_is_providing">Местоположение не было предоставлено системой в течение 10 секунд.</string>
     <string name="self_check_name_network_enabled">Местоположение по сети включено:</string>
     <string name="self_check_resolution_network_enabled">Отключено нахождение местоположение по сети (в настройках системы) или система не поддерживается.</string>
     <string name="self_check_loc_perm_missing">Разрешение на доступ к местоположению еще не предоставлено.</string>
@@ -58,5 +58,12 @@
     <string name="nlp_version_default">для прошивок по умолчанию без GAPPS</string>
     <string name="nlp_version_legacy">для устаревших прошивок без GAPPS</string>
     <string name="nlp_version_custom">для кастомных прошивок</string>
+	
+	<string name="self_check_geocoder_no_location">UnifiedNlp не имеет местоположения для тестирования геокодера</string>
+    <string name="self_check_geocoder_verify_backend">Пожалуйста, проверьте backend-программы определения местоположения</string>
+	
+	<string name="self_check_name_nlp_geocoder_is_providing_addresses">Геокодер предоставляет анализ адреса из местоположения:</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address">Геокодер не предоставляет анализ адреса. Пожалуйста, установите и настройте программу-backend для поиска адреса.</string>
+    <string name="self_check_resolution_nlp_geocoder_no_address_timeout">>Геокодер не предоставляет анализ адреса в течении 10 секунд.</string>
 
 </resources>
