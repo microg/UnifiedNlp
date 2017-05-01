@@ -65,6 +65,11 @@ android {
             applicationId = 'org.microg.nlp'
         }
     }
+
+    lintOptions {
+        disable 'MissingTranslation', 'InvalidPackage', 'BatteryLife', 'ImpliedQuantity', 'MissingQuantity'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
     }
