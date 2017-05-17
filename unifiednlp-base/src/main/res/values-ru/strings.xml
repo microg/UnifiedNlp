@@ -48,7 +48,7 @@
     <string name="self_check_name_nlp_is_providing">UnifiedNlp обеспечивает обновление местоположения:</string>
     <string name="self_check_resolution_nlp_is_providing">Местоположение не было предоставлено системой в течение 10 секунд.</string>
     <string name="self_check_name_network_enabled">Местоположение по сети включено:</string>
-    <string name="self_check_resolution_network_enabled">Отключено нахождение местоположение по сети (в настройках системы) или система не поддерживается.</string>
+    <string name="self_check_resolution_network_enabled">Отключено нахождение местоположения по сети (в настройках системы) или система не поддерживается.</string>
     <string name="self_check_loc_perm_missing">Разрешение на доступ к местоположению еще не предоставлено.</string>
 
     <string name="prefcat_about">О программе</string>
