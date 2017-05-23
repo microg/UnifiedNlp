@@ -32,9 +32,6 @@
     <string name="perm_force_coarse_location_label">强制启用精确定位</string>
     <string name="perm_force_coarse_location_desc">强制基于网络的位置提供商回应一个准确的位置</string>
 
-    <string name="pref_location_backends" translatable="false">location_backends</string>
-    <string name="pref_geocoder_backends" translatable="false">geocoder_backends</string>
-
     <string name="self_check_cat_nlpcompat">网络位置提供商支持</string>
     <string name="self_check_name_system_supported">Android支持版本：</string>
     <string name="self_check_resolution_system_supported">您的Android版本不被官方支持。这没什么。</string>
