@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 microG Project Team
+ * Copyright (C) 2013-2017 microG Project Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class Preferences {
         try {
             info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
         } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
+            return null;
         }
         if (info != null && info.signatures != null && info.signatures.length > 0) {
             for (Signature sig : info.signatures) {
