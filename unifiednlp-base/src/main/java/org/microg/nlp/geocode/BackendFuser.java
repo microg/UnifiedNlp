@@ -27,7 +27,7 @@ import java.util.List;
 
 import static org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND;
 
-class BackendFuser {
+public class BackendFuser {
     private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
     private final Context context;
 

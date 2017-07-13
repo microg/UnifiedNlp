@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="org.microg.nlp.standalone"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.INSTALL_LOCATION_PROVIDER"
+        tools:ignore="ProtectedPermissions"
+        tools:node="remove" />
+            
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_nlp_app"
+        android:label="@string/nlp_app_name">
+
+        <uses-library android:name="com.android.location.provider"
+                      tools:node="remove" />
+        
+        <service
+            android:name="org.microg.nlp.location.LocationServiceV1"
+            tools:node="remove" />
+        
+        <service
+            android:name="org.microg.nlp.location.LocationServiceV2"
+            tools:node="remove" />
+        
+        <service
+            android:name="org.microg.nlp.geocode.GeocodeServiceV1"
+            tools:node="remove" />
+        
+        <activity
+            android:name=".ui.SettingsActivity"
+            tools:node="remove" />
+        
+        <activity
+            android:name="org.microg.nlp.ui.SettingsActivity"
+            tools:node="remove" />
+        
+        <receiver android:name="org.microg.nlp.PackageReceiver"
+                  tools:node="remove" />
+        
+        <activity
+            android:name="org.microg.nlp.ui.SettingsLauncherActivity"
+            android:icon="@mipmap/ic_nlp_settings"
+            android:label="@string/nlp_app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="org.microg.nlp.ui.StandaloneSettingsActivity"
+            android:icon="@mipmap/ic_nlp_settings"
+            android:label="@string/nlp_settings_label"
+            android:theme="@style/Theme.AppCompat.Settings"/>
+        
+        <service android:name=".selfcheck.StandaloneNlpStatusChecks">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCATION_UPDATE" />
+            </intent-filter>
+        </service>
+        
+        <service android:name=".service.UnifiedNlpLocationManager"
+                 android:exported="true"
+                 android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.START_LOCATION_UPDATE" />
+            </intent-filter>
+        </service>
+        
+        <receiver android:name="org.microg.nlp.StandalonePackageReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+                <action android:name="android.intent.action.PACKAGE_UPGRADED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_RESTARTED"/>
+
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+        
+    </application>
+</manifest>
