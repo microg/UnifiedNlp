@@ -10,6 +10,17 @@ Installation
 ------------
 Release builds may be found on the [release page](https://github.com/microg/android_packages_apps_UnifiedNlp/releases).
 
+Unified Network Location Provider is provided in 3 variants:
+* NetworkLocation.apk – for the usual configuration of Android 4.4+ without GApps
+* LegacyNetworkLocation.apk – for the usual configuration of Android 2.3 - 4.3.1 without GApps
+* UnifiedNlp.apk – for Android WITH Gapps
+
+Keep in mind that:
+* All three variants are available on F-Droid as well, but they use different apk names (have a look at app description on F-Droid to check which version to use).
+* There is another repo containing the [deprecated version](https://github.com/microg/NetworkLocation) of NetworkLocation.apk without the plug-in system.
+* [microG GmsCore](https://github.com/microg/android_packages_apps_GmsCore/wiki) project already includes the Unified Network Location Provider.
+
+
 ### Android 4.4 - 7.1.1 (KitKat / Lollipop / Marshmallow / Nougat)
 Most modern ROMs come with support for non-Google geolocation providers. On these systems installation is easy:
 
