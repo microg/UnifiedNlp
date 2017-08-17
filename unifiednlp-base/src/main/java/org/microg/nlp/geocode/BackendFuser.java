@@ -48,6 +48,14 @@ public class BackendFuser {
         }
     }
 
+    public boolean haveAllHelpersBackend() {
+        boolean hasAllHelpersBackend = true;
+        for (BackendHelper backendHelper : backendHelpers) {
+            hasAllHelpersBackend &= backendHelper.hasBackend();
+        }
+        return hasAllHelpersBackend;
+    }
+    
     public List<Address> getFromLocation(double latitude, double longitude, int maxResults,
                                          String locale) {
         if (backendHelpers.isEmpty())

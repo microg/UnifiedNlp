@@ -31,6 +31,8 @@ public class UnifiedNlpLocationManager extends Service {
     private List<LocationBackend> backends = new ArrayList<LocationBackend>();
     
     private String destinationPackageName;
+    private boolean resolveAddress;
+    private Location inputLocation;
         
     @Override
     public void onCreate() {
@@ -43,16 +45,26 @@ public class UnifiedNlpLocationManager extends Service {
         super.onStartCommand(intent, flags, startId);
         if (intent.getExtras() != null) {
             destinationPackageName = intent.getExtras().getString("destinationPackageName");
+            resolveAddress = intent.getExtras().getBoolean("resolveAddress");
+            inputLocation = intent.getExtras().getParcelable("location");
         }
         bindAndEnableBackends();
-        sendUpdateToLocationBackends();
+        if (inputLocation != null) {
+            processUpdateOfLocation(inputLocation);
+        } else {
+            sendUpdateToLocationBackends();
+        }
         return START_STICKY;
     }
     
     private void bindAndEnableBackends() {
-        if (backends.size() > 0) {
+        if ((backends.size() > 0) && (backendFuser != null) && backendFuser.haveAllHelpersBackend()) {
             return;
         }
+        for (BackendInfo bi: queryKnownBackends()) {
+            enableBackend(bi);
+        }
+        
         for (String backend : Preferences
                 .splitBackendString(new Preferences(getBaseContext()).getLocationBackends())) {
             String[] parts = backend.split("/");
@@ -86,7 +98,7 @@ public class UnifiedNlpLocationManager extends Service {
                 IBinder service) {
             LocationBackend locationBackend = LocationBackend.Stub.asInterface(service);
             try {
-                locationBackend.open(new LocationUpdateBMAP());
+                locationBackend.open(new LocationUpdate());
             } catch (RemoteException re) {
                 re.printStackTrace();
             }
@@ -108,20 +120,30 @@ public class UnifiedNlpLocationManager extends Service {
         }
     };
     
-    public class LocationUpdateBMAP extends LocationCallback.Stub {
+    public class LocationUpdate extends LocationCallback.Stub {
         @Override
         public void report(Location location) throws RemoteException {
+            processUpdateOfLocation(location);
+        }
+    }
+    
+    private void processUpdateOfLocation(Location location) {
+        if ((destinationPackageName == null) || ("".equals(destinationPackageName))) {
+            return;
+        }
+        Intent sendIntent = new Intent("android.intent.action.LOCATION_UPDATE");
+        sendIntent.setPackage(destinationPackageName);
+        sendIntent.putExtra("location", location);
+        if (resolveAddress) {
             List<Address> addresses = backendFuser.getFromLocation(location.getLatitude(), location.getLongitude(), 1, Locale.getDefault().getLanguage());
-            Intent sendIntent = new Intent("android.intent.action.LOCATION_UPDATE");
-            sendIntent.setPackage(destinationPackageName);
-            sendIntent.putExtra("location", location);
+        
             if ((addresses != null) && (addresses.size() > 0)) {
                 sendIntent.putExtra("addresses", addresses.get(0));
             }
-            startService(sendIntent);
         }
+        startService(sendIntent);
     }
-        
+    
     protected void enableBackend(BackendInfo backendInfo) {
         try {
                 Intent intent = buildBackendIntent();
