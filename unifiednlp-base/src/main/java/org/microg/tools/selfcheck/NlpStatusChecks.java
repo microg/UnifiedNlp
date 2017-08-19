@@ -39,7 +39,6 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import android.os.IBinder;
-import org.microg.nlp.api.Constants;
 import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Negative;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Positive;
