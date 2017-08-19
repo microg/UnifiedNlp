@@ -100,6 +100,20 @@
                 android:name="android.location.SettingInjectorService"
                 android:resource="@xml/nlp_injected_setting"/>
         </service>
+        
+        <service android:name=".service.UnifiedNlpLocationManager"
+                 android:exported="true"
+                 android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.START_LOCATION_UPDATE" />
+            </intent-filter>
+        </service>
+
+        <service android:name="org.microg.tools.selfcheck.NlpStatusChecks">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCATION_UPDATE" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".ui.SettingsActivity"

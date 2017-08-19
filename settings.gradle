@@ -2,6 +2,5 @@ include ':unifiednlp-compat'
 include ':unifiednlp-api'
 include ':unifiednlp-base'
 include ':unifiednlp-app'
-include ':unifiednlp-standalone'
 
 include ':microg-ui-tools'

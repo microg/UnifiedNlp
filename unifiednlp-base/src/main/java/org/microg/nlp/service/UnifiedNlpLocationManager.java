@@ -1,4 +1,4 @@
-package org.microg.nlp.standalone.service;
+package org.microg.nlp.service;
 
 import android.app.Service;
 import android.content.ComponentName;
