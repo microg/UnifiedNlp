@@ -64,6 +64,9 @@ android {
         UnifiedNlp {
             applicationId = 'org.microg.nlp'
         }
+        UnifiedNlpStandalone {
+            applicationId = 'org.microg.nlp'
+        }
     }
 
     lintOptions {
