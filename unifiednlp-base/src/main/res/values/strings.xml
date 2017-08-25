@@ -39,7 +39,7 @@
     <string name="self_check_name_system_supported">Android version supported:</string>
     <string name="self_check_resolution_system_supported">Your Android version is not officially supported. This does not necessarily mean anything.</string>
     <string name="self_check_name_nlp_package_name">System supports location provider:</string>
-    <string name="self_check_resolution_nlp_package_name">Your system does not support replacement of system location provider. But you CAN still USE APPS with support of INTENT DRIVEN location lookups. To replace system location provider, either install a matching package or a compatibility Xposed module.</string>
+    <string name="self_check_resolution_nlp_package_name">Your system does not support this UnifiedNlp package. Either install a matching package or a compatibility Xposed module.</string>
 
     <string name="self_check_cat_nlp_status">UnifiedNlp status</string>
     <string name="self_check_name_nlp_bound">UnifiedNlp is registered in system:</string>

@@ -26,7 +26,7 @@
         <service
             android:name="org.microg.nlp.geocode.GeocodeServiceV1"
             tools:node="remove" />
-        
+                
         <service android:name=".service.UnifiedNlpLocationManager"
                  android:exported="true"
                  android:process=":remote">

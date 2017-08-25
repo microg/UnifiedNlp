@@ -90,9 +90,7 @@ public class NlpStatusChecks extends Service implements SelfCheckGroup {
     public void doChecks(Context context, ResultCollector collector) {
         this.collector = collector;
         this.context = context;
-        SharedPreferences mSharedPreferences = context.getSharedPreferences(Constants.APP_SETTINGS_NAME,
-                Context.MODE_PRIVATE);
-        boolean osSupportsUnlp = mSharedPreferences.getBoolean(Constants.OS_SUPPORTS_UNLP, false);
+        boolean osSupportsUnlp = isSystemLocationProviderAware(context);
         if (osSupportsUnlp) {
             providerWasBound();
         }
@@ -270,5 +268,10 @@ public class NlpStatusChecks extends Service implements SelfCheckGroup {
         sendIntent.putExtra("destinationPackageName", "org.microg.nlp");
         sendIntent.putExtra("resolveAddress", true);
         context.startService(sendIntent);
+    }
+    
+    private boolean isSystemLocationProviderAware(Context context) {
+        int resId = context.getResources().getIdentifier("is_system_location_provider_aware", "bool", context.getPackageName());
+        return resId != 0 && context.getResources().getBoolean(resId);
     }
 }
