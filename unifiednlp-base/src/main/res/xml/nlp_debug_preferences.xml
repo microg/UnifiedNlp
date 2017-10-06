@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2013-2017 microG Project Team
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  tools:ignore="missingPrefix"
+                  android:key="nlp_debug_preferences">
+    <PreferenceCategory android:title="@string/debug_category_title">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="debug.to.file"
+            android:summaryOff="Don't log to file"
+            android:summaryOn="Log to file"
+            android:title="Log to file" />
+        <ListPreference
+            android:defaultValue="24"
+            android:entries="@array/log_file_lasting_entries"
+            android:entryValues="@array/log_file_lasting_values"
+            android:key="debug.file.lasting.hours"
+            android:summary="@string/log_file_lasting_summary"
+            android:title="@string/log_file_lasting_title"/>
+        <Preference android:title="@string/debug_choose_file"
+                    android:key="debug.log.file" />
+    </PreferenceCategory>
+</PreferenceScreen>
