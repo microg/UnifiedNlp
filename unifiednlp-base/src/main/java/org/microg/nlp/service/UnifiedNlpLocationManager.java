@@ -67,7 +67,7 @@ public class UnifiedNlpLocationManager extends Service {
         inputLocation = null;
         locationListener = null;
         if (intent.getExtras() != null) {
-            destinationPackageName = intent.getExtras().getString("destinationPackageName", null);
+            destinationPackageName = intent.getExtras().getString("destinationPackageName");
             if (intent.getExtras().getParcelable("locationListener") != null) {
                 locationListener = (LocationListener) intent.getExtras().getParcelable("locationListener");
             }

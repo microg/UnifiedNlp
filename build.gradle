@@ -33,7 +33,7 @@ def androidCompileSdk() { return 25 }
 
 def androidTargetSdk() { return 23 }
 
-def androidMinSdk() { return 12 }
+def androidMinSdk() { return 9 }
 
 subprojects {
     repositories {
