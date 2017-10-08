@@ -68,4 +68,14 @@
     <string name="self_check_name_nlp_geocoder_is_providing_addresses">Geocoder provides address resolution from location:</string>
     <string name="self_check_resolution_nlp_geocoder_no_address">Geocoder did not provide address resolution. Please install and configure an address lookup Backend.</string>
     <string name="self_check_resolution_nlp_geocoder_no_address_timeout">Geocoder did not provide address resolution within 10 seconds.</string>
+    <string name="debug_choose_file">Select directory for logging</string>
+    <string name="debug_category_title">Debug options</string>
+    <string name="log_file_lasting_summary">After specified number of time log file will recreated</string>
+    <string name="log_file_lasting_title">Rotation of the log file</string>
+    <string name="log_file_12_label">12 hours</string>
+    <string name="log_file_24_label">a day</string>
+    <string name="log_file_48_label">two days</string>
+    <string name="log_file_72_label">three days</string>
+    <string name="log_file_168_label">a week</string>
+    <string name="log_file_720_label">a month</string>
 </resources>

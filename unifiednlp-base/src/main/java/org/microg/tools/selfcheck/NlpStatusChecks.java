@@ -16,6 +16,7 @@
 
 package org.microg.tools.selfcheck;
 
+import android.app.Service;
 import android.content.Context;
 import android.location.Geocoder;
 import android.location.Location;
@@ -33,15 +34,53 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.content.Context.LOCATION_SERVICE;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Address;
 import static android.location.LocationManager.NETWORK_PROVIDER;
+import android.os.IBinder;
 import static org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Negative;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Positive;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Unknown;
 
-public class NlpStatusChecks implements SelfCheckGroup {
-    private Location mLastLocation;
+public class NlpStatusChecks extends Service implements SelfCheckGroup {
+    
+    private static Location mLastLocation;
+    private static ResultCollector collector;
+    private static Context context;
+    private static Address mLastAddress;
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+    
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        int ret = super.onStartCommand(intent, flags, startId);
+        if ("android.intent.action.LOCATION_UPDATE".equals(intent.getAction()) && (intent.getExtras() != null)) {
+            mLastLocation = (Location) intent.getExtras().getParcelable("location");
+            mLastAddress = (Address) intent.getExtras().getParcelable("addresses");
+            collector.addResult(getBaseContext().getString(org.microg.nlp.R.string.self_check_name_nlp_is_providing),
+                            (mLastLocation != null) ? Positive : Unknown,
+                            getBaseContext().getString(org.microg.nlp.R.string.self_check_resolution_nlp_is_providing));
+            if (mLastLocation == null) {
+                collector.addResult(
+                        getBaseContext().getString(R.string.self_check_geocoder_no_location),
+                        Negative,
+                        getBaseContext().getString(R.string.self_check_geocoder_verify_backend));
+                return ret;
+            }
+
+            collector.addResult(
+                    getBaseContext().getString(R.string.self_check_name_nlp_geocoder_is_providing_addresses),
+                    (mLastAddress != null) ? Positive : Negative,
+                    getBaseContext().getString(R.string.self_check_resolution_nlp_geocoder_no_address));
+        }
+        return ret;
+    }
+    
     @Override
     public String getGroupName(Context context) {
         return context.getString(R.string.self_check_cat_nlp_status);
@@ -49,29 +88,38 @@ public class NlpStatusChecks implements SelfCheckGroup {
 
     @Override
     public void doChecks(Context context, ResultCollector collector) {
-        providerWasBound(context, collector);
-        isLocationProviderSetUp(context, collector);
-        if (isNetworkLocationEnabled(context, collector)) {
-            isProvidingLastLocation(context, collector);
-            isProvidingLocation(context, collector);
-            isGeocoderProvideAddress(context, collector);
+        this.collector = collector;
+        this.context = context;
+        boolean osSupportsUnlp = isSystemLocationProviderAware(context);
+        if (osSupportsUnlp) {
+            providerWasBound();
+        }
+        isLocationProviderSetUp();
+        if (isNetworkLocationEnabled()) {
+            if (osSupportsUnlp) {
+                isProvidingLastLocation();
+            }
+            isProvidingLocation(!osSupportsUnlp);
+            if (osSupportsUnlp) {
+                isGeocoderProvideAddress();
+            }
         }
     }
 
-    private boolean providerWasBound(Context context, ResultCollector collector) {
+    private boolean providerWasBound() {
         collector.addResult(context.getString(R.string.self_check_name_nlp_bound),
                 AbstractLocationService.WAS_BOUND ? Positive : Negative, context.getString(R.string.self_check_resolution_nlp_bound));
         return AbstractLocationService.WAS_BOUND;
     }
 
-    private boolean isLocationProviderSetUp(Context context, ResultCollector collector) {
+    private boolean isLocationProviderSetUp() {
         boolean setupLocationProvider = !TextUtils.isEmpty(new Preferences(context).getLocationBackends());
         collector.addResult(context.getString(R.string.self_check_name_nlp_setup),
                 setupLocationProvider ? Positive : Negative, context.getString(R.string.self_check_resolution_nlp_setup));
         return setupLocationProvider;
     }
 
-    private boolean isNetworkLocationEnabled(Context context, ResultCollector collector) {
+    private boolean isNetworkLocationEnabled() {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         boolean networkEnabled = locationManager.getProviders(true).contains(NETWORK_PROVIDER);
         collector.addResult(context.getString(R.string.self_check_name_network_enabled),
@@ -79,7 +127,7 @@ public class NlpStatusChecks implements SelfCheckGroup {
         return networkEnabled;
     }
 
-    private boolean isProvidingLastLocation(Context context, ResultCollector collector) {
+    private boolean isProvidingLastLocation() {
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         try {
             Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -99,7 +147,15 @@ public class NlpStatusChecks implements SelfCheckGroup {
         }
     }
 
-    private void isProvidingLocation(final Context context, final ResultCollector collector) {
+    private void isProvidingLocation(final boolean checkByIntent) {
+        if (checkByIntent) {
+            try {
+                updateNetworkLocation();
+            } catch (SecurityException e) {
+                collector.addResult(context.getString(R.string.self_check_name_last_location), Unknown, context.getString(R.string.self_check_loc_perm_missing));
+            }
+            return;
+        }
         final AtomicBoolean result = new AtomicBoolean(false);
         LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         new Thread(new Runnable() {
@@ -145,7 +201,7 @@ public class NlpStatusChecks implements SelfCheckGroup {
         }
     }
 
-    private void isGeocoderProvideAddress(final Context context, final ResultCollector collector) {
+    private void isGeocoderProvideAddress() {
         if (mLastLocation == null) {
             collector.addResult(
                     context.getString(R.string.self_check_geocoder_no_location),
@@ -202,5 +258,20 @@ public class NlpStatusChecks implements SelfCheckGroup {
                 }
             }
         }).start();
+    }
+    
+    private void updateNetworkLocation() {
+        mLastLocation = null;
+        mLastAddress = null;
+        Intent sendIntent = new Intent("android.intent.action.START_LOCATION_UPDATE");
+        sendIntent.setPackage("org.microg.nlp");
+        sendIntent.putExtra("destinationPackageName", "org.microg.nlp");
+        sendIntent.putExtra("resolveAddress", true);
+        context.startService(sendIntent);
+    }
+    
+    private boolean isSystemLocationProviderAware(Context context) {
+        int resId = context.getResources().getIdentifier("is_system_location_provider_aware", "bool", context.getPackageName());
+        return resId != 0 && context.getResources().getBoolean(resId);
     }
 }

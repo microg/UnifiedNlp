@@ -27,7 +27,7 @@ import java.util.List;
 
 import static org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND;
 
-class BackendFuser {
+public class BackendFuser {
     private final List<BackendHelper> backendHelpers = new ArrayList<BackendHelper>();
     private final Context context;
 
@@ -48,6 +48,14 @@ class BackendFuser {
         }
     }
 
+    public boolean haveAllHelpersBackend() {
+        boolean hasAllHelpersBackend = true;
+        for (BackendHelper backendHelper : backendHelpers) {
+            hasAllHelpersBackend &= backendHelper.hasBackend();
+        }
+        return hasAllHelpersBackend;
+    }
+    
     public List<Address> getFromLocation(double latitude, double longitude, int maxResults,
                                          String locale) {
         if (backendHelpers.isEmpty())

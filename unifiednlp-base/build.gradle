@@ -49,4 +49,5 @@ dependencies {
     compile project(":microg-ui-tools")
     compile project(':unifiednlp-api')
     provided project(':unifiednlp-compat')
+    compile 'com.obsez.android.lib.filechooser:filechooser:1.1.5'
 }

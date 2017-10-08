@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.INSTALL_LOCATION_PROVIDER"
+        tools:ignore="ProtectedPermissions"
+        tools:node="remove" />
+            
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_nlp_app"
+        android:label="@string/nlp_app_name">
+
+        <uses-library android:name="com.android.location.provider"
+                      tools:node="remove" />
+        
+        <service
+            android:name="org.microg.nlp.location.LocationServiceV1"
+            tools:node="remove" />
+        
+        <service
+            android:name="org.microg.nlp.location.LocationServiceV2"
+            tools:node="remove" />
+        
+        <service
+            android:name="org.microg.nlp.geocode.GeocodeServiceV1"
+            tools:node="remove" />
+                
+        <service android:name=".service.UnifiedNlpLocationManager"
+                 android:exported="true"
+                 android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.START_LOCATION_UPDATE" />
+            </intent-filter>
+        </service>
+
+        <service android:name="org.microg.tools.selfcheck.NlpStatusChecks">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCATION_UPDATE" />
+            </intent-filter>
+        </service>
+                
+    </application>
+</manifest>
+

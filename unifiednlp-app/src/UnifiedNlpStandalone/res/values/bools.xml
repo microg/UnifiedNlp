@@ -17,5 +17,5 @@
 
 <resources>
     <bool name="is_unifiednlp_app">true</bool>
-    <bool name="is_system_location_provider_aware">true</bool>
+    <bool name="is_system_location_provider_aware">false</bool>
 </resources>
