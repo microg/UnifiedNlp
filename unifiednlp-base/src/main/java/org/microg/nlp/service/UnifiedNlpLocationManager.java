@@ -114,6 +114,7 @@ public class UnifiedNlpLocationManager extends Service {
                 backend.update();
             }
         } catch (RemoteException re) {
+            appendLog(TAG, "sendUpdateToLocationBackends:RemoteException", re);
             re.printStackTrace();
         }
     }
@@ -131,6 +132,7 @@ public class UnifiedNlpLocationManager extends Service {
             try {
                 locationBackend.open(new LocationUpdate());
             } catch (RemoteException re) {
+                appendLog(TAG, "ServiceConnection:mConnection2", re);
                 re.printStackTrace();
             }
             backends.add(locationBackend);
@@ -193,6 +195,7 @@ public class UnifiedNlpLocationManager extends Service {
                     }
                 }, BIND_AUTO_CREATE);
         } catch (Exception e) {
+            appendLog(TAG, "enableBackend:" + backendInfo, e);
             backendInfo.enabled = false;
         }
     }
