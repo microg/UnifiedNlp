@@ -15,7 +15,11 @@
   -->
 
 <manifest package="org.microg.nlp.app"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- TODO: Does it work on SDK 9? -->
+    <uses-sdk tools:overrideLibrary="com.takisoft.fix.support.v7.preference,android.support.graphics.drawable.animated,android.arch.lifecycle"  />
 
     <application
         android:allowBackup="true"

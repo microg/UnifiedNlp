@@ -93,6 +93,7 @@ public abstract class AbstractLocationService extends AbstractProviderService<Lo
         return super.onUnbind(intent);
     }
 
+    @SuppressWarnings("unchecked")
     private void updateLauncherIcon() {
         try {
             Class cls = Class.forName("org.microg.nlp.ui.SettingsLauncherActivity");

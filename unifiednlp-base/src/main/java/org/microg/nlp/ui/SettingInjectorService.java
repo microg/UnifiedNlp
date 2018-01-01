@@ -44,6 +44,7 @@ public class SettingInjectorService extends android.location.SettingInjectorServ
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected String onGetSummary() {
         return "";
     }
@@ -56,6 +57,7 @@ public class SettingInjectorService extends android.location.SettingInjectorServ
     /**
      * Dirty method to check whether settings injection is possible on the currently used system
      */
+    @SuppressWarnings("unchecked")
     public static boolean settingsInjectionPossible(Context context) {
         try {
             Context settingsContext = context.createPackageContext("com.android.settings", CONTEXT_INCLUDE_CODE);

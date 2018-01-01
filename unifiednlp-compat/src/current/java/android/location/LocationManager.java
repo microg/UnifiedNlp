@@ -44,6 +44,7 @@ import java.util.List;
  * return location results, but the update rate will be throttled and the exact
  * location will be obfuscated to a coarse level of accuracy.
  */
+@SuppressWarnings("deprecation")
 public class LocationManager {
 
     /**

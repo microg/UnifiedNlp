@@ -36,7 +36,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     lintOptions {
@@ -46,7 +47,10 @@ android {
 }
 
 dependencies {
-    compile project(":microg-ui-tools")
-    compile project(':unifiednlp-api')
-    provided project(':unifiednlp-compat')
+    implementation project(":microg-ui-tools")
+    implementation project(':unifiednlp-api')
+    implementation "com.android.support:support-v4:$supportLibraryVersion"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.takisoft.fix:preference-v7:$supportLibraryVersion.0"
+    compileOnly project(':unifiednlp-compat')
 }
