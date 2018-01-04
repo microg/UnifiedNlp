@@ -21,7 +21,19 @@ Keep in mind that:
 * [microG GmsCore](https://github.com/microg/android_packages_apps_GmsCore/wiki) project already includes the Unified Network Location Provider.
 
 
-### Android 4.4 - 7.1.1 (KitKat / Lollipop / Marshmallow / Nougat)
+### Android 7.x (Nougat)
+
+1. Download `NetworkLocation.apk`
+2. Run:
+```shell
+adb root && adb mount /system
+adb mkdir /system/priv-app/NetworkLocation/
+adb push NetworkLocation.apk /system/priv-app/NetworkLocation/
+adb reboot
+```
+3. Continue at [Usage](#usage)
+
+### Android 4.4 - 6.x (KitKat / Lollipop / Marshmallow)
 Most modern ROMs come with support for non-Google geolocation providers. On these systems installation is easy:
 
 1. Make sure that no Google geolocation tool is installed (it is usually listed as Google Play Services in Apps)
@@ -31,20 +43,26 @@ Most modern ROMs come with support for non-Google geolocation providers. On thes
 Some ROMs, especially those not based on AOSP might have problems using this method. However, if your system has root, you can try installing the hard way:
 
 1. Download `NetworkLocation.apk`
-2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `NetworkLocation.apk` to `/system/priv-app` (from your PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
-4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
-
-**Note:** On Android 7 (or later) an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch) is needed to make it working, or alternatively, you can install it in `/system/priv-app` as explained above.
+2. Run:
+```shell
+adb root && adb mount /system
+adb push NetworkLocation.apk /system/priv-app/
+adb reboot
+```
+3. Continue at [Usage](#usage)
 
 ### Android 2.3 - 4.3.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
 Older Android versions are no longer officially supported. However I still provide a legacy build, that should be compatible with those systems.
 It is required to have a rooted system to install on Jelly Bean and older.
 
 1. Download `LegacyNetworkLocation.apk`
-2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `LegacyNetworkLocation.apk` to `/system/app` (from your PC, call `adb push LegacyNetworkLocation.apk /system/app/LegacyNetworkLocation.apk`)
-4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
+2. Run:
+```shell
+adb root && adb mount /system
+adb push LegacyNetworkLocation.apk /system/app/
+adb reboot
+```
+3. Continue at [Usage](#usage)
 
 
 Usage
