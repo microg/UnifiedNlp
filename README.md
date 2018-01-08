@@ -27,7 +27,7 @@ On these systems installation is easy:
 2. Download and install `NetworkLocation.apk` as a usual app (you may need to enable "Unknown sources" in Settings->Security)
 3. Reboot and continue at [Usage](#usage)
 
-**Important:** Installing as system app will always works, instead installing as user app will only work out of the box on Android versions from 4.4 to 6.x.  
+**Important:** Installing as a system app will always work under all versions of Android, instead installing as user app will only work out of the box on Android versions from 4.4 to 6.x.  
 On Android 7 (or higher) can be used also as user app if you compile the ROM with an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch).
 
 **Note:** Android versions lower then 4.4 are no longer officially supported, however I still provide a legacy build that should be compatible with those systems.
