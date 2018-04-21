@@ -23,7 +23,7 @@
     <string name="self_check_name_system_supported">Android-versjoner som er støttet:</string>
     <string name="self_check_resolution_system_supported">Din Android-versjon er ikke offisielt støttet. Dette behøver ikke nødvendigvis å bety noe.</string>
     <string name="self_check_name_nlp_package_name">Systemet støtter posisjonsleverandører:</string>
-    <string name="self_check_resolution_nlp_package_name">Ditt system støtter ikke denne UnifiedNlp-pakken. Enten installer en samsvarende pakke, eller en kompatibilitetsmodul fra Xposed..</string>
+    <string name="self_check_resolution_nlp_package_name">Ditt system støtter ikke denne UnifiedNlp-pakken. Enten installer en samsvarende pakke, eller en kompatibilitetsmodul fra Xposed.</string>
 
     <string name="self_check_cat_nlp_status">UnifiedNlp-status</string>
     <string name="self_check_name_nlp_bound">UnifiedNlp er registrert i systemet:</string>
