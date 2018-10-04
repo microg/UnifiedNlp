@@ -23,6 +23,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -43,7 +44,7 @@ public class Preferences {
     public String getDefaultLocationBackends() {
         String defBackends = Settings.Secure.getString(context.getContentResolver(), DEFAULT_LOCATION_BACKENDS);
         defBackends = null ? "org.microg.nlp.backend.ichnaea/org.microg.nlp.backend.ichnaea.BackendService" : defBackends;
-        System.out.println("Default backend: "+defBackends);
+        Log.i("Preferences","Default backend: "+defBackends);
         return defBackends;
     }
 
