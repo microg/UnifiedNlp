@@ -42,7 +42,7 @@ public class Preferences {
 
     public String getDefaultLocationBackends() {
         String defBackends = Settings.Secure.getString(context.getContentResolver(), DEFAULT_LOCATION_BACKENDS);
-        defBackends == null ? "org.microg.nlp.backend.ichnaea/org.microg.nlp.backend.ichnaea.BackendService" : defBackends;
+        defBackends = null ? "org.microg.nlp.backend.ichnaea/org.microg.nlp.backend.ichnaea.BackendService" : defBackends;
         System.out.println("Default backend: "+defBackends);
         return defBackends;
     }
