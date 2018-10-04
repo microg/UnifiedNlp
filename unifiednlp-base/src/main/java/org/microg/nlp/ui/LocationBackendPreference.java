@@ -49,7 +49,7 @@ public class LocationBackendPreference extends AbstractBackendPreference {
 
     @Override
     protected String defaultValue() {
-        return new Preferences(getContext()).getDefaultLocationBackends();;lsakjfa;lskdjfa;ljf
+        return new Preferences(getContext()).getDefaultLocationBackends();
     }
 
     @Override
