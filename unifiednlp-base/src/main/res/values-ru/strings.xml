@@ -40,7 +40,7 @@
 
     <string name="self_check_cat_nlp_status">Статус UnifiedNlp</string>
     <string name="self_check_name_nlp_bound">UnifiedNlp зарегистрирован в системе:</string>
-    <string name="self_check_resolution_nlp_bound">Не запускаються сервисы UnifiedNlp. Если вы только что установили UnifiedNlp, то перезагрузите устройство.</string>
+    <string name="self_check_resolution_nlp_bound">Не запускаются сервисы UnifiedNlp. Если вы только что установили UnifiedNlp, то перезагрузите устройство.</string>
     <string name="self_check_name_nlp_setup">Backend-программы для местоположения настроены:</string>
     <string name="self_check_resolution_nlp_setup">Установите и настройте UnifiedNlp backend-программу для использования местоположения по сети.</string>
     <string name="self_check_name_last_location">UnifiedNlp знает ваше местоположение:</string>
