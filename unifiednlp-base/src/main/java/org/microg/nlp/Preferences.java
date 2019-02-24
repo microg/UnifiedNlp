@@ -43,7 +43,7 @@ public class Preferences {
 
     public String getDefaultLocationBackends() {
         String defBackends = Settings.Secure.getString(context.getContentResolver(), DEFAULT_LOCATION_BACKENDS);
-        return defBackends == null ? "org.microg.nlp.backend.ichnaea/org.microg.nlp.backend.ichnaea.BackendService" : defBackends;
+        return defBackends == null ? "org.fitchfamily.android.dejavu/org.fitchfamily.android.dejavu.BackendService" : defBackends;
     }
 
     public String getLocationBackends() {

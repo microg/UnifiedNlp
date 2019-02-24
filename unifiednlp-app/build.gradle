@@ -44,7 +44,6 @@ int getMyVersionCode() {
 
 android {
     compileSdkVersion androidCompileSdk()
-    buildToolsVersion "$androidBuildVersionTools"
 
     defaultConfig {
         versionName getMyVersionName()
