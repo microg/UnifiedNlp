@@ -26,7 +26,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.KITKAT;
-import static android.os.Build.VERSION_CODES.M;
+import static android.os.Build.VERSION_CODES.O_MR1;
 
 public class NlpOsCompatChecks implements SelfCheckGroup {
 
@@ -47,7 +47,7 @@ public class NlpOsCompatChecks implements SelfCheckGroup {
     }
 
     private boolean checkSystemIsSupported(Context context, ResultCollector collector) {
-        boolean isSupported = (SDK_INT >= KITKAT && SDK_INT <= M);
+        boolean isSupported = (SDK_INT >= KITKAT && SDK_INT <= O_MR1);
         collector.addResult(context.getString(R.string.self_check_name_system_supported),
                 isSupported ? Result.Positive : Result.Unknown, context.getString(R.string.self_check_resolution_system_supported));
         return isSupported;
