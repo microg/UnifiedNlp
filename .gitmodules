@@ -1,6 +1,0 @@
-[submodule "extern/UnifiedNlpApi"]
-	path = extern/UnifiedNlpApi
-	url = https://github.com/microg/android_external_UnifiedNlpApi.git
-[submodule "extern/MicroGUiTools"]
-	path = extern/MicroGUiTools
-	url = https://github.com/microg/android_external_MicroGUiTools.git
