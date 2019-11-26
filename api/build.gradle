@@ -1,0 +1,60 @@
+/*
+ * SPDX-FileCopyrightText: 2013, microG Project Team
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion androidCompileSdk
+    buildToolsVersion "$androidBuildVersionTools"
+
+    defaultConfig {
+        versionName version
+        minSdkVersion androidMinSdk
+        targetSdkVersion androidTargetSdk
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                pom {
+                    name = 'UnifiedNlp API'
+                    description = 'API interfaces and helpers to create backends for UnifiedNlp'
+                    url = 'https://github.com/microg/UnifiedNlp'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'microg'
+                            name = 'microG Team'
+                        }
+                        developer {
+                            id = 'mar-v-in'
+                            name = 'Marvin W.'
+                        }
+                    }
+                    scm {
+                        url = 'https://github.com/microg/UnifiedNlp'
+                        connection = 'scm:git:https://github.com/microg/UnifiedNlp.git'
+                        developerConnection = 'scm:git:ssh://github.com/microg/UnifiedNlp.git'
+                    }
+                }
+
+                from components.release
+            }
+        }
+    }
+}
