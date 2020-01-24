@@ -1,0 +1,18 @@
+/*
+ * SPDX-FileCopyrightText: 2013, microG Project Team
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+apply plugin: 'java'
+
+def sdkDir = System.env.ANDROID_HOME
+if (!sdkDir) {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    sdkDir = properties.getProperty('sdk.dir')
+}
+
+sourceSets.main {
+    java.srcDirs = ['src/current/java', 'src/v9/java']
+    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-$androidCompileSdk/android.jar")
+}
