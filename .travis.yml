@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2014, microg Project Team
+# SPDX-License-Identifier: CC0-1.0
+
 language: android
 sudo: false
 before_script:
@@ -11,8 +14,6 @@ android:
   components:
   - tools
   - platform-tools
-  - build-tools-27.0.3
-  - android-27
+  - build-tools-29.0.3
+  - android-29
   - extra-android-m2repository
-before_install:
- - yes | sdkmanager "platforms;android-27"

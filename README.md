@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2014, microg Project Team
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 <img src="http://i.imgur.com/hXY4lcC.png" height="42px" alt="microG" /> Unified Network Location Provider
 ==========
 [![Build Status](https://travis-ci.org/microg/android_packages_apps_UnifiedNlp.svg?branch=master)](https://travis-ci.org/microg/android_packages_apps_UnifiedNlp)
@@ -78,24 +83,12 @@ You might also take a look into existing backends, to see how they work out.
 
 Building
 --------
-UnifiedNlp can be built using Gradle. Current builds are done using Gradle 2.2, but other versions might work as well.
+UnifiedNlp can be easily built using Gradle.
 
-To build with Gradle, first download git submodules:
+    git clone https://github.com/microg/UnifiedNlp
+    cd UnifiedNlp
+    ./gradlew build
 
-	git submodule update --init
-
-AOSP Build system integration
------------------------------
-UnifiedNlp can be build as part of Android when building an Android ROM from source.
-Add this repo to your (local) manifest.xml, as well as the UnifiedNlpApi and extend the `PRODUCT_PACKAGES` variable with `NetworkLocation` for KitKat and `LegacyNetworkLocation` for Jelly Bean.
-
-You can also directly invoke the compilation of UnifiedNlp by calling `make UnifiedNlp` or `make NetworkLocation` (respectively `make LegacyNetworkLocation`) from the build system root.
-Note that you need to add [UnifiedNlpApi](https://github.com/microg/android_external_UnifiedNlpApi) and [MicroGUiTools](https://github.com/microg/android_external_MicroGUiTools) to the build system for UnifiedNlp to compile:
-```
-  <project name="microg/android_packages_apps_UnifiedNlp" path="packages/apps/UnifiedNlp" remote="github" revision="master"/>
-  <project name="microg/android_external_UnifiedNlpApi" path="external/UnifiedNlpApi" remote="github" revision="master"/>
-  <project name="microg/android_external_MicroGUiTools" path="external/MicroGUiTools" remote="github" revision="master"/>
-```
 
 Attribution
 -----------
@@ -105,7 +98,7 @@ Some components: Copyright (C) 2013 The Android Open Source Project
 
 License
 -------
-    Copyright (C) 2013-2016 microG Project Team
+    Copyright (C) 2013-2019 microG Project Team
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
