@@ -1,9 +1,0 @@
-[main]
-host = https://www.transifex.com
-lang_map = he: iw, zh_TW: zh-rTW, es_MX: es-rMX, pt_BR: pt-rBR
-
-[unifiednlp.strings]
-file_filter = unifiednlp-base/src/main/res/values-<lang>/strings.xml
-source_file = unifiednlp-base/src/main/res/values/strings.xml
-source_lang = en
-type = ANDROID
