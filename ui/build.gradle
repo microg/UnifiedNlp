@@ -1,0 +1,83 @@
+/*
+ * SPDX-FileCopyrightText: 2019, microG Project Team
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion androidCompileSdk
+    buildToolsVersion "$androidBuildVersionTools"
+    dataBinding {
+        enabled = true
+    }
+
+    defaultConfig {
+        versionName version
+        minSdkVersion Math.max(androidMinSdk, 14)
+        targetSdkVersion androidTargetSdk
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+}
+
+dependencies {
+    implementation project(':api')
+    implementation project(':client')
+
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation "androidx.fragment:fragment:$fragmentVersion"
+    implementation "androidx.recyclerview:recyclerview:$recyclerviewVersion"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                pom {
+                    name = 'UnifiedNlp UI'
+                    description = 'UnifiedNlp UI library for common configuration fragments'
+                    url = 'https://github.com/microg/UnifiedNlp'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'microg'
+                            name = 'microG Team'
+                        }
+                        developer {
+                            id = 'mar-v-in'
+                            name = 'Marvin W.'
+                        }
+                    }
+                    scm {
+                        url = 'https://github.com/microg/UnifiedNlp'
+                        connection = 'scm:git:https://github.com/microg/UnifiedNlp.git'
+                        developerConnection = 'scm:git:ssh://github.com/microg/UnifiedNlp.git'
+                    }
+                }
+
+                from components.release
+            }
+        }
+    }
+}
