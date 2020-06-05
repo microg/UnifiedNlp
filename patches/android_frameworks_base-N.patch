@@ -1,3 +1,9 @@
+Remove PackageManager.MATCH_SYSTEM_ONLY flag in ServiceWatcher
+Patch for Android 7 "Nougat"
+
+SPDX-FileCopyrightText: 2016, microg Project Team
+SPDX-License-Identifier: CC0-1.0
+
 diff --git a/services/core/java/com/android/server/ServiceWatcher.java b/services/core/java/com/android/server/ServiceWatcher.java
 index 383e25a..31ae918 100644
 --- a/services/core/java/com/android/server/ServiceWatcher.java
