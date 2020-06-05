@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2013, microG Project Team
+  ~ SPDX-License-Identifier: CC-BY-SA-4.0
+  -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="256" height="256">
+  <defs>
+    <linearGradient id="a">
+      <stop offset="0" stop-color="#6a8592"/>
+      <stop offset="1" stop-color="#627f8d"/>
+    </linearGradient>
+    <linearGradient xlink:href="#a" id="b" x1="11.98" y1="2" x2="11.98" y2="21.91" gradientUnits="userSpaceOnUse" gradientTransform="scale(10.66667)"/>
+    <filter id="c" x="-.5" y="-.5" width="2" height="2" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="1" flood-color="#000" result="flood"/>
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+      <feGaussianBlur in="composite" stdDeviation="6" result="blur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope=".2"/>
+      </feComponentTransfer>
+      <feOffset dy="6" result="offset"/>
+      <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
+    </filter>
+    <filter color-interpolation-filters="sRGB" id="d">
+      <feOffset dy="5" result="result11" in="SourceGraphic"/>
+      <feComposite operator="in" in="SourceGraphic" result="result6" in2="result11"/>
+      <feFlood flood-color="#FFF" flood-opacity=".2" result="result10"/>
+      <feBlend in="result6" result="result13" in2="result10"/>
+      <feComposite in2="SourceGraphic" operator="in" result="result2"/>
+      <feBlend result="result12" in2="SourceGraphic"/>
+      <feOffset result="result11" dy="-5" in="SourceGraphic"/>
+      <feComposite result="result6" in="result12" operator="in" in2="result11"/>
+      <feFlood result="result10" flood-opacity=".2" flood-color="#000"/>
+      <feBlend in2="result10" in="result6"/>
+      <feComposite result="result2" operator="in" in2="result12"/>
+      <feBlend in="result2" in2="result12" result="result12"/>
+    </filter>
+  </defs>
+  <path d="M207.25 138.45c.43-3.41.75-6.82.75-10.45 0-3.63-.32-7.04-.75-10.45l22.51-17.6a5.38 5.38 0 001.28-6.83l-21.33-36.9a5.36 5.36 0 00-6.51-2.35l-26.56 10.66a77.93 77.93 0 00-18.03-10.45l-4.05-28.27a5.2 5.2 0 00-5.23-4.48h-42.66a5.2 5.2 0 00-5.23 4.48l-4.05 28.27a81.95 81.95 0 00-18.03 10.45L52.8 53.87a5.2 5.2 0 00-6.5 2.34L24.95 93.12a5.26 5.26 0 001.28 6.83l22.5 17.6A84.6 84.6 0 0048 128c0 3.52.32 7.04.75 10.45l-22.51 17.6a5.38 5.38 0 00-1.28 6.83l21.33 36.9a5.36 5.36 0 006.51 2.35l26.56-10.66a77.93 77.93 0 0018.03 10.45l4.05 28.27a5.2 5.2 0 005.23 4.48h42.66a5.2 5.2 0 005.23-4.48l4.05-28.27a81.95 81.95 0 0018.03-10.45l26.56 10.66a5.2 5.2 0 006.5-2.34l21.34-36.91a5.38 5.38 0 00-1.28-6.83z" fill="url(#b)" filter="url(#c)"/>
+  <path d="M0 0h256v256H0z" fill="none"/>
+  <path d="M207.25 138.45c.43-3.41.75-6.82.75-10.45 0-3.63-.32-7.04-.75-10.45l22.51-17.6a5.38 5.38 0 001.28-6.83l-21.33-36.9a5.36 5.36 0 00-6.51-2.35l-26.56 10.66a77.93 77.93 0 00-18.03-10.45l-4.05-28.27a5.2 5.2 0 00-5.23-4.48h-42.66a5.2 5.2 0 00-5.23 4.48l-4.05 28.27a81.95 81.95 0 00-18.03 10.45L52.8 53.87a5.2 5.2 0 00-6.5 2.34L24.95 93.12a5.26 5.26 0 001.28 6.83l22.5 17.6A84.6 84.6 0 0048 128c0 3.52.32 7.04.75 10.45l-22.51 17.6a5.38 5.38 0 00-1.28 6.83l21.33 36.9a5.36 5.36 0 006.51 2.35l26.56-10.66a77.93 77.93 0 0018.03 10.45l4.05 28.27a5.2 5.2 0 005.23 4.48h42.66a5.2 5.2 0 005.23-4.48l4.05-28.27a81.95 81.95 0 0018.03-10.45l26.56 10.66a5.2 5.2 0 006.5-2.34l21.34-36.91a5.38 5.38 0 00-1.28-6.83z" fill="url(#b)" filter="url(#d)"/>
+  <path d="M152.13 87.81l-42.1 16.52 18.02 73.79 29.67 29.97.9-6.18a81.7 81.7 0 0018-10.44l26.57 10.66c2.45.96 5.25 0 6.53-2.35l19.94-34.5z" fill-opacity=".06"/>
+  <path d="M128 69.55a40.89 40.89 0 00-40.92 40.91c0 30.7 40.92 76 40.92 76s40.92-45.3 40.92-76A40.89 40.89 0 00128 69.55zm0 55.53a14.62 14.62 0 11.01-29.24 14.62 14.62 0 01-.01 29.24z" transform="matrix(.85383 0 0 .85383 18.71 18.71)" fill="#fff" filter="url(#c)"/>
+</svg>

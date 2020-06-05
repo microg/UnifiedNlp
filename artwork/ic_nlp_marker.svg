@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2013, microG Project Team
+  ~ SPDX-License-Identifier: CC-BY-SA-4.0
+  -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+  <path d="M12 2a7 7 0 00-7 7h4.5A2.5 2.5 0 0112 6.5V2z" fill="#cddc39"/>
+  <path d="M12 2v4.5A2.5 2.5 0 0114.5 9H19a7 7 0 00-7-7z" fill="#009688"/>
+  <path d="M14.5 9a2.5 2.5 0 01-2.5 2.5V22s7-7.75 7-13h-4.5z" fill="#e91e63"/>
+  <path d="M5 9c0 5.25 7 13 7 13V11.5A2.5 2.5 0 019.5 9H5z" fill="#ff9800"/>
+</svg>
