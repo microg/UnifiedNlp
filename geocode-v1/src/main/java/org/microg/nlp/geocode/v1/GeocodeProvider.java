@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2019, microG Project Team
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package org.microg.nlp.geocode.v1;
 
 import android.content.Context;
