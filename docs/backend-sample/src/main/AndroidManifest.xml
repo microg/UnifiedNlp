@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2013, microG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<manifest
+	package="org.microg.nlp.api.sample"
+	android:versionCode="1"
+	android:versionName="0.0.1"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<application
+		android:allowBackup="false"
+		android:label="@string/app_name">
+
+		<service
+			android:name=".SampleBackendService"
+			android:exported="true"
+			android:permission="android.permission.ACCESS_COARSE_LOCATION"
+			android:label="NLPV2-Sample">
+			<intent-filter>
+				<action android:name="org.microg.nlp.LOCATION_BACKEND" />
+			</intent-filter>
+		</service>
+
+		<service
+			android:name=".SecondSampleService"
+			android:exported="true"
+			android:permission="android.permission.ACCESS_COARSE_LOCATION"
+			android:label="NLPV2-Second">
+			<intent-filter>
+				<action android:name="org.microg.nlp.LOCATION_BACKEND" />
+			</intent-filter>
+			<meta-data
+				android:name="org.microg.nlp.BACKEND_SETTINGS_ACTIVITY"
+				android:value="org.microg.nlp.api.sample.SecondSettings" />
+		</service>
+
+		<activity
+			android:name=".SecondSettings"
+			android:exported="true"
+			android:label="Second Settings Activity" />
+
+		<service
+			android:name=".ThirdSampleService"
+			android:exported="true"
+			android:permission="android.permission.ACCESS_COARSE_LOCATION"
+			android:label="NLPV2-Random">
+			<intent-filter>
+				<action android:name="org.microg.nlp.LOCATION_BACKEND" />
+			</intent-filter>
+		</service>
+	</application>
+</manifest>
