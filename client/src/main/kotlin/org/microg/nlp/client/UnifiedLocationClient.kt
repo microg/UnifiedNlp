@@ -212,11 +212,7 @@ class UnifiedLocationClient private constructor(context: Context) {
 
     @Synchronized
     fun requestLocationUpdates(listener: LocationListener, interval: Long, count: Int) {
-        for (request in requests) {
-            if (request.listener === listener) {
-                requests.remove(request)
-            }
-        }
+        requests.removeAll(requests.filter { it.listener === listener })
         requests.add(LocationRequest(listener, interval, count))
         updateServiceInterval()
         updateBinding()
@@ -224,13 +220,7 @@ class UnifiedLocationClient private constructor(context: Context) {
 
     @Synchronized
     fun removeLocationUpdates(listener: LocationListener) {
-        for (request in requests) {
-            if (request.listener === listener) {
-                requests.remove(request)
-            }
-        }
-        updateServiceInterval()
-        updateBinding()
+        removeRequests(requests.filter { it.listener === listener })
     }
 
     private suspend fun refAndGetService(): UnifiedLocationService = suspendCoroutine { continuation -> refAndGetServiceContinued(continuation) }
@@ -293,7 +283,7 @@ class UnifiedLocationClient private constructor(context: Context) {
                 service.getFromLocationWithOptions(latitude, longitude, maxResults, locale, options, AddressContinuation(continuation))
                 configureContinuationTimeout(continuation, timeout)
             }
-        } catch (e: RemoteException) {
+        } catch (e: Exception) {
             Log.w(TAG, "Failed to request geocode", e)
             return emptyList()
         } finally {
@@ -368,7 +358,7 @@ class UnifiedLocationClient private constructor(context: Context) {
 
     suspend fun setGeocoderBackends(backends: Array<String>) {
         try {
-            refAndGetService().locationBackends = backends
+            refAndGetService().geocoderBackends = backends
         } catch (e: RemoteException) {
             Log.w(TAG, "Failed to handle request", e)
         } finally {
@@ -399,10 +389,16 @@ class UnifiedLocationClient private constructor(context: Context) {
     }
 
     @Synchronized
-    private fun removeRequest(request: LocationRequest) {
-        requests.remove(request)
-        updateServiceInterval()
-        updateBinding()
+    private fun removeRequestPendingRemoval() {
+        removeRequests(requests.filter { it.needsRemoval })
+    }
+
+    private fun removeRequests(removalNeeded: List<LocationRequest>) {
+        if (removalNeeded.isNotEmpty()) {
+            requests.removeAll(removalNeeded)
+            updateServiceInterval()
+            updateBinding()
+        }
     }
 
     @Synchronized
@@ -459,6 +455,7 @@ class UnifiedLocationClient private constructor(context: Context) {
                     for (request in requests) {
                         request.handleLocation(location)
                     }
+                    removeRequestPendingRemoval()
                 }
             }, options)
             updateServiceInterval()
@@ -501,6 +498,10 @@ class UnifiedLocationClient private constructor(context: Context) {
     private inner class LocationRequest(val listener: LocationListener, var interval: Long, var pendingCount: Int) {
         private var lastUpdate: Long = 0
 
+        private var failed: Boolean = false
+        val needsRemoval: Boolean
+            get() = pendingCount <= 0 || failed
+
         fun reset(interval: Long, count: Int) {
             this.interval = interval
             this.pendingCount = count
@@ -508,6 +509,7 @@ class UnifiedLocationClient private constructor(context: Context) {
 
         @Synchronized
         fun handleLocation(location: Location) {
+            if (needsRemoval) return
             if (lastUpdate > System.currentTimeMillis()) {
                 lastUpdate = System.currentTimeMillis()
             }
@@ -520,12 +522,9 @@ class UnifiedLocationClient private constructor(context: Context) {
                     listener.onLocation(location)
                 } catch (e: Exception) {
                     Log.w(TAG, "Listener threw uncaught exception, stopping location request", e)
-                    removeRequest(this)
+                    failed = true
                 }
 
-            }
-            if (pendingCount == 0) {
-                removeRequest(this)
             }
         }
     }

@@ -48,6 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:onClick='@{() -> fragment.onAppClicked(entry)}'
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
@@ -262,7 +263,7 @@
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
             android:paddingEnd="?attr/listPreferredItemPaddingEnd"
             android:paddingRight="?attr/listPreferredItemPaddingRight"
-            android:visibility='@{lastLocationString == null ? View.GONE : View.VISIBLE}'>
+            android:visibility='@{lastLocationString == null || lastLocationString == "" ? View.GONE : View.VISIBLE}'>
 
             <RelativeLayout
                 android:layout_width="wrap_content"

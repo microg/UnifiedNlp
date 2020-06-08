@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
+            android:clickable='@{entry != null}'
             android:clipToPadding="false"
             android:focusable="true"
             android:gravity="start|center_vertical"
@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text='@{entry.name}'
+                    android:text='@{entry.name ?? "No provider installed"}'
                     android:textAppearance="?android:attr/textAppearanceListItem"
                     tools:text="Mozilla Location Service" />
             </RelativeLayout>
@@ -86,7 +86,8 @@
             android:gravity="start|center_vertical"
             android:orientation="horizontal"
             android:paddingTop="16dp"
-            android:paddingBottom="16dp">
+            android:paddingBottom="16dp"
+            android:visibility='@{entry == null ? View.GONE : View.VISIBLE}'>
 
             <View
                 android:layout_width="1dp"
@@ -99,7 +100,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:minWidth="64dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility='@{entry == null ? View.GONE : View.VISIBLE}'>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="match_parent"

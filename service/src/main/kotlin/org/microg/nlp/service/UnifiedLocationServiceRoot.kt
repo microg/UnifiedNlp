@@ -152,7 +152,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
 
     override fun setGeocoderBackends(backends: Array<String>) {
         if (Binder.getCallingUid() != myUid()) throw SecurityException("Only allowed from same UID")
-        Preferences(service).locationBackends = backends
+        Preferences(service).geocoderBackends = backends
         reloadPreferences()
     }
 

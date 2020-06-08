@@ -62,6 +62,9 @@ class BackendInfo(val context: Context, val serviceInfo: ServiceInfo, val type: 
     val settingsActivity: String? by lazy { serviceInfo.metaData?.getString(Constants.METADATA_BACKEND_SETTINGS_ACTIVITY) }
     val aboutActivity: String? by lazy { serviceInfo.metaData?.getString(Constants.METADATA_BACKEND_ABOUT_ACTIVITY) }
 
+    override fun equals(other: Any?): Boolean {
+        return other is BackendInfo && other.name == name && other.enabled == enabled && other.appName == appName && other.unsignedComponent == unsignedComponent && other.backendSummary == backendSummary
+    }
 }
 
 enum class BackendType { LOCATION, GEOCODER }
