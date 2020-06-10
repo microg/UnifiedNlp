@@ -88,7 +88,13 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details) {
     override fun onResume() {
         super.onResume()
         binding.switchWidget.trackTintList = switchBarTrackTintColor
+        UnifiedLocationClient[requireContext()].ref()
         lifecycleScope.launchWhenStarted { initContent(createBackendInfo()) }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        UnifiedLocationClient[requireContext()].unref()
     }
 
     private suspend fun initContent(entry: BackendInfo?) {
@@ -185,26 +191,21 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details) {
     }
 
     private suspend fun createBackendInfo(): BackendInfo? {
-        val activity = activity ?: return null
-        val intent = activity.intent ?: return null
-        val type = BackendType.values().find { it.name == intent.getStringExtra(EXTRA_TYPE) }
+        val type = BackendType.values().find { it.name == arguments?.getString("type") }
                 ?: return null
-        val packageName = intent.getStringExtra(EXTRA_PACKAGE) ?: return null
-        val name = intent.getStringExtra(EXTRA_NAME) ?: return null
-        val serviceInfo = activity.packageManager.getServiceInfo(ComponentName(packageName, name), GET_META_DATA)
+        val packageName = arguments?.getString("package") ?: return null
+        val name = arguments?.getString("name") ?: return null
+        val serviceInfo = context?.packageManager?.getServiceInfo(ComponentName(packageName, name), GET_META_DATA)
                 ?: return null
         val enabledBackends = when (type) {
-            GEOCODER -> UnifiedLocationClient[activity].getGeocoderBackends()
-            LOCATION -> UnifiedLocationClient[activity].getLocationBackends()
+            GEOCODER -> UnifiedLocationClient[requireContext()].getGeocoderBackends()
+            LOCATION -> UnifiedLocationClient[requireContext()].getLocationBackends()
         }
-        return BackendInfo(activity, serviceInfo, type, lifecycleScope, enabledBackends)
+        return BackendInfo(requireContext(), serviceInfo, type, lifecycleScope, enabledBackends)
     }
 
     companion object {
         const val ACTION = "org.microg.nlp.ui.BACKEND_DETAILS"
-        const val EXTRA_TYPE = "org.microg.nlp.ui.BackendDetailsFragment.type"
-        const val EXTRA_PACKAGE = "org.microg.nlp.ui.BackendDetailsFragment.package"
-        const val EXTRA_NAME = "org.microg.nlp.ui.BackendDetailsFragment.name"
         private const val TAG = "USettings"
         private const val WAIT_FOR_RESULT = 5000L
     }

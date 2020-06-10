@@ -5,13 +5,16 @@
 
 package org.microg.nlp.service
 
-import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context
+import android.location.Address
 import android.location.Location
 import android.os.Binder
 import android.os.Bundle
-import android.os.Process.myUid
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.microg.nlp.client.UnifiedLocationClient.Companion.PERMISSION_SERVICE_ADMIN
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -21,14 +24,14 @@ import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.min
 
-class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntryPoint) : UnifiedLocationService.Stub() {
+class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntryPoint, val coroutineScope: CoroutineScope) : UnifiedLocationService.Stub() {
     private val instances = HashMap<Int, UnifiedLocationServiceInstance>()
     private val geocoderThreads: ThreadPoolExecutor = ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.SECONDS, LinkedBlockingQueue())
     private val timer: Timer = Timer("location-requests")
     private var timerTask: TimerTask? = null
     private var lastTime: Long = 0
     val locationFuser: LocationFuser = LocationFuser(service, this)
-    val geocodeFuser: GeocodeFuser = GeocodeFuser(service)
+    val geocodeFuser: GeocodeFuser = GeocodeFuser(service, this)
     var lastReportedLocation: Location? = null
         private set
     private var interval: Long = 0
@@ -37,12 +40,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
         get() = service
 
     init {
-        try {
-            locationFuser.bind()
-            geocodeFuser.bind()
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed loading preferences", e)
-        }
+        coroutineScope.launch { reset() }
     }
 
     val instance: UnifiedLocationServiceInstance
@@ -73,17 +71,22 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     fun destroy() {
-        locationFuser.destroy()
-        geocodeFuser.destroy()
+        coroutineScope.launch {
+            locationFuser.destroy()
+            geocodeFuser.destroy()
+        }
     }
 
     @Synchronized
     fun updateLocationInterval() {
         var interval: Long = Long.MAX_VALUE
+        val sb = StringBuilder()
         for (instance in ArrayList(instances.values)) {
             val implInterval = instance.getInterval()
             if (implInterval <= 0) continue
             interval = min(interval, implInterval)
+            if (sb.isNotEmpty()) sb.append(", ")
+            sb.append("${instance.callingPackage}:${implInterval}ms")
         }
         interval = max(interval, MIN_LOCATION_INTERVAL)
 
@@ -94,11 +97,14 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
         timerTask = null
 
         if (interval < Long.MAX_VALUE) {
-            Log.d(TAG, "Set merged location interval to $interval")
+            Log.d(TAG, "Set merged location interval to $interval ($sb)")
+
             val timerTask = object : TimerTask() {
                 override fun run() {
-                    lastTime = System.currentTimeMillis()
-                    locationFuser.update()
+                    coroutineScope.launch {
+                        lastTime = System.currentTimeMillis()
+                        locationFuser.update()
+                    }
                 }
             }
             timer.scheduleAtFixedRate(timerTask, min(interval, max(0, interval - (System.currentTimeMillis() - lastTime))), interval)
@@ -109,7 +115,11 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     private fun checkLocationPermission() {
-        service.enforceCallingPermission(Manifest.permission.ACCESS_COARSE_LOCATION, "coarse location permission required")
+        service.enforceCallingPermission(ACCESS_COARSE_LOCATION, "coarse location permission required")
+    }
+
+    private fun checkAdminPermission() {
+        service.enforceCallingPermission(PERMISSION_SERVICE_ADMIN, "coarse location permission required")
     }
 
     override fun registerLocationCallback(callback: LocationCallback, options: Bundle) {
@@ -125,14 +135,34 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun getFromLocationWithOptions(latitude: Double, longitude: Double, maxResults: Int, locale: String, options: Bundle, callback: AddressCallback) {
-        geocoderThreads.execute {
-            callback.onResult(geocodeFuser.getFromLocation(latitude, longitude, maxResults, locale))
+        coroutineScope.launch {
+            val res = try {
+                geocodeFuser.getFromLocation(latitude, longitude, maxResults, locale).orEmpty()
+            } catch (e: Exception) {
+                Log.w(TAG, e)
+                emptyList<Address>()
+            }
+            try {
+                callback.onResult(res)
+            } catch (e: Exception) {
+                Log.w(TAG, e)
+            }
         }
     }
 
     override fun getFromLocationNameWithOptions(locationName: String, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String, options: Bundle, callback: AddressCallback) {
-        geocoderThreads.execute {
-            callback.onResult(geocodeFuser.getFromLocationName(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale))
+        coroutineScope.launch {
+            val res = try {
+                geocodeFuser.getFromLocationName(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale).orEmpty()
+            } catch (e: Exception) {
+                Log.w(TAG, e)
+                emptyList<Address>()
+            }
+            try {
+                callback.onResult(res)
+            } catch (e: Exception) {
+                Log.w(TAG, e)
+            }
         }
     }
 
@@ -141,7 +171,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun setLocationBackends(backends: Array<String>) {
-        if (Binder.getCallingUid() != myUid()) throw SecurityException("Only allowed from same UID")
+        checkAdminPermission();
         Preferences(service).locationBackends = backends
         reloadPreferences()
     }
@@ -151,14 +181,16 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun setGeocoderBackends(backends: Array<String>) {
-        if (Binder.getCallingUid() != myUid()) throw SecurityException("Only allowed from same UID")
+        checkAdminPermission();
         Preferences(service).geocoderBackends = backends
         reloadPreferences()
     }
 
     override fun reloadPreferences() {
-        if (Binder.getCallingUid() != myUid()) throw SecurityException("Only allowed from same UID")
-        reset()
+        checkAdminPermission();
+        coroutineScope.launch {
+            reset()
+        }
     }
 
     override fun getLastLocation(): Location? {
@@ -172,7 +204,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     @Synchronized
-    fun reset() {
+    suspend fun reset() {
         locationFuser.reset()
         locationFuser.bind()
         geocodeFuser.reset()

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2020, microG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_unlp"
+    app:startDestination="@id/backendListFragment">
+
+    <fragment
+        android:id="@+id/backendListFragment"
+        android:name="org.microg.nlp.ui.BackendListFragment"
+        android:label="Location modules">
+        <action
+            android:id="@+id/openDetails"
+            app:destination="@id/backendDetailsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/backendDetailsFragment"
+        android:name="org.microg.nlp.ui.BackendDetailsFragment"
+        android:label="Location module details">
+        <argument
+            android:name="type"
+            app:argType="string" />
+        <argument
+            android:name="package"
+            app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+    </fragment>
+</navigation>

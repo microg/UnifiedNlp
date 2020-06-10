@@ -9,6 +9,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 
 class UnifiedLocationServiceEntryPoint : Service() {
     private var root: UnifiedLocationServiceRoot? = null
@@ -31,7 +35,7 @@ class UnifiedLocationServiceEntryPoint : Service() {
         Log.d(TAG, "onBind: $intent")
         synchronized(this) {
             if (root == null) {
-                root = UnifiedLocationServiceRoot(this)
+                root = UnifiedLocationServiceRoot(this, CoroutineScope(Dispatchers.IO + Job()))
             }
             return root!!.asBinder()
         }

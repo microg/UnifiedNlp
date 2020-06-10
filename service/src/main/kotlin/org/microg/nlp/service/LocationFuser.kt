@@ -10,6 +10,8 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 import java.util.ArrayList
 import java.util.Collections
@@ -24,11 +26,7 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
     private var fusing = false
     private var lastLocationReportTime: Long = 0
 
-    init {
-        reset()
-    }
-
-    fun reset() {
+    suspend fun reset() {
         unbind()
         backendHelpers.clear()
         lastLocationReportTime = 0
@@ -39,12 +37,12 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
                 val intent = Intent(ACTION_LOCATION_BACKEND)
                 intent.setPackage(parts[0])
                 intent.setClassName(parts[0], parts[1])
-                backendHelpers.add(LocationBackendHelper(context, this, intent, if (parts.size >= 3) parts[2] else null))
+                backendHelpers.add(LocationBackendHelper(context, this, root.coroutineScope, intent, if (parts.size >= 3) parts[2] else null))
             }
         }
     }
 
-    fun unbind() {
+    suspend fun unbind() {
         for (handler in backendHelpers) {
             handler.unbind()
         }
@@ -57,12 +55,12 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
         }
     }
 
-    fun destroy() {
+    suspend fun destroy() {
         unbind()
         backendHelpers.clear()
     }
 
-    fun update() {
+    suspend fun update() {
         var hasUpdates = false
         fusing = true
         for (handler in backendHelpers) {

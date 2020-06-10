@@ -4,7 +4,9 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 
-<manifest package="org.microg.nlp.ui">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.microg.nlp.ui">
 
+    <uses-permission android:name="org.microg.nlp.SERVICE_ADMIN" />
     <application />
 </manifest>

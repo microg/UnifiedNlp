@@ -10,17 +10,17 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.net.wifi.WifiManager
 import android.os.*
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_COMPONENT
 import org.microg.nlp.api.Constants.LOCATION_EXTRA_BACKEND_PROVIDER
-import org.microg.nlp.api.LocationBackend
 import org.microg.nlp.api.LocationCallback
 
-class LocationBackendHelper(context: Context, private val locationFuser: LocationFuser, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, serviceIntent, signatureDigest) {
+class LocationBackendHelper(context: Context, private val locationFuser: LocationFuser, coroutineScope: CoroutineScope, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, coroutineScope, serviceIntent, signatureDigest) {
     private val callback = Callback()
-    private var backend: LocationBackend? = null
+    private var backend: AsyncLocationBackend? = null
     private var updateWaiting: Boolean = false
     var lastLocation: Location? = null
         private set(location) {
@@ -52,7 +52,7 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
      * @return The location reported by the backend. This may be null if a backend cannot determine its
      * location, or if it is going to return a location asynchronously.
      */
-    fun update(): Location? {
+    suspend fun update(): Location? {
         var result: Location? = null
         if (backend == null) {
             Log.d(TAG, "Not (yet) bound.")
@@ -87,7 +87,7 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
     }
 
     @Throws(RemoteException::class)
-    public override fun close() {
+    public override suspend fun close() {
         Log.d(TAG, "Calling close")
         backend!!.close()
     }
@@ -98,8 +98,8 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
         super.onServiceConnected(name, service)
-        backend = LocationBackend.Stub.asInterface(service)
-        if (backend != null) {
+        backend = AsyncLocationBackend(service, name.toShortString() + "-location-backend")
+        coroutineScope.launch {
             try {
                 Log.d(TAG, "Calling open")
                 backend!!.open(callback)
@@ -110,7 +110,6 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
                 Log.w(TAG, e)
                 unbind()
             }
-
         }
     }
 

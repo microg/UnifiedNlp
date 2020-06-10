@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="org.microg.nlp.SERVICE_ADMIN" />
 
     <application>
         <uses-library android:name="com.android.location.provider" />

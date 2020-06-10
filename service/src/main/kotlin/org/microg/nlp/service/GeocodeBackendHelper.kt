@@ -12,57 +12,55 @@ import android.location.Address
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
-import org.microg.nlp.api.GeocoderBackend
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-class GeocodeBackendHelper(context: Context, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, serviceIntent, signatureDigest) {
-    private var backend: GeocoderBackend? = null
+class GeocodeBackendHelper(context: Context, coroutineScope: CoroutineScope, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, coroutineScope, serviceIntent, signatureDigest) {
+    private var backend: AsyncGeocoderBackend? = null
 
-    fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int,
-                        locale: String): List<Address> {
+    suspend fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int,
+                                locale: String): List<Address> {
         if (backend == null) {
             Log.d(TAG, "Not (yet) bound.")
             return emptyList()
         }
         try {
-            return backend!!.getFromLocation(latitude, longitude, maxResults, locale) ?: emptyList()
+            return backend!!.getFromLocation(latitude, longitude, maxResults, locale)
         } catch (e: Exception) {
             Log.w(TAG, e)
             unbind()
             return emptyList()
         }
-
     }
 
-    fun getFromLocationName(locationName: String, maxResults: Int,
-                            lowerLeftLatitude: Double, lowerLeftLongitude: Double,
-                            upperRightLatitude: Double, upperRightLongitude: Double,
-                            locale: String): List<Address> {
+    suspend fun getFromLocationName(locationName: String, maxResults: Int,
+                                    lowerLeftLatitude: Double, lowerLeftLongitude: Double,
+                                    upperRightLatitude: Double, upperRightLongitude: Double,
+                                    locale: String): List<Address> {
         if (backend == null) {
             Log.d(TAG, "Not (yet) bound.")
             return emptyList()
         }
         try {
             return backend!!.getFromLocationName(locationName, maxResults, lowerLeftLatitude,
-                    lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale) ?: emptyList()
+                    lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale)
         } catch (e: Exception) {
             Log.w(TAG, e)
             unbind()
             return emptyList()
         }
-
     }
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
         super.onServiceConnected(name, service)
-        backend = GeocoderBackend.Stub.asInterface(service)
-        if (backend != null) {
+        backend = AsyncGeocoderBackend(service, name.toShortString() + "-geocoder-backend")
+        coroutineScope.launch {
             try {
                 backend!!.open()
             } catch (e: Exception) {
                 Log.w(TAG, e)
                 unbind()
             }
-
         }
     }
 
@@ -72,7 +70,7 @@ class GeocodeBackendHelper(context: Context, serviceIntent: Intent, signatureDig
     }
 
     @Throws(RemoteException::class)
-    public override fun close() {
+    public override suspend fun close() {
         backend!!.close()
     }
 

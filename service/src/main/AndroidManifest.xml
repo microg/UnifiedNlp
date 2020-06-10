@@ -8,7 +8,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.microg.nlp.service">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <permission
+        android:name="org.microg.nlp.SERVICE_ADMIN"
+        android:label="Configure UnifiedNlp"
+        android:protectionLevel="privileged|signature" />
+
+    <uses-permission android:name="org.microg.nlp.SERVICE_ADMIN" />
 
     <application>
         <service

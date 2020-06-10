@@ -8,17 +8,14 @@ package org.microg.nlp.service
 import android.content.Context
 import android.content.Intent
 import android.location.Address
+import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
 import java.util.ArrayList
 
-class GeocodeFuser(private val context: Context) {
+class GeocodeFuser(private val context: Context, private val root: UnifiedLocationServiceRoot) {
     private val backendHelpers = ArrayList<GeocodeBackendHelper>()
 
-    init {
-        reset()
-    }
-
-    fun reset() {
+    suspend fun reset() {
         unbind()
         backendHelpers.clear()
         for (backend in Preferences(context).geocoderBackends) {
@@ -27,7 +24,7 @@ class GeocodeFuser(private val context: Context) {
                 val intent = Intent(ACTION_GEOCODER_BACKEND)
                 intent.setPackage(parts[0])
                 intent.setClassName(parts[0], parts[1])
-                backendHelpers.add(GeocodeBackendHelper(context, intent, if (parts.size >= 3) parts[2] else null))
+                backendHelpers.add(GeocodeBackendHelper(context, root.coroutineScope, intent, if (parts.size >= 3) parts[2] else null))
             }
         }
     }
@@ -38,18 +35,18 @@ class GeocodeFuser(private val context: Context) {
         }
     }
 
-    fun unbind() {
+    suspend fun unbind() {
         for (backendHelper in backendHelpers) {
             backendHelper.unbind()
         }
     }
 
-    fun destroy() {
+    suspend fun destroy() {
         unbind()
         backendHelpers.clear()
     }
 
-    fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int, locale: String): List<Address>? {
+    suspend fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int, locale: String): List<Address>? {
         if (backendHelpers.isEmpty())
             return null
         val result = ArrayList<Address>()
@@ -60,7 +57,7 @@ class GeocodeFuser(private val context: Context) {
         return result
     }
 
-    fun getFromLocationName(locationName: String, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String): List<Address>? {
+    suspend fun getFromLocationName(locationName: String, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String): List<Address>? {
         if (backendHelpers.isEmpty())
             return null
         val result = ArrayList<Address>()

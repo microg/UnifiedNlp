@@ -5,12 +5,13 @@
 
 buildscript {
     ext.kotlinVersion = '1.3.72'
-    ext.coroutineVersion = '1.3.3'
+    ext.coroutineVersion = '1.3.7'
 
     ext.appcompatVersion = '1.1.0'
-    ext.fragmentVersion = '1.2.4'
-    ext.recyclerviewVersion = '1.1.0'
+    ext.fragmentVersion = '1.2.5'
     ext.lifecycleVersion = '2.2.0'
+    ext.navigationVersion = '2.3.0'
+    ext.recyclerviewVersion = '1.1.0'
 
     ext.androidBuildGradleVersion = '3.6.3'
 

@@ -18,9 +18,14 @@ import com.android.location.provider.ProviderRequestUnbundled;
 
 import org.microg.nlp.client.UnifiedLocationClient;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+
 import static android.location.LocationProvider.AVAILABLE;
 
 public class LocationProvider extends LocationProviderBase implements UnifiedLocationClient.LocationListener {
+    private static final List<String> EXCLUDED_PACKAGES = Arrays.asList("android", "com.android.location.fused", "com.google.android.gms");
     private static final long FASTEST_REFRESH_INTERVAL = 30000;
     private static final String TAG = "ULocation";
     private Context context;
@@ -43,6 +48,21 @@ public class LocationProvider extends LocationProviderBase implements UnifiedLoc
     @Override
     public void onSetRequest(ProviderRequestUnbundled requests, WorkSource source) {
         Log.v(TAG, "onSetRequest: " + requests + " by " + source);
+        String opPackageName = null;
+        try {
+            Field namesField = WorkSource.class.getDeclaredField("mNames");
+            namesField.setAccessible(true);
+            String[] names = (String[]) namesField.get(source);
+            if (names != null) {
+                for (String name : names) {
+                    if (!EXCLUDED_PACKAGES.contains(name)) {
+                        opPackageName = name;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
 
         long autoTime = Math.max(requests.getInterval(), FASTEST_REFRESH_INTERVAL);
         boolean autoUpdate = requests.getReportLocation();
@@ -50,6 +70,7 @@ public class LocationProvider extends LocationProviderBase implements UnifiedLoc
         Log.v(TAG, "using autoUpdate=" + autoUpdate + " autoTime=" + autoTime);
 
         if (autoUpdate) {
+            UnifiedLocationClient.get(context).setOpPackageName(opPackageName);
             UnifiedLocationClient.get(context).requestLocationUpdates(this, autoTime);
         } else {
             UnifiedLocationClient.get(context).removeLocationUpdates(this);

@@ -7,23 +7,21 @@ package org.microg.nlp.ui
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.GET_META_DATA
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.delay
-import org.microg.nlp.api.Constants.*
+import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
+import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
 import org.microg.nlp.client.UnifiedLocationClient
-import org.microg.nlp.ui.BackendDetailsFragment.Companion.EXTRA_NAME
-import org.microg.nlp.ui.BackendDetailsFragment.Companion.EXTRA_PACKAGE
-import org.microg.nlp.ui.BackendDetailsFragment.Companion.EXTRA_TYPE
 import org.microg.nlp.ui.databinding.BackendListBinding
 import org.microg.nlp.ui.databinding.BackendListEntryBinding
 
@@ -39,17 +37,23 @@ class BackendListFragment : Fragment(R.layout.backend_list) {
 
     override fun onResume() {
         super.onResume()
+        UnifiedLocationClient[requireContext()].ref()
         lifecycleScope.launchWhenStarted { updateAdapters() }
     }
 
-    fun onBackendSelected(entry: BackendInfo?) {
-        if (entry == null) return
-        val intent = Intent(BackendDetailsFragment.ACTION)
-        intent.`package` = requireContext().packageName
-        intent.putExtra(EXTRA_TYPE, entry.type.name)
-        intent.putExtra(EXTRA_PACKAGE, entry.serviceInfo.packageName)
-        intent.putExtra(EXTRA_NAME, entry.serviceInfo.name)
-        startActivity(intent)
+    override fun onPause() {
+        super.onPause()
+        UnifiedLocationClient[requireContext()].unref()
+    }
+
+    fun onBackendSelected(tag: Any?) {
+        val binding = tag as? BackendListEntryBinding ?: return
+        val entry = binding.entry ?: return
+        findNavController().navigate(R.id.openDetails, bundleOf(
+                "type" to entry.type.name,
+                "package" to entry.serviceInfo.packageName,
+                "name" to entry.serviceInfo.name
+        ))
     }
 
     private suspend fun updateAdapters() {
@@ -69,6 +73,7 @@ class BackendSettingsLineViewHolder(val binding: BackendListEntryBinding) : Recy
     fun bind(fragment: BackendListFragment, entry: BackendInfo?) {
         binding.fragment = fragment
         binding.entry = entry
+        binding.tag = binding
         binding.executePendingBindings()
     }
 }

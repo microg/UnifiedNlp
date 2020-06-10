@@ -17,6 +17,10 @@
         <variable
             name="entry"
             type="org.microg.nlp.ui.BackendInfo" />
+
+        <variable
+            name="tag"
+            type="Object" />
     </data>
 
     <LinearLayout
@@ -24,23 +28,23 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:gravity="center_vertical"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:minHeight="?attr/listPreferredItemHeightSmall"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackground"
             android:clickable='@{entry != null}'
             android:clipToPadding="false"
             android:focusable="true"
             android:gravity="start|center_vertical"
-            android:onClick="@{() -> fragment.onBackendSelected(entry)}"
-            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-            android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
-            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-            android:paddingRight="?android:attr/listPreferredItemPaddingRight">
+            android:onClick="@{() -> fragment.onBackendSelected(tag)}"
+            android:paddingStart="?attr/listPreferredItemPaddingStart"
+            android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+            android:paddingEnd="?attr/listPreferredItemPaddingEnd"
+            android:paddingRight="?attr/listPreferredItemPaddingRight">
 
             <LinearLayout
                 android:id="@+id/icon_frame"
@@ -74,7 +78,7 @@
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:text='@{entry.name ?? "No provider installed"}'
-                    android:textAppearance="?android:attr/textAppearanceListItem"
+                    android:textAppearance="?attr/textAppearanceListItem"
                     tools:text="Mozilla Location Service" />
             </RelativeLayout>
         </LinearLayout>

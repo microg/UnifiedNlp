@@ -16,6 +16,8 @@ import android.content.pm.Signature
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -24,10 +26,10 @@ fun <T> Array<out T>?.isNotNullOrEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
-abstract class AbstractBackendHelper(private val TAG: String, private val context: Context, val serviceIntent: Intent, val signatureDigest: String?) : ServiceConnection {
+abstract class AbstractBackendHelper(private val TAG: String, private val context: Context, protected val coroutineScope: CoroutineScope, val serviceIntent: Intent, val signatureDigest: String?) : ServiceConnection {
     private var bound: Boolean = false
 
-    protected abstract fun close()
+    protected abstract suspend fun close()
 
     protected abstract fun hasBackend(): Boolean
 
@@ -41,7 +43,7 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
         Log.d(TAG, "Unbound from: $name")
     }
 
-    fun unbind() {
+    suspend fun unbind() {
         if (bound) {
             if (hasBackend()) {
                 try {
@@ -49,7 +51,6 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
                 } catch (e: Exception) {
                     Log.w(TAG, e)
                 }
-
             }
             try {
                 Log.d(TAG, "Unbinding from: $serviceIntent")
