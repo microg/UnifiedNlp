@@ -23,6 +23,8 @@ android {
     }
 }
 
+apply from: "../gradle/androidJars.gradle"
+
 dependencies {
     implementation project(':location-v2')
 }
@@ -59,6 +61,8 @@ afterEvaluate {
                 }
 
                 from components.release
+                artifact androidSourcesJar
+                artifact androidJavadocsJar
             }
         }
         if (project.hasProperty('sonatype.username')) {

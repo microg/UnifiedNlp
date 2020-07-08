@@ -30,6 +30,8 @@ android {
     }
 }
 
+apply from: "../gradle/androidJars.gradle"
+
 dependencies {
     implementation project(':api')
     implementation project(':client')
@@ -71,6 +73,8 @@ afterEvaluate {
                 }
 
                 from components.release
+                artifact androidSourcesJar
+                artifact androidJavadocsJar
             }
         }
         if (project.hasProperty('sonatype.username')) {

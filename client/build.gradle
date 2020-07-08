@@ -28,9 +28,8 @@ android {
         targetCompatibility = 1.8
     }
 }
-repositories {
-    mavenCentral()
-}
+
+apply from: "../gradle/androidJars.gradle"
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
@@ -69,6 +68,8 @@ afterEvaluate {
                 }
 
                 from components.release
+                artifact androidSourcesJar
+                artifact androidJavadocsJar
             }
         }
         if (project.hasProperty('sonatype.username')) {

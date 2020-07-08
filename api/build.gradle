@@ -23,6 +23,8 @@ android {
     }
 }
 
+apply from: "../gradle/androidJars.gradle"
+
 afterEvaluate {
     publishing {
         publications {
@@ -55,6 +57,8 @@ afterEvaluate {
                 }
 
                 from components.release
+                artifact androidSourcesJar
+                artifact androidJavadocsJar
             }
         }
         if (project.hasProperty('sonatype.username')) {
