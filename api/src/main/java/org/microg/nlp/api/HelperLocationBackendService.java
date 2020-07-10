@@ -76,7 +76,7 @@ public abstract class HelperLocationBackendService extends LocationBackendServic
                 perms.addAll(Arrays.asList(helper.getRequiredPermissions()));
             }
             // Request background location permission if needed as we are likely to run in background
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && (perms.contains(ACCESS_COARSE_LOCATION) || perms.contains(ACCESS_FINE_LOCATION))) {
+            if (Build.VERSION.SDK_INT >= 29 && (perms.contains(ACCESS_COARSE_LOCATION) || perms.contains(ACCESS_FINE_LOCATION))) {
                 perms.add(ACCESS_BACKGROUND_LOCATION);
             }
             for (Iterator<String> iterator = perms.iterator(); iterator.hasNext(); ) {

@@ -12,15 +12,19 @@
 
         <import type="android.view.View" />
 
-        <import type="org.microg.nlp.ui.BackendType" />
+        <import type="org.microg.nlp.ui.viewmodel.BackendType" />
 
         <variable
             name="fragment"
             type="org.microg.nlp.ui.BackendDetailsFragment" />
 
         <variable
+            name="callbacks"
+            type="org.microg.nlp.ui.viewmodel.BackendDetailsCallback" />
+
+        <variable
             name="entry"
-            type="org.microg.nlp.ui.BackendInfo" />
+            type="org.microg.nlp.ui.viewmodel.BackendInfo" />
 
         <variable
             name="lastLocationString"
@@ -49,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:gravity="center_horizontal"
-                android:onClick='@{() -> fragment.onAppClicked(entry)}'
+                android:onClick='@{() -> callbacks.onAppClicked(entry)}'
                 android:orientation="vertical">
 
                 <ImageView
@@ -93,9 +97,10 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:clickable="true"
+            android:enabled="@{entry.loaded}"
             android:focusable="true"
             android:gravity="center"
-            android:onClick="@{() -> fragment.onBackendEnabledChanged(entry)}"
+            android:onClick="@{() -> callbacks.onEnabledChange(entry, !entry.enabled)}"
             android:orientation="horizontal"
             android:paddingStart="?attr/listPreferredItemPaddingStart"
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
@@ -124,7 +129,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:background="@null"
-                android:checked="@={entry.enabled}"
+                android:checked="@{entry.enabled}"
+                android:enabled="@{entry.loaded || entry.enabled}"
+                app:onCheckedChangeListener="@{(view, checked) -> callbacks.onEnabledChange(entry, checked)}"
                 app:thumbTint="?android:attr/textColorPrimaryInverse"
                 tools:checked="true" />
         </LinearLayout>
@@ -139,12 +146,12 @@
             android:focusable="true"
             android:gravity="start|center_vertical"
             android:minHeight="?attr/listPreferredItemHeightSmall"
-            android:onClick="@{() -> fragment.onConfigureClicked(entry)}"
+            android:onClick="@{() -> callbacks.onConfigureClicked(entry)}"
             android:paddingStart="?attr/listPreferredItemPaddingStart"
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
             android:paddingEnd="?attr/listPreferredItemPaddingEnd"
             android:paddingRight="?attr/listPreferredItemPaddingRight"
-            android:visibility='@{entry == null || entry.settingsActivity == null ? View.GONE : View.VISIBLE}'>
+            android:visibility='@{entry == null || entry.settingsIntent == null ? View.GONE : View.VISIBLE}'>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -174,12 +181,12 @@
             android:focusable="true"
             android:gravity="start|center_vertical"
             android:minHeight="?attr/listPreferredItemHeightSmall"
-            android:onClick="@{() -> fragment.onAboutClicked(entry)}"
+            android:onClick="@{() -> callbacks.onAboutClicked(entry)}"
             android:paddingStart="?attr/listPreferredItemPaddingStart"
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
             android:paddingEnd="?attr/listPreferredItemPaddingEnd"
             android:paddingRight="?attr/listPreferredItemPaddingRight"
-            android:visibility='@{entry == null || entry.aboutActivity == null ? View.GONE : View.VISIBLE}'>
+            android:visibility='@{entry == null || entry.aboutIntent == null ? View.GONE : View.VISIBLE}'>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -205,7 +212,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?attr/dividerHorizontal"
-            android:visibility='@{entry == null || (entry.backendSummary == null || entry.type != BackendType.LOCATION) || (entry.settingsActivity == null &amp;&amp; entry.aboutActivity == null) ? View.GONE : View.VISIBLE}' />
+            android:visibility='@{entry == null || (entry.summary == null || entry.type != BackendType.LOCATION) || (entry.settingsIntent == null &amp;&amp; entry.aboutIntent == null) ? View.GONE : View.VISIBLE}' />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -217,7 +224,7 @@
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
             android:paddingEnd="?attr/listPreferredItemPaddingEnd"
             android:paddingRight="?attr/listPreferredItemPaddingRight"
-            android:visibility='@{entry == null || entry.backendSummary == null ? View.GONE : View.VISIBLE}'>
+            android:visibility='@{entry == null || entry.summary == null ? View.GONE : View.VISIBLE}'>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -246,7 +253,7 @@
                     android:layout_alignStart="@id/description_title"
                     android:layout_alignLeft="@id/description_title"
                     android:maxLines="10"
-                    android:text='@{entry.backendSummary ?? ""}'
+                    android:text='@{entry.summary ?? ""}'
                     android:textAppearance="?attr/textAppearanceListItemSecondary"
                     android:textColor="?android:attr/textColorSecondary"
                     tools:text="Locate using Mozilla\'s online database" />

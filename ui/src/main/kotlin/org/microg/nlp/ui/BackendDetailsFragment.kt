@@ -8,7 +8,6 @@ package org.microg.nlp.ui
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.ACTION_VIEW
 import android.content.pm.PackageManager.GET_META_DATA
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -22,19 +21,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.Observable
-import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.microg.nlp.client.UnifiedLocationClient
-import org.microg.nlp.ui.BackendType.GEOCODER
-import org.microg.nlp.ui.BackendType.LOCATION
+import org.microg.nlp.ui.viewmodel.BackendType.GEOCODER
+import org.microg.nlp.ui.viewmodel.BackendType.LOCATION
 import org.microg.nlp.ui.databinding.BackendDetailsBinding
+import org.microg.nlp.ui.viewmodel.BackendDetailsCallback
+import org.microg.nlp.ui.viewmodel.BackendInfo
+import org.microg.nlp.ui.viewmodel.BackendType
 import java.util.*
 
-class BackendDetailsFragment : Fragment(R.layout.backend_details) {
+class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetailsCallback {
 
     fun Double.toStringWithDigits(digits: Int): String {
         val s = this.toString()
@@ -82,6 +84,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details) {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = BackendDetailsBinding.inflate(inflater, container, false)
         binding.fragment = this
+        binding.callbacks = this
         return binding.root
     }
 
@@ -101,21 +104,19 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details) {
         binding.entry = entry
         binding.executePendingBindings()
         updateContent(entry)
-        entry?.addOnPropertyChangedCallback(object : OnPropertyChangedCallback() {
-            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                if (propertyId == BR.enabled) {
-                    lifecycleScope.launchWhenStarted { initContent(entry) }
-                }
-            }
-        })
     }
 
     private var updateInProgress = false
     private suspend fun updateContent(entry: BackendInfo?) {
-        if (entry?.type == LOCATION && entry.enabled) {
+        if (entry == null) return
+        if (!entry.loaded.get()) {
+            entry.fillDetails(requireContext())
+            entry.loadIntents(requireActivity() as AppCompatActivity)
+        }
+        if (entry.type == LOCATION && entry.enabled.get()) {
             if (updateInProgress) return
             updateInProgress = true
-            val client = UnifiedLocationClient[entry.context]
+            val client = UnifiedLocationClient[requireContext()]
 
             val locationTemp = client.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
             val location = when (locationTemp) {
@@ -153,41 +154,18 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details) {
             binding.lastLocationString = locationString
             binding.executePendingBindings()
         } else {
-            Log.d(TAG, "Location is not available for this backend (type: ${entry?.type}, enabled ${entry?.enabled}")
+            Log.d(TAG, "Location is not available for this backend (type: ${entry.type}, enabled ${entry.enabled.get()}")
             binding.lastLocationString = ""
             binding.executePendingBindings()
         }
     }
 
-    fun onBackendEnabledChanged(entry: BackendInfo) {
-        entry.enabled = !entry.enabled
+    override fun onAboutClicked(entry: BackendInfo?) {
+        entry?.aboutIntent?.get()?.let { requireContext().startActivity(it) }
     }
 
-    private fun createExternalIntent(packageName: String, activityName: String): Intent {
-        val intent = Intent(ACTION_VIEW);
-        intent.setPackage(packageName);
-        intent.setClassName(packageName, activityName);
-        return intent;
-    }
-
-    private fun startExternalActivity(packageName: String, activityName: String) {
-        requireContext().startActivity(createExternalIntent(packageName, activityName))
-    }
-
-    fun onAboutClicked(entry: BackendInfo) {
-        entry.aboutActivity?.let { activityName -> startExternalActivity(entry.serviceInfo.packageName, activityName) }
-    }
-
-    fun onConfigureClicked(entry: BackendInfo) {
-        entry.settingsActivity?.let { activityName -> startExternalActivity(entry.serviceInfo.packageName, activityName) }
-    }
-
-    fun onAppClicked(entry: BackendInfo) {
-        val intent = Intent()
-        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-        val uri = Uri.fromParts("package", entry.serviceInfo.packageName, null)
-        intent.data = uri
-        requireContext().startActivity(intent)
+    override fun onConfigureClicked(entry: BackendInfo?) {
+        entry?.settingsIntent?.get()?.let { requireContext().startActivity(it) }
     }
 
     private suspend fun createBackendInfo(): BackendInfo? {
@@ -201,11 +179,35 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details) {
             GEOCODER -> UnifiedLocationClient[requireContext()].getGeocoderBackends()
             LOCATION -> UnifiedLocationClient[requireContext()].getLocationBackends()
         }
-        return BackendInfo(requireContext(), serviceInfo, type, lifecycleScope, enabledBackends)
+        val info = BackendInfo(serviceInfo, type, firstSignatureDigest(requireContext(), packageName))
+        info.enabled.set(enabledBackends.contains(info.signedComponent) || enabledBackends.contains(info.unsignedComponent))
+        return info
+    }
+
+    override fun onEnabledChange(entry: BackendInfo?, newValue: Boolean) {
+        Log.d(TAG, "onEnabledChange: ${entry?.signedComponent} = $newValue")
+        val activity = requireActivity() as AppCompatActivity
+        entry?.enabled?.set(newValue)
+        activity.lifecycleScope.launch {
+            entry?.updateEnabled(this@BackendDetailsFragment, newValue)
+            initContent(entry)
+        }
+    }
+
+    override fun onAppClicked(entry: BackendInfo?) {
+        if (entry == null) return
+        val intent = Intent()
+        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        val uri = Uri.fromParts("package", entry.serviceInfo.packageName, null)
+        intent.data = uri
+        requireContext().startActivity(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        handleActivityResult(requestCode, resultCode, data)
     }
 
     companion object {
-        const val ACTION = "org.microg.nlp.ui.BACKEND_DETAILS"
         private const val TAG = "USettings"
         private const val WAIT_FOR_RESULT = 5000L
     }

@@ -13,11 +13,11 @@
         android:name="org.microg.nlp.ui.BackendListFragment"
         android:label="Location modules">
         <action
-            android:id="@+id/openDetails"
+            android:id="@+id/openBackendDetails"
             app:destination="@id/backendDetailsFragment"
             app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_close_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
     </fragment>
     <fragment

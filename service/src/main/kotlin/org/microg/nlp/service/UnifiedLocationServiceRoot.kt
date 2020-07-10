@@ -167,22 +167,22 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun getLocationBackends(): Array<String> {
-        return Preferences(service).locationBackends
+        return Preferences(service).locationBackends.toTypedArray()
     }
 
     override fun setLocationBackends(backends: Array<String>) {
         checkAdminPermission();
-        Preferences(service).locationBackends = backends
+        Preferences(service).locationBackends = backends.toSet()
         reloadPreferences()
     }
 
     override fun getGeocoderBackends(): Array<String> {
-        return Preferences(service).geocoderBackends
+        return Preferences(service).geocoderBackends.toTypedArray()
     }
 
     override fun setGeocoderBackends(backends: Array<String>) {
         checkAdminPermission();
-        Preferences(service).geocoderBackends = backends
+        Preferences(service).geocoderBackends = backends.toSet()
         reloadPreferences()
     }
 

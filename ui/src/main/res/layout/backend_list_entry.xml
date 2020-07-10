@@ -4,6 +4,7 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -11,16 +12,12 @@
         <import type="android.view.View" />
 
         <variable
-            name="fragment"
-            type="org.microg.nlp.ui.BackendListFragment" />
+            name="callbacks"
+            type="org.microg.nlp.ui.viewmodel.BackendListEntryCallback" />
 
         <variable
             name="entry"
-            type="org.microg.nlp.ui.BackendInfo" />
-
-        <variable
-            name="tag"
-            type="Object" />
+            type="org.microg.nlp.ui.viewmodel.BackendInfo" />
     </data>
 
     <LinearLayout
@@ -40,7 +37,7 @@
             android:clipToPadding="false"
             android:focusable="true"
             android:gravity="start|center_vertical"
-            android:onClick="@{() -> fragment.onBackendSelected(tag)}"
+            android:onClick="@{() -> callbacks.onOpenDetails(entry)}"
             android:paddingStart="?attr/listPreferredItemPaddingStart"
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
             android:paddingEnd="?attr/listPreferredItemPaddingEnd"
@@ -110,10 +107,12 @@
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:checked="@={entry.enabled}"
+                android:checked="@{entry.enabled}"
+                android:enabled="@{entry.loaded || entry.enabled}"
                 android:minWidth="80dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp" />
+                android:paddingRight="16dp"
+                app:onCheckedChangeListener="@{(view, checked) -> callbacks.onEnabledChange(entry, checked)}" />
         </LinearLayout>
     </LinearLayout>
 </layout>

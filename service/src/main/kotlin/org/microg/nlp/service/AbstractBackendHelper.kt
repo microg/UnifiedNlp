@@ -66,15 +66,11 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
     fun bind() {
         if (!bound) {
             Log.d(TAG, "Binding to: $serviceIntent sig: $signatureDigest")
-            if (signatureDigest == null) {
-                Log.w(TAG, "No signature digest provided. Aborting.")
-                return
-            }
             if (serviceIntent.getPackage() == null) {
                 Log.w(TAG, "Intent is not properly resolved, can't verify signature. Aborting.")
                 return
             }
-            if (signatureDigest != firstSignatureDigest(context, serviceIntent.getPackage())) {
+            if (signatureDigest != null && signatureDigest != firstSignatureDigest(context, serviceIntent.getPackage())) {
                 Log.w(TAG, "Target signature does not match selected package (" + signatureDigest + " = " + firstSignatureDigest(context, serviceIntent.getPackage()) + "). Aborting.")
                 return
             }

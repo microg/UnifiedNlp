@@ -5,27 +5,29 @@
 
 package org.microg.nlp.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.GET_META_DATA
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
 import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
 import org.microg.nlp.client.UnifiedLocationClient
 import org.microg.nlp.ui.databinding.BackendListBinding
 import org.microg.nlp.ui.databinding.BackendListEntryBinding
+import org.microg.nlp.ui.viewmodel.BackendInfo
+import org.microg.nlp.ui.viewmodel.BackendListEntryCallback
+import org.microg.nlp.ui.viewmodel.BackendType
 
-class BackendListFragment : Fragment(R.layout.backend_list) {
+class BackendListFragment : Fragment(R.layout.backend_list), BackendListEntryCallback {
     val locationAdapter: BackendSettingsLineAdapter = BackendSettingsLineAdapter(this)
     val geocoderAdapter: BackendSettingsLineAdapter = BackendSettingsLineAdapter(this)
 
@@ -46,34 +48,53 @@ class BackendListFragment : Fragment(R.layout.backend_list) {
         UnifiedLocationClient[requireContext()].unref()
     }
 
-    fun onBackendSelected(tag: Any?) {
-        val binding = tag as? BackendListEntryBinding ?: return
-        val entry = binding.entry ?: return
-        findNavController().navigate(R.id.openDetails, bundleOf(
+    override fun onOpenDetails(entry: BackendInfo?) {
+        if (entry == null) return
+        findNavController().navigate(R.id.openBackendDetails, bundleOf(
                 "type" to entry.type.name,
                 "package" to entry.serviceInfo.packageName,
                 "name" to entry.serviceInfo.name
         ))
     }
 
-    private suspend fun updateAdapters() {
-        val context = requireContext()
-        locationAdapter.setEntries(createBackendInfoList(context, Intent(ACTION_LOCATION_BACKEND), UnifiedLocationClient[context].getLocationBackends(), BackendType.LOCATION))
-        geocoderAdapter.setEntries(createBackendInfoList(context, Intent(ACTION_GEOCODER_BACKEND), UnifiedLocationClient[context].getGeocoderBackends(), BackendType.GEOCODER))
+    override fun onEnabledChange(entry: BackendInfo?, newValue: Boolean) {
+        val activity = requireActivity() as AppCompatActivity
+        activity.lifecycleScope.launch {
+            entry?.updateEnabled(this@BackendListFragment, newValue)
+        }
     }
 
-    private fun createBackendInfoList(context: Context, intent: Intent, enabledBackends: Array<String>, type: BackendType): Array<BackendInfo?> {
-        val backends = context.packageManager.queryIntentServices(intent, GET_META_DATA).map { BackendInfo(context, it.serviceInfo, type, lifecycleScope, enabledBackends) }
+    private suspend fun updateAdapters() {
+        val activity = requireActivity() as AppCompatActivity
+        locationAdapter.setEntries(createBackendInfoList(activity, Intent(ACTION_LOCATION_BACKEND), UnifiedLocationClient[activity].getLocationBackends(), BackendType.LOCATION))
+        geocoderAdapter.setEntries(createBackendInfoList(activity, Intent(ACTION_GEOCODER_BACKEND), UnifiedLocationClient[activity].getGeocoderBackends(), BackendType.GEOCODER))
+    }
+
+    private fun createBackendInfoList(activity: AppCompatActivity, intent: Intent, enabledBackends: Array<String>, type: BackendType): Array<BackendInfo?> {
+        val backends = activity.packageManager.queryIntentServices(intent, GET_META_DATA).map {
+            val info = BackendInfo(it.serviceInfo, type, firstSignatureDigest(activity, it.serviceInfo.packageName))
+            if (enabledBackends.contains(info.signedComponent) || enabledBackends.contains(info.unsignedComponent)) {
+                info.enabled.set(true)
+            }
+            info.fillDetails(activity)
+            activity.lifecycleScope.launch {
+                info.loadIntents(activity)
+            }
+            info
+        }.sortedBy { it.name.get() }
         if (backends.isEmpty()) return arrayOf(null)
         return backends.toTypedArray()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        handleActivityResult(requestCode, resultCode, data)
     }
 }
 
 class BackendSettingsLineViewHolder(val binding: BackendListEntryBinding) : RecyclerView.ViewHolder(binding.root) {
     fun bind(fragment: BackendListFragment, entry: BackendInfo?) {
-        binding.fragment = fragment
+        binding.callbacks = fragment
         binding.entry = entry
-        binding.tag = binding
         binding.executePendingBindings()
     }
 }
@@ -92,7 +113,7 @@ class BackendSettingsLineAdapter(val fragment: BackendListFragment) : RecyclerVi
                 if (entries[oldIndex] == entry) return
                 entries.removeAt(oldIndex)
             }
-            val targetIndex = when (val i = entries.indexOfFirst { it == null || it.name.toString() > entry.name.toString() }) {
+            val targetIndex = when (val i = entries.indexOfFirst { it == null || it.name.get().toString() > entry.name.get().toString() }) {
                 -1 -> entries.size
                 else -> i
             }
