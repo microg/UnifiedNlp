@@ -12,19 +12,15 @@
 
         <import type="android.view.View" />
 
-        <import type="org.microg.nlp.ui.viewmodel.BackendType" />
-
-        <variable
-            name="fragment"
-            type="org.microg.nlp.ui.BackendDetailsFragment" />
+        <import type="org.microg.nlp.ui.model.BackendType" />
 
         <variable
             name="callbacks"
-            type="org.microg.nlp.ui.viewmodel.BackendDetailsCallback" />
+            type="org.microg.nlp.ui.model.BackendDetailsCallback" />
 
         <variable
             name="entry"
-            type="org.microg.nlp.ui.viewmodel.BackendInfo" />
+            type="org.microg.nlp.ui.model.BackendInfo" />
 
         <variable
             name="lastLocationString"
@@ -79,7 +75,6 @@
                     android:textSize="20sp"
                     tools:text="Mozilla Location Service" />
 
-
                 <TextView
                     android:id="@+id/app_name"
                     style="@style/TextAppearance.AppCompat.Body1"
@@ -106,8 +101,8 @@
             android:paddingLeft="?attr/listPreferredItemPaddingLeft"
             android:paddingEnd="?attr/listPreferredItemPaddingEnd"
             android:paddingRight="?attr/listPreferredItemPaddingRight"
-            app:backgroundColor="@{entry.enabled ? fragment.switchBarEnabledColor : fragment.switchBarDisabledColor}"
-            tools:background="?attr/colorAccent">
+            app:backgroundColorAttr="@{entry.enabled ? androidx.appcompat.R.attr.colorControlActivated : androidx.appcompat.R.attr.colorButtonNormal}"
+            tools:background="?attr/colorControlActivated">
 
             <TextView
                 android:id="@+id/switch_text"
@@ -133,6 +128,7 @@
                 android:enabled="@{entry.loaded || entry.enabled}"
                 app:onCheckedChangeListener="@{(view, checked) -> callbacks.onEnabledChange(entry, checked)}"
                 app:thumbTint="?android:attr/textColorPrimaryInverse"
+                app:trackTint="?android:attr/textColorSecondaryInverse"
                 tools:checked="true" />
         </LinearLayout>
 
@@ -212,7 +208,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?attr/dividerHorizontal"
-            android:visibility='@{entry == null || (entry.summary == null || entry.type != BackendType.LOCATION) || (entry.settingsIntent == null &amp;&amp; entry.aboutIntent == null) ? View.GONE : View.VISIBLE}' />
+            android:visibility='@{entry == null || (entry.summary == null || entry.type != BackendType.LOCATION) || (entry.settingsIntent == null &amp;&amp; entry.aboutIntent == null) ? View.GONE : View.VISIBLE}'
+            tools:visibility="visible" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -28,12 +28,12 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.microg.nlp.client.UnifiedLocationClient
-import org.microg.nlp.ui.viewmodel.BackendType.GEOCODER
-import org.microg.nlp.ui.viewmodel.BackendType.LOCATION
+import org.microg.nlp.ui.model.BackendType.GEOCODER
+import org.microg.nlp.ui.model.BackendType.LOCATION
 import org.microg.nlp.ui.databinding.BackendDetailsBinding
-import org.microg.nlp.ui.viewmodel.BackendDetailsCallback
-import org.microg.nlp.ui.viewmodel.BackendInfo
-import org.microg.nlp.ui.viewmodel.BackendType
+import org.microg.nlp.ui.model.BackendDetailsCallback
+import org.microg.nlp.ui.model.BackendInfo
+import org.microg.nlp.ui.model.BackendType
 import java.util.*
 
 class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetailsCallback {
@@ -83,7 +83,6 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = BackendDetailsBinding.inflate(inflater, container, false)
-        binding.fragment = this
         binding.callbacks = this
         return binding.root
     }

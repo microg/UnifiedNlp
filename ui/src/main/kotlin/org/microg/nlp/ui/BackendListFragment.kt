@@ -23,9 +23,9 @@ import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
 import org.microg.nlp.client.UnifiedLocationClient
 import org.microg.nlp.ui.databinding.BackendListBinding
 import org.microg.nlp.ui.databinding.BackendListEntryBinding
-import org.microg.nlp.ui.viewmodel.BackendInfo
-import org.microg.nlp.ui.viewmodel.BackendListEntryCallback
-import org.microg.nlp.ui.viewmodel.BackendType
+import org.microg.nlp.ui.model.BackendInfo
+import org.microg.nlp.ui.model.BackendListEntryCallback
+import org.microg.nlp.ui.model.BackendType
 
 class BackendListFragment : Fragment(R.layout.backend_list), BackendListEntryCallback {
     val locationAdapter: BackendSettingsLineAdapter = BackendSettingsLineAdapter(this)

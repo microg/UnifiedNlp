@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.microg.nlp.ui.viewmodel
+package org.microg.nlp.ui.model
 
 import android.content.Intent
 import android.content.pm.ServiceInfo

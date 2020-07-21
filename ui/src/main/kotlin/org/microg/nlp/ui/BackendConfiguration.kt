@@ -24,8 +24,8 @@ import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
 import org.microg.nlp.api.GeocoderBackend
 import org.microg.nlp.api.LocationBackend
 import org.microg.nlp.client.UnifiedLocationClient
-import org.microg.nlp.ui.viewmodel.BackendInfo
-import org.microg.nlp.ui.viewmodel.BackendType
+import org.microg.nlp.ui.model.BackendInfo
+import org.microg.nlp.ui.model.BackendType
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 

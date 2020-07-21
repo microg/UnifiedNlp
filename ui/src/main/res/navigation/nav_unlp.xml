@@ -5,13 +5,15 @@
   -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_unlp"
     app:startDestination="@id/backendListFragment">
 
     <fragment
         android:id="@+id/backendListFragment"
         android:name="org.microg.nlp.ui.BackendListFragment"
-        android:label="Location modules">
+        android:label="Location modules"
+        tools:layout="@layout/backend_list">
         <action
             android:id="@+id/openBackendDetails"
             app:destination="@id/backendDetailsFragment"
@@ -23,7 +25,8 @@
     <fragment
         android:id="@+id/backendDetailsFragment"
         android:name="org.microg.nlp.ui.BackendDetailsFragment"
-        android:label="Location module details">
+        android:label="Location module details"
+        tools:layout="@layout/backend_details">
         <argument
             android:name="type"
             app:argType="string" />

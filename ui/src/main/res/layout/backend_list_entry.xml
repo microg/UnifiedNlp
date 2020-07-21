@@ -13,11 +13,11 @@
 
         <variable
             name="callbacks"
-            type="org.microg.nlp.ui.viewmodel.BackendListEntryCallback" />
+            type="org.microg.nlp.ui.model.BackendListEntryCallback" />
 
         <variable
             name="entry"
-            type="org.microg.nlp.ui.viewmodel.BackendInfo" />
+            type="org.microg.nlp.ui.model.BackendInfo" />
     </data>
 
     <LinearLayout
@@ -76,7 +76,7 @@
                     android:singleLine="true"
                     android:text='@{entry.name ?? "No provider installed"}'
                     android:textAppearance="?attr/textAppearanceListItem"
-                    tools:text="Mozilla Location Service" />
+                    tools:text="@tools:sample/lorem" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -88,7 +88,8 @@
             android:orientation="horizontal"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:visibility='@{entry == null ? View.GONE : View.VISIBLE}'>
+            android:visibility='@{entry == null ? View.GONE : View.VISIBLE}'
+            tools:visibility="visible">
 
             <View
                 android:layout_width="1dp"
@@ -102,7 +103,8 @@
             android:gravity="center"
             android:minWidth="64dp"
             android:orientation="vertical"
-            android:visibility='@{entry == null ? View.GONE : View.VISIBLE}'>
+            android:visibility='@{entry == null ? View.GONE : View.VISIBLE}'
+            tools:visibility="visible">
 
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="match_parent"
@@ -112,7 +114,11 @@
                 android:minWidth="80dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                app:onCheckedChangeListener="@{(view, checked) -> callbacks.onEnabledChange(entry, checked)}" />
+                android:textOff=""
+                android:textOn=""
+                app:onCheckedChangeListener="@{(view, checked) -> callbacks.onEnabledChange(entry, checked)}"
+                tools:checked="true"
+                tools:text="&#8203;" />
         </LinearLayout>
     </LinearLayout>
 </layout>

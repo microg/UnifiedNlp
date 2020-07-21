@@ -51,16 +51,13 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
     implementation "androidx.fragment:fragment:$fragmentVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerviewVersion"
+    implementation "androidx.preference:preference:$preferenceVersion"
 
     // Kotlin coroutine for android
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
-
-    // Activity result
-    implementation "androidx.activity:activity:1.1.0"
-    implementation "androidx.activity:activity-ktx:1.1.0"
 
     // Navigation
     implementation "androidx.navigation:navigation-fragment:$navigationVersion"
