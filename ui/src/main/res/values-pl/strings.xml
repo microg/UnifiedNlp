@@ -5,6 +5,6 @@
   -->
 
 <resources>
-    <string name="network_location">Geolokalizacja oparta o sieć</string>
-    <string name="geocoding">Wyszukiwanie adresów</string>
+    <string name="nlp_backend_action_configure">Konfiguruj</string>
+    <string name="nlp_backend_action_about">O programie</string>
 </resources>

@@ -5,6 +5,12 @@
   -->
 
 <resources>
-    <string name="network_location">Funknetz-basierte Ortung</string>
-    <string name="geocoding">Adressauflösung</string>
+    <string name="nlp_backends_network_location">Module für Funknetz-basierte Ortung</string>
+    <string name="nlp_backends_geocoding">Module für Adressauflösung</string>
+
+    <string name="nlp_backend_action_configure">Konfigurieren</string>
+    <string name="nlp_backend_action_about">Infos</string>
+    <string name="nlp_backend_enable">Modul benutzen</string>
+    <string name="nlp_backend_description">Beschreibung</string>
+    <string name="nlp_backend_last_location">Letzte Ortung</string>
 </resources>

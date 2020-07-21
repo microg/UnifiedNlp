@@ -5,6 +5,16 @@
   -->
 
 <resources>
-    <string name="network_location">Network-based Geolocation</string>
-    <string name="geocoding">Address lookup</string>
+    <string name="nlp_backends_title">Location modules</string>
+    <string name="nlp_backend_details_title">Location module details</string>
+
+    <string name="nlp_backends_network_location">Network-based Geolocation modules</string>
+    <string name="nlp_backends_geocoding">Address lookup modules</string>
+    <string name="nlp_backends_none">No module installed</string>
+
+    <string name="nlp_backend_action_configure">Configure</string>
+    <string name="nlp_backend_action_about">About</string>
+    <string name="nlp_backend_enable">Use module</string>
+    <string name="nlp_backend_description">Description</string>
+    <string name="nlp_backend_last_location">Last location</string>
 </resources>

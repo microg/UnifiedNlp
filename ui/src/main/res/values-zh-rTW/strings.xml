@@ -5,6 +5,6 @@
   -->
 
 <resources>
-    <string name="network_location">基於網路的地理位置定位</string>
-    <string name="geocoding">地址查閱</string>
+    <string name="nlp_backend_action_configure">設定</string>
+    <string name="nlp_backend_action_about">關於</string>
 </resources>

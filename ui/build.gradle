@@ -36,6 +36,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    lintOptions {
+        warning "MissingTranslation"
+    }
 }
 
 apply from: "../gradle/androidJars.gradle"

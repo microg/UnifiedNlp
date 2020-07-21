@@ -5,6 +5,6 @@
   -->
 
 <resources>
-    <string name="network_location">Географічне позиціювання на основі мереж</string>
-    <string name="geocoding">Пошук адрес</string>
+    <string name="nlp_backend_action_configure">Сконфігурувати</string>
+    <string name="nlp_backend_action_about">Про</string>
 </resources>

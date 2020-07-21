@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text='@{entry.name ?? "No provider installed"}'
+                    android:text='@{entry.name ?? @string/nlp_backends_none}'
                     android:textAppearance="?attr/textAppearanceListItem"
                     tools:text="@tools:sample/lorem" />
             </RelativeLayout>

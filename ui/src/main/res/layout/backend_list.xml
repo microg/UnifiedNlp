@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Network-based Geolocation modules"
+                android:text="@string/nlp_backends_network_location"
                 android:ellipsize="marquee"
                 android:paddingStart="56dp"
                 android:paddingLeft="56dp"
@@ -79,7 +79,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:singleLine="true"
-                android:text="Address lookup modules"
+                android:text="@string/nlp_backends_geocoding"
                 android:textAppearance="?attr/preferenceCategoryTitleTextAppearance"
                 android:textColor="?attr/colorAccent"/>
         </LinearLayout>

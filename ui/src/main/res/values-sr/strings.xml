@@ -5,6 +5,6 @@
   -->
 
 <resources>
-    <string name="network_location">Мрежна геолокација</string>
-    <string name="geocoding">Потрага адресе</string>
+    <string name="nlp_backend_action_configure">Подеси</string>
+    <string name="nlp_backend_action_about">О програму</string>
 </resources>

@@ -5,6 +5,5 @@
   -->
 
 <resources>
-    <string name="network_location">Localizare geografică bazată pe rețea</string>
-    <string name="geocoding">Căutare adrese</string>
+    <string name="nlp_backend_action_configure">Configuraţi</string>
 </resources>

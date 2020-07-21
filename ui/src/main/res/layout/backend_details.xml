@@ -114,7 +114,7 @@
                 android:maxLines="2"
                 android:paddingStart="56dp"
                 android:paddingLeft="56dp"
-                android:text="Use backend"
+                android:text="@string/nlp_backend_enable"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:textColor="?android:attr/textColorPrimaryInverse" />
 
@@ -162,7 +162,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text="Configure"
+                    android:text="@string/nlp_backend_action_configure"
                     android:textAppearance="?attr/textAppearanceListItem" />
             </RelativeLayout>
         </LinearLayout>
@@ -198,7 +198,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text='About'
+                    android:text="@string/nlp_backend_action_about"
                     android:textAppearance="?attr/textAppearanceListItem" />
             </RelativeLayout>
         </LinearLayout>
@@ -238,7 +238,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text="Description"
+                    android:text="@string/nlp_backend_description"
                     android:textAppearance="?attr/textAppearanceListItem"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -284,7 +284,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text="Last location"
+                    android:text="@string/nlp_backend_last_location"
                     android:textAppearance="?attr/textAppearanceListItem"
                     android:textColor="?android:attr/textColorSecondary" />
 

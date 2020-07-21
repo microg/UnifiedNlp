@@ -12,7 +12,7 @@
     <fragment
         android:id="@+id/backendListFragment"
         android:name="org.microg.nlp.ui.BackendListFragment"
-        android:label="Location modules"
+        android:label="@string/nlp_backends_title"
         tools:layout="@layout/backend_list">
         <action
             android:id="@+id/openBackendDetails"
@@ -25,7 +25,7 @@
     <fragment
         android:id="@+id/backendDetailsFragment"
         android:name="org.microg.nlp.ui.BackendDetailsFragment"
-        android:label="Location module details"
+        android:label="@string/nlp_backend_details_title"
         tools:layout="@layout/backend_details">
         <argument
             android:name="type"
