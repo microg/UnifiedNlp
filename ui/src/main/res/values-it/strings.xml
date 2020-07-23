@@ -16,5 +16,5 @@
     <string name="nlp_backend_action_about">A proposito</string>
     <string name="nlp_backend_enable">Abilita il modulo</string>
     <string name="nlp_backend_description">Descrizione</string>
-    <string name="nlp_backend_last_location">Ultima geolocalizzazione</string>
+    <string name="nlp_backend_last_location">Ultima localizzazione</string>
 </resources>
