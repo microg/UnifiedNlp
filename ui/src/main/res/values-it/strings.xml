@@ -13,8 +13,8 @@
     <string name="nlp_backends_none">Nessun modulo installato</string>
 
     <string name="nlp_backend_action_configure">Configura</string>
-    <string name="nlp_backend_action_about">A proposito</string>
+    <string name="nlp_backend_action_about">Informazioni</string>
     <string name="nlp_backend_enable">Abilita il modulo</string>
     <string name="nlp_backend_description">Descrizione</string>
-    <string name="nlp_backend_last_location">Ultima localizzazione</string>
+    <string name="nlp_backend_last_location">Ultima posizione rilevata</string>
 </resources>
