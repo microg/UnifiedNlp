@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2014, microG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<resources>
+    <string name="nlp_backends_title">Moduli di geolocalizzazione</string>
+    <string name="nlp_backend_details_title">Dettagli del modulo di geolocalizzazione</string>
+
+    <string name="nlp_backends_network_location">Moduli di localizzazione basati sulle reti senza fili</string>
+    <string name="nlp_backends_geocoding">Moduli di geocodifica degli indirizzi</string>
+    <string name="nlp_backends_none">Nessun modulo installato</string>
+
+    <string name="nlp_backend_action_configure">Configura</string>
+    <string name="nlp_backend_action_about">Informazioni</string>
+    <string name="nlp_backend_enable">Abilita il modulo</string>
+    <string name="nlp_backend_description">Descrizione</string>
+    <string name="nlp_backend_last_location">Ultima posizione rilevata</string>
+</resources>
