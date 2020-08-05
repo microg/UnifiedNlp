@@ -5,17 +5,23 @@
 
 package org.microg.nlp.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.GET_META_DATA
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
@@ -50,7 +56,7 @@ class BackendListFragment : Fragment(R.layout.backend_list), BackendListEntryCal
 
     override fun onOpenDetails(entry: BackendInfo?) {
         if (entry == null) return
-        findNavController().navigate(R.id.openBackendDetails, bundleOf(
+        findNavController().navigate(requireContext(), R.id.openBackendDetails, bundleOf(
                 "type" to entry.type.name,
                 "package" to entry.serviceInfo.packageName,
                 "name" to entry.serviceInfo.name
@@ -155,4 +161,27 @@ class BackendSettingsLineAdapter(val fragment: BackendListFragment) : RecyclerVi
     }
 }
 
+fun NavController.navigate(context: Context, @IdRes resId: Int, args: Bundle? = null) {
+    navigate(resId, args, if (context.systemAnimationsEnabled) navOptions {
+        anim {
+            enter = androidx.navigation.ui.R.anim.nav_default_enter_anim
+            exit = androidx.navigation.ui.R.anim.nav_default_exit_anim
+            popEnter = androidx.navigation.ui.R.anim.nav_default_pop_enter_anim
+            popExit = androidx.navigation.ui.R.anim.nav_default_pop_exit_anim
+        }
+    } else null)
+}
 
+val Context.systemAnimationsEnabled: Boolean
+    get() {
+        val duration: Float
+        val transition: Float
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            duration = Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+            transition = Settings.Global.getFloat(contentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE, 1f)
+        } else {
+            duration = Settings.System.getFloat(contentResolver, Settings.System.ANIMATOR_DURATION_SCALE, 1f)
+            transition = Settings.System.getFloat(contentResolver, Settings.System.TRANSITION_ANIMATION_SCALE, 1f)
+        }
+        return duration != 0f && transition != 0f
+    }
