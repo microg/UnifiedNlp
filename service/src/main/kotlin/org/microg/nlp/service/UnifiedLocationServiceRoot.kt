@@ -11,6 +11,7 @@ import android.location.Address
 import android.location.Location
 import android.os.Binder
 import android.os.Bundle
+import android.os.Process
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -115,10 +116,12 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     private fun checkLocationPermission() {
+        if (Binder.getCallingUid() == Process.myUid()) return // Always except self
         service.enforceCallingPermission(ACCESS_COARSE_LOCATION, "coarse location permission required")
     }
 
     private fun checkAdminPermission() {
+        if (Binder.getCallingUid() == Process.myUid()) return // Always except self
         service.enforceCallingPermission(PERMISSION_SERVICE_ADMIN, "coarse location permission required")
     }
 
