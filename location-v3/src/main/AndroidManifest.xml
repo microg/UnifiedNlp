@@ -21,7 +21,6 @@
         <service
             android:name=".LocationService"
             android:exported="true"
-            android:process=":locservice"
             android:permission="android.permission.ACCESS_COARSE_LOCATION">
             <intent-filter>
                 <action android:name="com.android.location.service.v3.NetworkLocationProvider" />

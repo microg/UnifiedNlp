@@ -19,7 +19,6 @@
         <service
             android:name=".UnifiedLocationServiceEntryPoint"
             android:exported="true"
-            android:process=":ulocservice"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.microg.nlp.service.UnifiedLocationService" />

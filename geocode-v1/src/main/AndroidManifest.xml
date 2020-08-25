@@ -19,8 +19,7 @@
         <service
             android:name=".GeocodeService"
             android:exported="true"
-            android:permission="android.permission.INTERNET"
-            android:process=":geocservice">
+            android:permission="android.permission.INTERNET">
             <intent-filter>
                 <action android:name="com.android.location.service.GeocodeProvider" />
                 <action android:name="com.google.android.location.GeocodeProvider" />

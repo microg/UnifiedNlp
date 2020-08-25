@@ -8,12 +8,23 @@ package org.microg.nlp.service
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
+import java.io.File
 
 
 class Preferences(private val context: Context) {
 
-    private val sharedPreferences: SharedPreferences
+    private val preferences: SharedPreferences
         get() = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+
+    private val oldPreferences: SharedPreferences
+        get() = context.getSharedPreferences(context.packageName + "_preferences", Context.MODE_PRIVATE)
+
+    private val systemDefaultPreferences: SharedPreferences?
+        get() = try {
+            Context::class.java.getDeclaredMethod("getSharedPreferences", File::class.java, Int::class.javaPrimitiveType).invoke(context, File("/system/etc/microg.xml"), Context.MODE_PRIVATE) as SharedPreferences
+        } catch (e: java.lang.Exception) {
+            null
+        }
 
     private fun SharedPreferences.getStringSetCompat(key: String, defValues: Set<String>? = null): Set<String>? {
         if (Build.VERSION.SDK_INT >= 11) {
@@ -41,18 +52,24 @@ class Preferences(private val context: Context) {
         }
     }
 
+    private fun getStringSetFromAny(key: String): Set<String>? {
+        val fromNewSettings = preferences.getStringSetCompat(key)
+        if (fromNewSettings != null) return fromNewSettings
+        val fromOldSettings = oldPreferences.getStringSetCompat(key)
+        if (fromOldSettings != null) return fromOldSettings
+        return systemDefaultPreferences?.getStringSetCompat(key)
+    }
+
     var locationBackends: Set<String>
-        get() =
-            sharedPreferences.getStringSetCompat(PREF_LOCATION_BACKENDS) ?: emptySet()
+        get() = getStringSetFromAny(PREF_LOCATION_BACKENDS) ?: emptySet()
         set(backends) {
-            sharedPreferences.edit().putStringSetCompat(PREF_LOCATION_BACKENDS, backends).apply()
+            preferences.edit().putStringSetCompat(PREF_LOCATION_BACKENDS, backends).apply()
         }
 
     var geocoderBackends: Set<String>
-        get() =
-            sharedPreferences.getStringSetCompat(PREF_GEOCODER_BACKENDS) ?: emptySet()
+        get() = getStringSetFromAny(PREF_GEOCODER_BACKENDS) ?: emptySet()
         set(backends) {
-            sharedPreferences.edit().putStringSetCompat(PREF_GEOCODER_BACKENDS, backends).apply()
+            preferences.edit().putStringSetCompat(PREF_GEOCODER_BACKENDS, backends).apply()
         }
 
     companion object {
