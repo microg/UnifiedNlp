@@ -169,12 +169,18 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
         }
     }
 
+    private fun <E> Set<E>.contentEquals(other: Set<E>): Boolean {
+        if (other.size != size) return false
+        return containsAll(other)
+    }
+
     override fun getLocationBackends(): Array<String> {
         return Preferences(service).locationBackends.toTypedArray()
     }
 
     override fun setLocationBackends(backends: Array<String>) {
         checkAdminPermission();
+        if (Preferences(service).locationBackends.contentEquals(backends.toSet())) return
         Preferences(service).locationBackends = backends.toSet()
         reloadPreferences()
     }
@@ -185,6 +191,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
 
     override fun setGeocoderBackends(backends: Array<String>) {
         checkAdminPermission();
+        if (Preferences(service).geocoderBackends.contentEquals(backends.toSet())) return
         Preferences(service).geocoderBackends = backends.toSet()
         reloadPreferences()
     }

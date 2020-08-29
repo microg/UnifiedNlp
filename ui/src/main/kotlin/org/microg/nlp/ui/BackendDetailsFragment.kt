@@ -184,6 +184,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
     }
 
     override fun onEnabledChange(entry: BackendInfo?, newValue: Boolean) {
+        if (entry?.enabled?.get() == newValue) return
         Log.d(TAG, "onEnabledChange: ${entry?.signedComponent} = $newValue")
         val activity = requireActivity() as AppCompatActivity
         entry?.enabled?.set(newValue)
