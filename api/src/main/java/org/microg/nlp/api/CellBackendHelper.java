@@ -30,6 +30,7 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -137,6 +140,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
                 return parceCellInfo18(info);
             }
         } catch (Exception ignored) {
+            Log.d(TAG, "Failed to parse cell info " + info, ignored);
         }
         return null;
     }
@@ -384,7 +388,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
                     @Override
                     public void onSignalStrengthsChanged(SignalStrength signalStrength) {
                         if (!supportsCellInfoChanged) {
-                            fallbackScan();
+                            doScan();
                         }
                     }
                 };
@@ -395,9 +399,24 @@ public class CellBackendHelper extends AbstractBackendHelper {
         }
     }
 
-    private synchronized void fallbackScan() {
+    private synchronized void doScan() {
         if (lastScan + MIN_UPDATE_INTERVAL > System.currentTimeMillis()) return;
-        List<CellInfo> allCellInfo = telephonyManager.getAllCellInfo();
+        if (Build.VERSION.SDK_INT >= 29) {
+            telephonyManager.requestCellInfoUpdate(command -> {
+                Handler mainHandler = new Handler(context.getMainLooper());
+                mainHandler.post(command);
+            }, new TelephonyManager.CellInfoCallback() {
+                @Override
+                public void onCellInfo(List<CellInfo> cellInfo) {
+                    handleAllCellInfo(cellInfo);
+                }
+            });
+        } else {
+            handleAllCellInfo(telephonyManager.getAllCellInfo());
+        }
+    }
+
+    private void handleAllCellInfo(List<CellInfo> allCellInfo) {
         if ((allCellInfo == null || allCellInfo.isEmpty()) && telephonyManager.getNetworkType() > 0) {
             allCellInfo = new ArrayList<>();
             CellLocation cellLocation = telephonyManager.getCellLocation();
@@ -435,7 +454,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
         } else {
             state = State.SCANNING;
             if (lastScan + FALLBACK_UPDATE_INTERVAL < System.currentTimeMillis()) {
-                fallbackScan();
+                doScan();
             }
         }
     }
