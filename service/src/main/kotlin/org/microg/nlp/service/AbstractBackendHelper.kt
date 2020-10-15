@@ -12,12 +12,9 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.content.pm.Signature
 import android.os.IBinder
-import android.os.RemoteException
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -70,8 +67,9 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
                 Log.w(TAG, "Intent is not properly resolved, can't verify signature. Aborting.")
                 return
             }
-            if (signatureDigest != null && signatureDigest != firstSignatureDigest(context, serviceIntent.getPackage())) {
-                Log.w(TAG, "Target signature does not match selected package (" + signatureDigest + " = " + firstSignatureDigest(context, serviceIntent.getPackage()) + "). Aborting.")
+            val computedDigest = firstSignatureDigest(context, serviceIntent.getPackage(), if (signatureDigest?.length == 40) "SHA-1" else "SHA-256")
+            if (signatureDigest != null && signatureDigest != computedDigest) {
+                Log.w(TAG, "Target signature does not match selected package ($signatureDigest != $computedDigest). Aborting.")
                 return
             }
             try {
@@ -86,7 +84,7 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
     companion object {
         @Suppress("DEPRECATION")
         @SuppressLint("PackageManagerGetSignatures")
-        fun firstSignatureDigest(context: Context, packageName: String?): String? {
+        fun firstSignatureDigest(context: Context, packageName: String?, algorithm: String): String? {
             val packageManager = context.packageManager
             val info: PackageInfo?
             try {
@@ -97,15 +95,15 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
 
             if (info?.signatures.isNotNullOrEmpty()) {
                 for (sig in info.signatures) {
-                    sha256sum(sig.toByteArray())?.let { return it }
+                    digest(sig.toByteArray(), algorithm)?.let { return it }
                 }
             }
             return null
         }
 
-        private fun sha256sum(bytes: ByteArray): String? {
+        private fun digest(bytes: ByteArray, algorithm: String): String? {
             try {
-                val md = MessageDigest.getInstance("SHA-256")
+                val md = MessageDigest.getInstance(algorithm)
                 val digest = md.digest(bytes)
                 val sb = StringBuilder(2 * digest.size)
                 for (b in digest) {
