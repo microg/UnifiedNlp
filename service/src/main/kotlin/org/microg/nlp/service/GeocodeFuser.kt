@@ -11,9 +11,10 @@ import android.location.Address
 import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
 import java.util.ArrayList
+import java.util.concurrent.CopyOnWriteArrayList
 
 class GeocodeFuser(private val context: Context, private val root: UnifiedLocationServiceRoot) {
-    private val backendHelpers = ArrayList<GeocodeBackendHelper>()
+    private val backendHelpers = CopyOnWriteArrayList<GeocodeBackendHelper>()
 
     suspend fun reset() {
         unbind()

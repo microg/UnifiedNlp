@@ -19,10 +19,11 @@ import java.util.Comparator
 
 import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
 import org.microg.nlp.api.Constants.LOCATION_EXTRA_OTHER_BACKENDS
+import java.util.concurrent.CopyOnWriteArrayList
 
 class LocationFuser(private val context: Context, private val root: UnifiedLocationServiceRoot) {
 
-    private val backendHelpers = ArrayList<LocationBackendHelper>()
+    private val backendHelpers = CopyOnWriteArrayList<LocationBackendHelper>()
     private var fusing = false
     private var lastLocationReportTime: Long = 0
 
