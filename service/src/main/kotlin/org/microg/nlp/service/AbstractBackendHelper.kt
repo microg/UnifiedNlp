@@ -67,7 +67,7 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
                 Log.w(TAG, "Intent is not properly resolved, can't verify signature. Aborting.")
                 return
             }
-            val computedDigest = firstSignatureDigest(context, serviceIntent.getPackage(), if (signatureDigest?.length == 40) "SHA-1" else "SHA-256")
+            val computedDigest = firstSignatureDigest(context, serviceIntent.getPackage(), "SHA-256")
             if (signatureDigest != null && signatureDigest != computedDigest) {
                 Log.w(TAG, "Target signature does not match selected package ($signatureDigest != $computedDigest). Aborting.")
                 return
