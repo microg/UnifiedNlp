@@ -16,6 +16,6 @@ include ':ui'
 
 //include ':service-app'
 //include ':client-app'
-//include ':app'
+include ':app'
 
 include ':docs:backend-sample'

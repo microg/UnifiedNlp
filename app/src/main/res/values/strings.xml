@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2013-2017 microG Project Team
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="nlp_app_name">UnifiedNlp</string>
+    <string name="nlp_settings_label">UnifiedNlp Settings</string>
+
+    <!-- Self check -->
+
+    <string name="self_check_title">Self-Check</string>
+    <string name="self_check_desc">Check if the system is correctly set up to use microG.</string>
+
+    <string name="self_check_cat_nlpcompat">Network location provider support</string>
+    <string name="self_check_name_system_supported">Android version supported:</string>
+    <string name="self_check_resolution_system_supported">Your Android version is not officially supported. This does not necessarily mean anything.</string>
+    <string name="self_check_name_nlp_package_name">System supports location provider:</string>
+    <string name="self_check_resolution_nlp_package_name">Your system does not support this UnifiedNlp package. Either install a matching package or a compatibility Xposed module.</string>
+
+    <string name="self_check_cat_nlp_status">UnifiedNlp status</string>
+    <string name="self_check_name_nlp_bound">UnifiedNlp is registered in system:</string>
+    <string name="self_check_resolution_nlp_bound">The system did not bind the UnifiedNlp service. If you just installed UnifiedNlp you should try to reboot this device.</string>
+    <string name="self_check_name_last_location">UnifiedNlp has known location:</string>
+    <string name="self_check_resolution_last_location">UnifiedNlp has no last known location. This will cause some apps to fail.</string>
+    <string name="self_check_name_nlp_is_providing">UnifiedNlp provides location updates:</string>
+    <string name="self_check_resolution_nlp_is_providing">No UnifiedNlp location was provided by the system within 10 seconds.</string>
+    <string name="self_check_name_network_enabled">Network-based location enabled:</string>
+    <string name="self_check_resolution_network_enabled">You either disabled network-based location (in system settings) or the system is not supported.</string>
+    <string name="self_check_loc_perm_missing">Location permission not yet granted</string>
+
+    <string name="self_check_cat_permissions">Permissions granted</string>
+    <string name="self_check_name_permission">Permission to %1$s:</string>
+    <string name="self_check_resolution_permission">Touch here to grant permission. Not granting the permission can result in misbehaving applications.</string>
+
+    <!-- About strings -->
+    <string name="about_version_str">Version %1$s</string>
+    <string name="about_name_version_str">%1$s %2$s</string>
+    <string name="about_default_license">All rights reserved.</string>
+
+    <string name="about_root_title">UnifiedNlp UI Demo</string>
+    <string name="about_root_summary">Summary</string>
+    <string name="about_root_version">Version v0.1.0</string>
+    <string name="about_root_libraries">Included libraries</string>
+
+    <string name="prefcat_about">About</string>
+    <string name="pref_about_title">About microG UnifiedNlp</string>
+    <string name="pref_about_summary">Version information and used libraries</string>
+
+</resources>
