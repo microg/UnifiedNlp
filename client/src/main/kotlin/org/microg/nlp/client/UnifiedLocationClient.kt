@@ -501,6 +501,8 @@ class UnifiedLocationClient private constructor(context: Context) {
             } catch (e: Exception) {
                 Log.w(TAG, "Failed to register location callback", e)
             }
+            context.get()?.resources?.getStringArray(R.array.force_location_backends)?.let { setLocationBackends(it + getLocationBackends()) }
+            context.get()?.resources?.getStringArray(R.array.force_geocoder_backends)?.let { setGeocoderBackends(it + getGeocoderBackends()) }
             updateServiceInterval()
             if (continuations.size > 0) {
                 Log.d(TAG, "Resuming ${continuations.size} continuations")
