@@ -63,6 +63,7 @@ class Preferences(private val context: Context) {
         val fromOldSettings = oldPreferences.getStringSetCompat(key)
         if (fromOldSettings != null) {
             var newSettings: MutableSet<String> = mutableSetOf<String>()
+            newSettings.addAll(preferences.getStringSetCompat(key).orEmpty())
             for (oldBackend in fromOldSettings) {
                 // Get package name and sha1
                 val parts = oldBackend.split("/".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
