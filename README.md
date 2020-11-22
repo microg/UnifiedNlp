@@ -6,6 +6,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 <img src="http://i.imgur.com/hXY4lcC.png" height="42px" alt="microG" /> Unified Network Location Provider
 ==========
 [![Build Status](https://travis-ci.com/microg/UnifiedNlp.svg?branch=master)](https://travis-ci.com/microg/UnifiedNlp)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmicrog%2FUnifiedNlp.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmicrog%2FUnifiedNlp?ref=badge_shield)
 
 The next generation Network Location Provider, based on plugins. Usually abbreviated as UnifiedNlp.
 
@@ -111,3 +112,6 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmicrog%2FUnifiedNlp.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmicrog%2FUnifiedNlp?ref=badge_large)
