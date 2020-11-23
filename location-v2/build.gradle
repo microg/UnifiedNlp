@@ -23,7 +23,6 @@ android {
     }
 }
 
-apply from: '../gradle/androidJars.gradle'
 apply from: '../gradle/publish.gradle'
 
 description = 'UnifiedNlp service to implement Location API v2'

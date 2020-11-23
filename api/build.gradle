@@ -23,7 +23,6 @@ android {
     }
 }
 
-apply from: '../gradle/androidJars.gradle'
 apply from: '../gradle/publish.gradle'
 
 description = 'API interfaces and helpers to create backends for UnifiedNlp'

@@ -42,7 +42,6 @@ android {
     }
 }
 
-apply from: '../gradle/androidJars.gradle'
 apply from: '../gradle/publish.gradle'
 
 description = 'UnifiedNlp UI library for common configuration fragments'
