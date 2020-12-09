@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ SPDX-FileCopyrightText: 2014, microG Project Team
+  ~ SPDX-FileCopyrightText: 2014-2020, microG Project Team
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 
 <resources>
+    <string name="nlp_backends_title">Навигационные модули</string>
+    <string name="nlp_backend_details_title">Подробности о модуле</string>
+
+    <string name="nlp_backends_network_location">Сетевые модули геолокации</string>
+    <string name="nlp_backends_geocoding">Модули поиска адресов</string>
+    <string name="nlp_backends_none">Установленные модули отсутствуют</string>
+
     <string name="nlp_backend_action_configure">Настроить</string>
     <string name="nlp_backend_action_about">О программе</string>
+    <string name="nlp_backend_enable">Использовать модуль</string>
+    <string name="nlp_backend_description">Описание</string>
+    <string name="nlp_backend_last_location">Последнее местоположение</string>
 </resources>
