@@ -8,5 +8,6 @@
     package="org.microg.nlp.ui">
 
     <uses-permission android:name="org.microg.nlp.SERVICE_ADMIN" />
-    <application />
+    <application
+        android:theme="@style/Theme.AppCompat" />
 </manifest>

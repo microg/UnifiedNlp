@@ -45,6 +45,7 @@ int getMyVersionCode() {
 android {
     compileSdkVersion androidCompileSdk
     buildToolsVersion "$androidBuildVersionTools"
+    buildFeatures.dataBinding = true
 
     defaultConfig {
         versionName version
