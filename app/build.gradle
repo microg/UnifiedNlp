@@ -58,16 +58,16 @@ android {
     flavorDimensions 'tier'
 
     productFlavors {
-        NetworkLocation {
+        networkLocation {
             applicationId = 'com.google.android.gms'
             minSdkVersion 19
             dimension 'tier'
         }
-        LegacyNetworkLocation {
+        legacyNetworkLocation {
             applicationId = 'com.google.android.location'
             dimension 'tier'
         }
-        UnifiedNlp {
+        unifiedNlp {
             applicationId = 'org.microg.nlp'
             dimension 'tier'
         }
@@ -84,7 +84,7 @@ android {
 }
 
 dependencies {
-    implementation project(':location-v3')
+    unifiedNlpImplementation project(':location-v3')
     implementation project(':ui')
     implementation project(':service')
     implementation project(':client')
