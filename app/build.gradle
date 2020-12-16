@@ -93,6 +93,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.appcompat:appcompat:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+
 }
 
 if (file('user.gradle').exists()) {
