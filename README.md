@@ -37,7 +37,7 @@ This leaves us with the following installation steps:
 
 1. Make sure no gapps are installed
 2. Download `NetworkLocation.apk`
-3. Boot into recovery and copy the apk to `/system/priv-app/` using the adb-command `adb push NetworkLocation.apk /system/priv-app/UnifiedNLP/NetwortkLocation.apk` (also make sure you mount the `/system` partition in advance)
+3. Boot into recovery and copy the apk to `/system/priv-app/` using the adb-command `adb push NetworkLocation.apk /system/priv-app/UnifiedNLP/NetworkLocation.apk` (also make sure you mount the `/system` partition in advance)
 4. Still in recovery mode, copy the `privapp-permissions-unifiednlp.xml` with the contents from above to `/system/etc/permissions` using the adb-command `adb push privapp-permissions-unifiednlp.xml /system/etc/permissions/privapp-permissions-unifiednlp.xml`
 5. Reboot `adb reboot`
 
