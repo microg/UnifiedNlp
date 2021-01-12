@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2014, microG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<resources>
+    <string name="nlp_backends_title">Modul lokasi</string>
+    <string name="nlp_backend_details_title">Detail modul lokasi</string>
+
+    <string name="nlp_backends_network_location">Modul Geolokasi berbasis jaringan</string>
+    <string name="nlp_backends_geocoding">Modul pencarian alamat</string>
+    <string name="nlp_backends_none">Tidak ada modul yang dipasang</string>
+
+    <string name="nlp_backend_action_configure">Konfigurasi</string>
+    <string name="nlp_backend_action_about">Tentang</string>
+    <string name="nlp_backend_enable">Gunakan modul</string>
+    <string name="nlp_backend_description">Deskripsi</string>
+    <string name="nlp_backend_last_location"Lokasi terakhir</string>
+</resources>
