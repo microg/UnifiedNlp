@@ -5,6 +5,17 @@
   -->
 
 <resources>
+    <string name="nlp_backends_title">Usługi lokaliacji</string>
+    <string name="nlp_backend_details_title">Szczeguły usługi</string>
+
+    <string name="nlp_backends_network_location">Usługi lokalizacji oparte o sieć</string>
+    <string name="nlp_backends_geocoding">Usługi wyszukiwania adresów</string>
+    <string name="nlp_backends_none">Brak zainstalowanych usług</string>
+
     <string name="nlp_backend_action_configure">Konfiguruj</string>
     <string name="nlp_backend_action_about">O programie</string>
+    <string name="nlp_backend_enable">Użyj usługi</string>
+    <string name="nlp_backend_description">Opis</string>
+    <string name="nlp_backend_last_location">Ostatnia lokalizacja</string>
 </resources>
+
