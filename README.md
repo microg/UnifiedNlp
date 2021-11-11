@@ -5,6 +5,9 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 <img src="http://i.imgur.com/hXY4lcC.png" height="42px" alt="microG" /> Unified Network Location Provider
 ==========
+
+[English](https://github.com/microG/UnifiedNlp/tree/master/README.md) | [Русский](https://github.com/microG/UnifiedNlp/tree/master/README-ru.md)
+
 [![Build Status](https://travis-ci.com/microg/UnifiedNlp.svg?branch=master)](https://travis-ci.com/microg/UnifiedNlp)
 
 The next generation Network Location Provider, based on plugins. Usually abbreviated as UnifiedNlp.
