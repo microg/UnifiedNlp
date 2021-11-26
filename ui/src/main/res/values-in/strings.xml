@@ -16,5 +16,5 @@
     <string name="nlp_backend_action_about">Tentang</string>
     <string name="nlp_backend_enable">Gunakan modul</string>
     <string name="nlp_backend_description">Deskripsi</string>
-    <string name="nlp_backend_last_location"Lokasi terakhir</string>
+    <string name="nlp_backend_last_location">Lokasi terakhir</string>
 </resources>
