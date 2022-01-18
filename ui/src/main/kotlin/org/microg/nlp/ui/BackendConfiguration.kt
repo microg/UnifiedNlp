@@ -23,7 +23,8 @@ import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
 import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
 import org.microg.nlp.api.GeocoderBackend
 import org.microg.nlp.api.LocationBackend
-import org.microg.nlp.client.UnifiedLocationClient
+import org.microg.nlp.client.GeocodeClient
+import org.microg.nlp.client.LocationClient
 import org.microg.nlp.ui.model.BackendInfo
 import org.microg.nlp.ui.model.BackendType
 import java.security.MessageDigest
@@ -31,6 +32,7 @@ import java.security.NoSuchAlgorithmException
 
 
 private fun Array<String>.without(entry: BackendInfo): Array<String> = filterNot { it == entry.unsignedComponent || it.startsWith("${entry.unsignedComponent}/") }.toTypedArray()
+private fun List<String>.without(entry: BackendInfo): List<String> = filterNot { it == entry.unsignedComponent || it.startsWith("${entry.unsignedComponent}/") }
 
 suspend fun BackendInfo.updateEnabled(fragment: Fragment, newValue: Boolean) {
     Log.d("USettings", "updateEnabled $signedComponent = $newValue")
@@ -107,20 +109,31 @@ private suspend fun BackendInfo.enable(fragment: Fragment): Boolean {
             return false
         }
     }
-    val client = UnifiedLocationClient[activity]
-    when (type) {
-        BackendType.LOCATION -> client.setLocationBackends(client.getLocationBackends().without(this) + signedComponent)
-        BackendType.GEOCODER -> client.setGeocoderBackends(client.getGeocoderBackends().without(this) + signedComponent)
+    when(type) {
+        BackendType.LOCATION -> {
+            val client = LocationClient(activity, activity.lifecycle)
+            client.setLocationBackends(client.getLocationBackends().without(this) + signedComponent)
+        }
+        BackendType.GEOCODER -> {
+            val client = GeocodeClient(activity, activity.lifecycle)
+            client.setGeocodeBackends(client.getGeocodeBackends().without(this) + signedComponent)
+        }
     }
     Log.w("USettings", "Enabled backend $signedComponent")
     return true
 }
 
 private suspend fun BackendInfo.disable(fragment: Fragment): Boolean {
-    val client = UnifiedLocationClient[fragment.requireContext()]
-    when (type) {
-        BackendType.LOCATION -> client.setLocationBackends(client.getLocationBackends().without(this))
-        BackendType.GEOCODER -> client.setGeocoderBackends(client.getGeocoderBackends().without(this))
+    val activity = fragment.requireActivity() as AppCompatActivity
+    when(type) {
+        BackendType.LOCATION -> {
+            val client = LocationClient(activity, activity.lifecycle)
+            client.setLocationBackends(client.getLocationBackends().without(this))
+        }
+        BackendType.GEOCODER -> {
+            val client = GeocodeClient(activity, activity.lifecycle)
+            client.setGeocodeBackends(client.getGeocodeBackends().without(this))
+        }
     }
     return true
 }

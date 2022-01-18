@@ -23,10 +23,10 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
 import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
-import org.microg.nlp.client.UnifiedLocationClient
+import org.microg.nlp.client.GeocodeClient
+import org.microg.nlp.client.LocationClient
 import org.microg.nlp.ui.databinding.BackendListBinding
 import org.microg.nlp.ui.databinding.BackendListEntryBinding
 import org.microg.nlp.ui.model.BackendInfo
@@ -45,13 +45,11 @@ class BackendListFragment : Fragment(R.layout.backend_list), BackendListEntryCal
 
     override fun onResume() {
         super.onResume()
-        UnifiedLocationClient[requireContext()].ref()
         lifecycleScope.launchWhenStarted { updateAdapters() }
     }
 
     override fun onPause() {
         super.onPause()
-        UnifiedLocationClient[requireContext()].unref()
     }
 
     override fun onOpenDetails(entry: BackendInfo?) {
@@ -65,25 +63,25 @@ class BackendListFragment : Fragment(R.layout.backend_list), BackendListEntryCal
 
     override fun onEnabledChange(entry: BackendInfo?, newValue: Boolean) {
         val activity = requireActivity() as AppCompatActivity
-        activity.lifecycleScope.launch {
+        lifecycleScope.launchWhenStarted {
             entry?.updateEnabled(this@BackendListFragment, newValue)
         }
     }
 
     private suspend fun updateAdapters() {
         val activity = requireActivity() as AppCompatActivity
-        locationAdapter.setEntries(createBackendInfoList(activity, Intent(ACTION_LOCATION_BACKEND), UnifiedLocationClient[activity].getLocationBackends(), BackendType.LOCATION))
-        geocoderAdapter.setEntries(createBackendInfoList(activity, Intent(ACTION_GEOCODER_BACKEND), UnifiedLocationClient[activity].getGeocoderBackends(), BackendType.GEOCODER))
+        locationAdapter.setEntries(createBackendInfoList(activity, Intent(ACTION_LOCATION_BACKEND), LocationClient(activity, lifecycle).getLocationBackends(), BackendType.LOCATION))
+        geocoderAdapter.setEntries(createBackendInfoList(activity, Intent(ACTION_GEOCODER_BACKEND), GeocodeClient(activity, lifecycle).getGeocodeBackends(), BackendType.GEOCODER))
     }
 
-    private fun createBackendInfoList(activity: AppCompatActivity, intent: Intent, enabledBackends: Array<String>, type: BackendType): Array<BackendInfo?> {
+    private fun createBackendInfoList(activity: AppCompatActivity, intent: Intent, enabledBackends: List<String>, type: BackendType): Array<BackendInfo?> {
         val backends = activity.packageManager.queryIntentServices(intent, GET_META_DATA).map {
             val info = BackendInfo(it.serviceInfo, type, firstSignatureDigest(activity, it.serviceInfo.packageName))
             if (enabledBackends.contains(info.signedComponent) || enabledBackends.contains(info.unsignedComponent)) {
                 info.enabled.set(true)
             }
             info.fillDetails(activity)
-            activity.lifecycleScope.launch {
+            lifecycleScope.launchWhenStarted {
                 info.loadIntents(activity)
             }
             info

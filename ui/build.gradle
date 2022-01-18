@@ -14,8 +14,9 @@ apply plugin: 'signing'
 android {
     compileSdkVersion androidCompileSdk
     buildToolsVersion "$androidBuildVersionTools"
-    dataBinding {
-        enabled = true
+
+    buildFeatures {
+        dataBinding = true
     }
 
     defaultConfig {
