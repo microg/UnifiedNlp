@@ -14,14 +14,13 @@ import android.os.Binder.getCallingUid
 import android.os.Bundle
 import android.os.RemoteException
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 import org.microg.nlp.client.UnifiedLocationClient.Companion.KEY_FORCE_NEXT_UPDATE
 import org.microg.nlp.client.UnifiedLocationClient.Companion.KEY_OP_PACKAGE_NAME
 import org.microg.nlp.client.UnifiedLocationClient.Companion.PERMISSION_SERVICE_ADMIN
+import java.io.PrintWriter
 
+@Deprecated("Use LocationService or GeocodeService")
 class UnifiedLocationServiceInstance(private val root: UnifiedLocationServiceRoot) : UnifiedLocationService.Default() {
     private var callback: LocationCallback? = null
     private var interval: Long = 0
@@ -88,7 +87,7 @@ class UnifiedLocationServiceInstance(private val root: UnifiedLocationServiceRoo
         if (lastLocation == null || lastLocation.time < System.currentTimeMillis() - UnifiedLocationServiceRoot.MAX_LOCATION_AGE || options.getBoolean(KEY_FORCE_NEXT_UPDATE, false)) {
             Log.d(TAG, "requestSingleUpdate[$debugPackageString] requesting new location")
             singleUpdatePending = true
-            root.coroutineScope.launch {
+            root.lifecycleScope.launchWhenStarted {
                 root.locationFuser.update()
                 root.updateLocationInterval()
             }
@@ -101,6 +100,10 @@ class UnifiedLocationServiceInstance(private val root: UnifiedLocationServiceRoo
                 throw e
             }
         }
+    }
+
+    fun dump(writer: PrintWriter?) {
+        writer?.println("$debugPackageString: interval $interval, single $singleUpdatePending")
     }
 
     companion object {

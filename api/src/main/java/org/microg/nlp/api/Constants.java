@@ -12,8 +12,11 @@ public class Constants {
     public static final String ACTION_FORCE_LOCATION = "org.microg.nlp.FORCE_LOCATION";
     public static final String PERMISSION_FORCE_LOCATION = "org.microg.permission.FORCE_COARSE_LOCATION";
     public static final String INTENT_EXTRA_LOCATION = "location";
+    @Deprecated
     public static final String LOCATION_EXTRA_BACKEND_PROVIDER = "SERVICE_BACKEND_PROVIDER";
+    @Deprecated
     public static final String LOCATION_EXTRA_BACKEND_COMPONENT = "SERVICE_BACKEND_COMPONENT";
+    @Deprecated
     public static final String LOCATION_EXTRA_OTHER_BACKENDS = "OTHER_BACKEND_RESULTS";
     public static final String METADATA_BACKEND_SETTINGS_ACTIVITY = "org.microg.nlp.BACKEND_SETTINGS_ACTIVITY";
     public static final String METADATA_BACKEND_ABOUT_ACTIVITY = "org.microg.nlp.BACKEND_ABOUT_ACTIVITY";

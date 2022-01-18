@@ -5,48 +5,49 @@
 
 package org.microg.nlp.service
 
-import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import java.io.FileDescriptor
+import java.io.PrintWriter
 
-class UnifiedLocationServiceEntryPoint : Service() {
-    private var root: UnifiedLocationServiceRoot? = null
-
-    @Synchronized
-    fun destroy() {
-        if (root != null) {
-            root!!.destroy()
-            root = null
-        }
-    }
+@Deprecated("Use LocationService or GeocodeService")
+class UnifiedLocationServiceEntryPoint : LifecycleService() {
+    private var root: UnifiedLocationServiceRoot = UnifiedLocationServiceRoot(this, lifecycle)
 
     override fun onCreate() {
+        singleton = this
         super.onCreate()
         Log.d(TAG, "onCreate")
-        destroy()
+        lifecycleScope.launchWhenStarted { root.reset() }
     }
 
     override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
         Log.d(TAG, "onBind: $intent")
-        synchronized(this) {
-            if (root == null) {
-                root = UnifiedLocationServiceRoot(this, CoroutineScope(Dispatchers.IO + Job()))
-            }
-            return root!!.asBinder()
-        }
+        return root.asBinder()
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         Log.d(TAG, "onDestroy")
-        destroy()
+        root.destroy()
+        singleton = null
+    }
+
+    override fun dump(fd: FileDescriptor?, writer: PrintWriter?, args: Array<out String>?) {
+        writer?.println("Singleton: ${singleton != null}")
+        root.dump(writer)
     }
 
     companion object {
         private val TAG = "ULocService"
+        private var singleton: UnifiedLocationServiceEntryPoint? = null
+
+        fun reloadPreferences() {
+            singleton?.root?.reloadPreferences()
+        }
     }
 }

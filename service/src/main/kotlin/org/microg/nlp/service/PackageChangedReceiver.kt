@@ -11,8 +11,6 @@ import android.content.Intent
 import android.content.Intent.*
 import android.util.Log
 
-import org.microg.nlp.client.UnifiedLocationClient
-
 class PackageChangedReceiver : BroadcastReceiver() {
 
     private fun isProtectedAction(action: String) = when (action) {
@@ -29,14 +27,14 @@ class PackageChangedReceiver : BroadcastReceiver() {
         for (backend in preferences.locationBackends) {
             if (backend.startsWith("$packageName/")) {
                 Log.d(TAG, "Reloading location service for $packageName")
-                suspend { UnifiedLocationClient[context].reloadPreferences() }
+                UnifiedLocationServiceEntryPoint.reloadPreferences()
                 return
             }
         }
         for (backend in preferences.geocoderBackends) {
             if (backend.startsWith("$packageName/")) {
                 Log.d(TAG, "Reloading geocoding service for $packageName")
-                suspend { UnifiedLocationClient[context].reloadPreferences() }
+                UnifiedLocationServiceEntryPoint.reloadPreferences()
                 return
             }
         }
