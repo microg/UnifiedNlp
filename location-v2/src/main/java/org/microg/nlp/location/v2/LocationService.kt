@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.io.FileDescriptor
 import java.io.PrintWriter
@@ -20,7 +21,10 @@ open class LocationService : LifecycleService() {
         super.onCreate()
         Log.d(TAG, "Creating system service...")
         provider = LocationProvider(this, lifecycle)
-        lifecycleScope.launchWhenStarted { provider.connect() }
+        lifecycleScope.launchWhenStarted {
+            delay(5000)
+            provider.connect()
+        }
         Log.d(TAG, "Created system service.")
     }
 
