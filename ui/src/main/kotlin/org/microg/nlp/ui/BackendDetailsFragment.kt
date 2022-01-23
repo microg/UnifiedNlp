@@ -118,42 +118,66 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
         }
         if (entry.type == LOCATION && entry.enabled.get()) {
             if (updateInProgress) return
+            locationClient.connect()
             updateInProgress = true
-
-            val locationTemp = locationClient.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
-            val location = when (locationTemp) {
-                null -> {
-                    delay(500L) // Wait short time to ensure backend was activated
-                    Log.d(TAG, "Location was not available, requesting once")
-                    locationClient.forceLocationUpdate()
-                    val secondAttempt = locationClient.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
-                    if (secondAttempt == null) {
-                        Log.d(TAG, "Location still not available, waiting or giving up")
-                        delay(WAIT_FOR_RESULT)
-                        locationClient.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
-                    } else {
-                        secondAttempt
+            try {
+                val locationTemp = locationClient.getLastLocationForBackend(
+                    entry.serviceInfo.packageName,
+                    entry.serviceInfo.name,
+                    entry.firstSignatureDigest
+                )
+                val location = when (locationTemp) {
+                    null -> {
+                        delay(500L) // Wait short time to ensure backend was activated
+                        Log.d(TAG, "Location was not available, requesting once")
+                        locationClient.forceLocationUpdate()
+                        val secondAttempt = locationClient.getLastLocationForBackend(
+                            entry.serviceInfo.packageName,
+                            entry.serviceInfo.name,
+                            entry.firstSignatureDigest
+                        )
+                        if (secondAttempt == null) {
+                            Log.d(TAG, "Location still not available, waiting or giving up")
+                            delay(WAIT_FOR_RESULT)
+                            locationClient.getLastLocationForBackend(
+                                entry.serviceInfo.packageName,
+                                entry.serviceInfo.name,
+                                entry.firstSignatureDigest
+                            )
+                        } else {
+                            secondAttempt
+                        }
                     }
-                }
-                else -> locationTemp
-            } ?: return
-            var locationString = "${location.latitude.toStringWithDigits(6)}, ${location.longitude.toStringWithDigits(6)}"
+                    else -> locationTemp
+                } ?: return
+                var locationString =
+                    "${location.latitude.toStringWithDigits(6)}, ${location.longitude.toStringWithDigits(6)}"
 
-            val address = geocodeClient.requestReverseGeocode(ReverseGeocodeRequest(LatLon(location.latitude, location.longitude))).singleOrNull()
-            if (address != null) {
-                val addressLine = StringBuilder()
-                var i = 0
-                addressLine.append(address.getAddressLine(i))
-                while (addressLine.length < 10 && address.maxAddressLineIndex > i) {
-                    i++
-                    addressLine.append(", ")
+                val address = geocodeClient.requestReverseGeocode(
+                    ReverseGeocodeRequest(
+                        LatLon(
+                            location.latitude,
+                            location.longitude
+                        )
+                    )
+                ).singleOrNull()
+                if (address != null) {
+                    val addressLine = StringBuilder()
+                    var i = 0
                     addressLine.append(address.getAddressLine(i))
+                    while (addressLine.length < 10 && address.maxAddressLineIndex > i) {
+                        i++
+                        addressLine.append(", ")
+                        addressLine.append(address.getAddressLine(i))
+                    }
+                    locationString = addressLine.toString()
                 }
-                locationString = addressLine.toString()
+                binding.lastLocationString = locationString
+                binding.executePendingBindings()
+            } finally {
+                locationClient.disconnect()
+                updateInProgress = false
             }
-            updateInProgress = false
-            binding.lastLocationString = locationString
-            binding.executePendingBindings()
         } else {
             Log.d(TAG, "Location is not available for this backend (type: ${entry.type}, enabled ${entry.enabled.get()}")
             binding.lastLocationString = ""
