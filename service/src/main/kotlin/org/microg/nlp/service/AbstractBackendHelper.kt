@@ -54,6 +54,12 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
                     Log.w(TAG, e)
                 }
             }
+            unbindNow()
+        }
+    }
+
+    fun unbindNow() {
+        if (bound) {
             try {
                 Log.d(TAG, "Unbinding from: $serviceIntent")
                 context.unbindService(this)

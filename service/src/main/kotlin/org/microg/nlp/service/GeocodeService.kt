@@ -41,9 +41,7 @@ class GeocodeService : LifecycleService() {
     }
 
     override fun onDestroy() {
-        lifecycleScope.launch {
-            service.destroy()
-        }
+        service.destroy()
         super.onDestroy()
         Log.d(TAG, "Destroyed")
     }
@@ -187,7 +185,7 @@ class GeocodeServiceImpl(private val context: Context, private val lifecycle: Li
         fuser.dump(writer)
     }
 
-    suspend fun destroy() {
+    fun destroy() {
         fuser.destroy()
     }
 

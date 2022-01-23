@@ -46,9 +46,7 @@ class LocationService : LifecycleService() {
     }
 
     override fun onDestroy() {
-        lifecycleScope.launch {
-            service.destroy()
-        }
+        service.destroy()
         super.onDestroy()
         Log.d(TAG, "Destroyed")
     }
@@ -340,7 +338,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
         fuser.dump(writer)
     }
 
-    suspend fun destroy() {
+    fun destroy() {
         fuser.destroy()
     }
 

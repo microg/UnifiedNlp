@@ -57,6 +57,12 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
         }
     }
 
+    private fun unbindNow() {
+        for (handler in backendHelpers) {
+            handler.unbindNow()
+        }
+    }
+
     fun bind() {
         fusing = false
         for (handler in backendHelpers) {
@@ -64,8 +70,8 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
         }
     }
 
-    suspend fun destroy() {
-        unbind()
+    fun destroy() {
+        unbindNow()
         backendHelpers.clear()
     }
 

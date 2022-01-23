@@ -52,8 +52,14 @@ class GeocodeFuser(private val context: Context, private val lifecycle: Lifecycl
         }
     }
 
-    suspend fun destroy() {
-        unbind()
+    private fun unbindNow() {
+        for (backendHelper in backendHelpers) {
+            backendHelper.unbindNow()
+        }
+    }
+
+    fun destroy() {
+        unbindNow()
         backendHelpers.clear()
     }
 
