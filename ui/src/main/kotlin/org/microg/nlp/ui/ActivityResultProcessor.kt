@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2020, microG Project Team
+ * SPDX-FileCopyrightText: 2020 microG Project Team
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -20,7 +20,7 @@ private val continuationMap = SparseArray<(Int, Intent?) -> Unit>()
 
 fun Fragment.startActivityForResult(intent: Intent, options: Bundle? = null, callback: (Int, Intent?) -> Unit) {
     val requestCode = requestCodeCounter.getAndIncrement()
-    continuationMap[requestCode] = callback
+    continuationMap.put(requestCode, callback)
     startActivityForResult(intent, requestCode, options)
 }
 
