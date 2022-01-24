@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2021, microG Project Team
+# SPDX-License-Identifier: CC0-1.0
+
+name: REUSE Compliance Check
+on: [pull_request, push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: fsfe/reuse-action@v1
