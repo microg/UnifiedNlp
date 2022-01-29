@@ -14,7 +14,10 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.IBinder
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
+import java.io.PrintWriter
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -23,10 +26,12 @@ fun <T> Array<out T>?.isNotNullOrEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
-abstract class AbstractBackendHelper(private val TAG: String, private val context: Context, protected val coroutineScope: CoroutineScope, val serviceIntent: Intent, val signatureDigest: String?) : ServiceConnection {
+abstract class AbstractBackendHelper(private val TAG: String, private val context: Context, private val lifecycle: Lifecycle, val serviceIntent: Intent, val signatureDigest: String?) : ServiceConnection, LifecycleOwner {
     private var bound: Boolean = false
 
     protected abstract suspend fun close()
+
+    override fun getLifecycle(): Lifecycle = lifecycle
 
     protected abstract fun hasBackend(): Boolean
 
@@ -49,6 +54,12 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
                     Log.w(TAG, e)
                 }
             }
+            unbindNow()
+        }
+    }
+
+    fun unbindNow() {
+        if (bound) {
             try {
                 Log.d(TAG, "Unbinding from: $serviceIntent")
                 context.unbindService(this)
@@ -79,6 +90,10 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
             }
 
         }
+    }
+
+    fun dump(writer: PrintWriter?) {
+        writer?.println("  ${javaClass.simpleName} $serviceIntent bound=$bound")
     }
 
     companion object {

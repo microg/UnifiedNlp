@@ -9,8 +9,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.ApplicationInfo
-import android.content.pm.ResolveInfo
 import android.location.Address
 import android.location.Location
 import android.os.Bundle
@@ -18,37 +16,31 @@ import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
-
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.*
 import org.microg.nlp.service.AddressCallback
 import org.microg.nlp.service.LocationCallback
 import org.microg.nlp.service.UnifiedLocationService
-
-import java.lang.ref.WeakReference
-import java.util.Timer
-import java.util.TimerTask
-import java.util.concurrent.atomic.AtomicInteger
-
-import android.content.pm.PackageManager.SIGNATURE_MATCH
-import kotlinx.coroutines.*
-import java.lang.RuntimeException
+import java.util.*
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.*
-import kotlin.math.min
 
 private const val CALL_TIMEOUT = 10000L
 
-class UnifiedLocationClient private constructor(context: Context) {
+@Deprecated("Use LocationClient or GeocodeClient")
+class UnifiedLocationClient(private val context: Context, private val lifecycle: Lifecycle) : LifecycleOwner {
     private var bound = false
     private val serviceReferenceCount = AtomicInteger(0)
     private val options = Bundle()
-    private var context: WeakReference<Context> = WeakReference(context)
     private var service: UnifiedLocationService? = null
     private val syncThreads: ThreadPoolExecutor = ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.SECONDS, LinkedBlockingQueue())
     private val waitingForService = arrayListOf<Continuation<UnifiedLocationService>>()
     private var timer: Timer? = null
     private var reconnectCount = 0
     private val requests = CopyOnWriteArraySet<LocationRequest>()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             this@UnifiedLocationClient.onServiceConnected(name, service)
@@ -82,56 +74,7 @@ class UnifiedLocationClient private constructor(context: Context) {
     val targetPackage: String?
         get() = resolve()?.`package`
 
-    private fun resolve(): Intent? {
-        val context = this.context.get() ?: return null
-        val intent = Intent(ACTION_UNIFIED_LOCATION_SERVICE)
-
-        val pm = context.packageManager
-        var resolveInfos = pm.queryIntentServices(intent, 0)
-        if (resolveInfos.size > 1) {
-
-            // Restrict to self if possible
-            val isSelf: (it: ResolveInfo) -> Boolean = {
-                it.serviceInfo.packageName == context.packageName
-            }
-            if (resolveInfos.size > 1 && resolveInfos.any(isSelf)) {
-                Log.d(TAG, "Found more than one active unified service, restricted to own package " + context.packageName)
-                resolveInfos = resolveInfos.filter(isSelf)
-            }
-
-            // Restrict to package with matching signature if possible
-            val isSelfSig: (it: ResolveInfo) -> Boolean = {
-                it.serviceInfo.packageName == context.packageName
-            }
-            if (resolveInfos.size > 1 && resolveInfos.any(isSelfSig)) {
-                Log.d(TAG, "Found more than one active unified service, restricted to related packages")
-                resolveInfos = resolveInfos.filter(isSelfSig)
-            }
-
-            // Restrict to system if any package is system
-            val isSystem: (it: ResolveInfo) -> Boolean = {
-                (it.serviceInfo?.applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM > 0
-            }
-            if (resolveInfos.size > 1 && resolveInfos.any(isSystem)) {
-                Log.d(TAG, "Found more than one active unified service, restricted to system packages")
-                resolveInfos = resolveInfos.filter(isSystem)
-            }
-
-            val highestPriority: ResolveInfo? = resolveInfos.maxBy { it.priority }
-            intent.setPackage(highestPriority!!.serviceInfo.packageName)
-            intent.setClassName(highestPriority.serviceInfo.packageName, highestPriority.serviceInfo.name)
-            if (resolveInfos.size > 1) {
-                Log.d(TAG, "Found more than one active unified service, picked highest priority " + intent.component)
-            }
-            return intent
-        } else if (!resolveInfos.isEmpty()) {
-            intent.setPackage(resolveInfos[0].serviceInfo.packageName)
-            return intent
-        } else {
-            Log.w(TAG, "No service to bind to, your system does not support unified service")
-            return null
-        }
-    }
+    private fun resolve(): Intent? = resolveIntent(context, ACTION_UNIFIED_LOCATION_SERVICE)
 
     @Synchronized
     private fun updateBinding(): Boolean {
@@ -167,7 +110,6 @@ class UnifiedLocationClient private constructor(context: Context) {
 
     @Synchronized
     private fun bind() {
-        val context = this.context.get() ?: return
         if (!bound) {
             Log.w(TAG, "Tried to bind while not being bound!")
             return
@@ -186,7 +128,7 @@ class UnifiedLocationClient private constructor(context: Context) {
     @Synchronized
     private fun unbind() {
         try {
-            this.context.get()?.unbindService(connection)
+            this.context.unbindService(connection)
         } catch (ignored: Exception) {
         }
 
@@ -207,29 +149,34 @@ class UnifiedLocationClient private constructor(context: Context) {
         updateBinding()
     }
 
+    @Deprecated("Use LocationClient")
     suspend fun getSingleLocation(): Location = suspendCoroutine { continuation ->
         requestSingleLocation(LocationListener.wrap { continuation.resume(it) })
     }
 
+    @Deprecated("Use LocationClient")
     fun requestSingleLocation(listener: LocationListener) {
         requestLocationUpdates(listener, 0, 1)
     }
 
+    @Deprecated("Use LocationClient")
     fun requestLocationUpdates(listener: LocationListener, interval: Long) {
         requestLocationUpdates(listener, interval, Integer.MAX_VALUE)
     }
 
+    @Deprecated("Use LocationClient")
     fun requestLocationUpdates(listener: LocationListener, interval: Long, count: Int) {
         requests.removeAll(requests.filter { it.listener === listener })
         requests.add(LocationRequest(listener, interval, count))
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             updateServiceInterval()
             updateBinding()
         }
     }
 
+    @Deprecated("Use LocationClient")
     fun removeLocationUpdates(listener: LocationListener) {
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             removeRequests(requests.filter { it.listener === listener })
         }
     }
@@ -310,6 +257,7 @@ class UnifiedLocationClient private constructor(context: Context) {
         return result ?: throw NullPointerException()
     }
 
+    @Deprecated("Use GeocoderClient")
     suspend fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int, locale: String, timeout: Long = Long.MAX_VALUE): List<Address> {
         try {
             val service = refAndGetService()
@@ -325,10 +273,12 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use GeocoderClient")
     fun getFromLocationSync(latitude: Double, longitude: Double, maxResults: Int, locale: String, timeout: Long = CALL_TIMEOUT): List<Address> = executeSyncWithTimeout(timeout) {
         getFromLocation(latitude, longitude, maxResults, locale, timeout)
     }
 
+    @Deprecated("Use GeocoderClient")
     suspend fun getFromLocationName(locationName: String, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String, timeout: Long = Long.MAX_VALUE): List<Address> {
         return try {
             val service = refAndGetService()
@@ -344,20 +294,12 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use GeocoderClient")
     fun getFromLocationNameSync(locationName: String, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String, timeout: Long = CALL_TIMEOUT): List<Address> = executeSyncWithTimeout(timeout) {
         getFromLocationName(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale, timeout)
     }
 
-    suspend fun reloadPreferences() {
-        try {
-            refAndGetService().reloadPreferences()
-        } catch (e: RemoteException) {
-            Log.w(TAG, "Failed to handle request", e)
-        } finally {
-            unref()
-        }
-    }
-
+    @Deprecated("Use LocationClient")
     suspend fun getLocationBackends(): Array<String> {
         try {
             return refAndGetService().locationBackends
@@ -369,6 +311,7 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use LocationClient")
     suspend fun setLocationBackends(backends: Array<String>) {
         try {
             refAndGetService().locationBackends = backends
@@ -379,6 +322,7 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use GeocoderClient")
     suspend fun getGeocoderBackends(): Array<String> {
         try {
             return refAndGetService().geocoderBackends
@@ -390,6 +334,7 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use GeocoderClient")
     suspend fun setGeocoderBackends(backends: Array<String>) {
         try {
             refAndGetService().geocoderBackends = backends
@@ -400,10 +345,12 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use LocationClient")
     fun getLastLocationSync(timeout: Long = CALL_TIMEOUT): Location? = executeSyncWithTimeout(timeout) {
         getLastLocation()
     }
 
+    @Deprecated("Use LocationClient")
     suspend fun getLastLocation(): Location? {
         return try {
             refAndGetService().lastLocation
@@ -415,6 +362,7 @@ class UnifiedLocationClient private constructor(context: Context) {
         }
     }
 
+    @Deprecated("Use LocationClient")
     suspend fun getLastLocationForBackend(packageName: String, className: String, signatureDigest: String? = null): Location? {
         return try {
             refAndGetService().getLastLocationForBackend(packageName, className, signatureDigest)
@@ -439,30 +387,32 @@ class UnifiedLocationClient private constructor(context: Context) {
     }
 
     private suspend fun updateServiceInterval() {
-        var interval: Long = Long.MAX_VALUE
+        var minTime = Long.MAX_VALUE
         var requestSingle = false
         for (request in requests) {
             if (request.interval <= 0) {
                 requestSingle = true
+                forceNextUpdate = true
                 continue
             }
-            interval = min(interval, request.interval)
+            if (request.interval <= minTime) {
+                minTime = request.interval
+            }
         }
-        if (interval == Long.MAX_VALUE) {
+        if (minTime == Long.MAX_VALUE) {
             Log.d(TAG, "Disable automatic updates")
-            interval = 0
+            minTime = 0
         } else {
-            Log.d(TAG, "Set update interval to $interval")
+            Log.d(TAG, "Set update interval to $minTime")
         }
-        val service: UnifiedLocationService
-        try {
-            service = waitForService()
+        val service = try {
+            waitForService()
         } catch (e: Exception) {
             Log.w(TAG, e)
             return
         }
         try {
-            service.setUpdateInterval(interval, options)
+            service.setUpdateInterval(minTime, options)
             if (requestSingle) {
                 Log.d(TAG, "Request single update (force update: $forceNextUpdate)")
                 service.requestSingleUpdate(options)
@@ -487,12 +437,12 @@ class UnifiedLocationClient private constructor(context: Context) {
             continuations.addAll(waitingForService)
             waitingForService.clear()
         }
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             try {
                 Log.d(TAG, "Registering location callback")
                 service.registerLocationCallback(object : LocationCallback.Stub() {
                     override fun onLocationUpdate(location: Location) {
-                        coroutineScope.launch {
+                        lifecycleScope.launchWhenStarted {
                             this@UnifiedLocationClient.onLocationUpdate(location)
                         }
                     }
@@ -537,6 +487,8 @@ class UnifiedLocationClient private constructor(context: Context) {
         Log.w(TAG, "Null binding from $name, reconnecting")
         bindLater()
     }
+
+    override fun getLifecycle(): Lifecycle = lifecycle
 
     interface LocationListener {
         fun onLocation(location: Location)
@@ -592,20 +544,6 @@ class UnifiedLocationClient private constructor(context: Context) {
         const val KEY_FORCE_NEXT_UPDATE = "org.microg.nlp.FORCE_NEXT_UPDATE"
         const val KEY_OP_PACKAGE_NAME = "org.microg.nlp.OP_PACKAGE_NAME"
         private val TAG = "ULocClient"
-        private var client: UnifiedLocationClient? = null
-
-        @JvmStatic
-        @Synchronized
-        operator fun get(context: Context): UnifiedLocationClient {
-            var client = client
-            if (client == null) {
-                client = UnifiedLocationClient(context)
-                this.client = client
-            } else {
-                client.context = WeakReference(context)
-            }
-            return client
-        }
     }
 }
 

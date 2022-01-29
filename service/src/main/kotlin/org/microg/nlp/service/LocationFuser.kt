@@ -5,23 +5,31 @@
 
 package org.microg.nlp.service
 
+import android.annotation.TargetApi
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
+import android.os.*
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 
 import java.util.ArrayList
 import java.util.Collections
 import java.util.Comparator
 
 import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
-import org.microg.nlp.api.Constants.LOCATION_EXTRA_OTHER_BACKENDS
+import org.microg.nlp.api.LocationCallback
+import org.microg.nlp.service.api.Constants
+import java.io.PrintWriter
 import java.util.concurrent.CopyOnWriteArrayList
 
-class LocationFuser(private val context: Context, private val root: UnifiedLocationServiceRoot) {
+private const val TAG = "LocationFuser"
+
+class LocationFuser(private val context: Context, private val lifecycle: Lifecycle, private val receiver: LocationReceiver) : LifecycleOwner {
 
     private val backendHelpers = CopyOnWriteArrayList<LocationBackendHelper>()
     private var fusing = false
@@ -38,7 +46,7 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
                 val intent = Intent(ACTION_LOCATION_BACKEND)
                 intent.setPackage(parts[0])
                 intent.setClassName(parts[0], parts[1])
-                backendHelpers.add(LocationBackendHelper(context, this, root.coroutineScope, intent, if (parts.size >= 3) parts[2] else null))
+                backendHelpers.add(LocationBackendHelper(context, this, lifecycle, intent, if (parts.size >= 3) parts[2] else null))
             }
         }
     }
@@ -49,6 +57,12 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
         }
     }
 
+    private fun unbindNow() {
+        for (handler in backendHelpers) {
+            handler.unbindNow()
+        }
+    }
+
     fun bind() {
         fusing = false
         for (handler in backendHelpers) {
@@ -56,8 +70,8 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
         }
     }
 
-    suspend fun destroy() {
-        unbind()
+    fun destroy() {
+        unbindNow()
         backendHelpers.clear()
     }
 
@@ -84,7 +98,7 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
             if (lastLocationReportTime < location.time) {
                 lastLocationReportTime = location.time
                 Log.v(TAG, "Fused location: $location")
-                root.reportLocation(location)
+                receiver.reportLocation(location)
             } else {
                 Log.v(TAG, "Ignoring location update as it's older than other provider.")
             }
@@ -101,8 +115,8 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
             if (locations[0] == backendResult) continue
             backendResults.add(backendResult)
         }
-        if (!backendResults.isEmpty()) {
-            location.extras.putParcelableArrayList(LOCATION_EXTRA_OTHER_BACKENDS, backendResults)
+        if (backendResults.isNotEmpty()) {
+            location.extras.putParcelableArrayList(Constants.LOCATION_EXTRA_OTHER_BACKENDS, backendResults)
         }
         return location
     }
@@ -113,10 +127,19 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
         updateLocation()
     }
 
-    fun getLastLocationForBackend(packageName: String, className: String, signatureDigest: String?): Location? =
+    fun getLastLocationForBackend(packageName: String?, className: String?, signatureDigest: String?): Location? =
             backendHelpers.find {
                 it.serviceIntent.`package` == packageName && it.serviceIntent.component?.className == className && (signatureDigest == null || it.signatureDigest == null || it.signatureDigest == signatureDigest)
             }?.lastLocation
+
+    fun dump(writer: PrintWriter?) {
+        writer?.println("${backendHelpers.size} backends:")
+        for (helper in backendHelpers) {
+            helper?.dump(writer)
+        }
+    }
+
+    override fun getLifecycle(): Lifecycle = lifecycle
 
     class LocationComparator : Comparator<Location> {
 
@@ -139,8 +162,116 @@ class LocationFuser(private val context: Context, private val root: UnifiedLocat
             val SWITCH_ON_FRESHNESS_CLIFF_MS: Long = 30000 // 30 seconds
         }
     }
+}
 
-    companion object {
-        private val TAG = "UnifiedLocation"
+
+class LocationBackendHelper(context: Context, private val locationFuser: LocationFuser, lifecycle: Lifecycle, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, lifecycle, serviceIntent, signatureDigest) {
+    private val callback = Callback()
+    private var backend: AsyncLocationBackend? = null
+    private var updateWaiting: Boolean = false
+    var lastLocation: Location? = null
+        private set(location) {
+            if (location == null || !location.hasAccuracy()) {
+                return
+            }
+            if (location.extras == null) {
+                location.extras = Bundle()
+            }
+            location.extras.putString(Constants.LOCATION_EXTRA_BACKEND_PROVIDER, location.provider)
+            location.extras.putString(Constants.LOCATION_EXTRA_BACKEND_COMPONENT,
+                    serviceIntent.component!!.flattenToShortString())
+            location.provider = "network"
+            if (!location.hasAccuracy()) {
+                location.accuracy = 50000f
+            }
+            if (location.time <= 0) {
+                location.time = System.currentTimeMillis()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                updateElapsedRealtimeNanos(location)
+            }
+            field = location
+        }
+
+    /**
+     * Requests a location update from the backend.
+     *
+     * @return The location reported by the backend. This may be null if a backend cannot determine its
+     * location, or if it is going to return a location asynchronously.
+     */
+    suspend fun update(): Location? {
+        var result: Location? = null
+        if (backend == null) {
+            Log.d(TAG, "Not (yet) bound.")
+            updateWaiting = true
+        } else {
+            updateWaiting = false
+            try {
+                result = backend?.update()
+                if (result == null) {
+                    Log.d(TAG, "Received no location from ${serviceIntent.component!!.flattenToShortString()}")
+                } else {
+                    Log.d(TAG, "Received location from ${serviceIntent.component!!.flattenToShortString()} with time ${result.time} (last was ${lastLocation?.time ?: 0})")
+                    if (this.lastLocation == null || result.time > this.lastLocation!!.time) {
+                        lastLocation = result
+                        locationFuser.reportLocation()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, e)
+                unbind()
+            }
+
+        }
+        return result
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private fun updateElapsedRealtimeNanos(location: Location) {
+        if (location.elapsedRealtimeNanos <= 0) {
+            location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+        }
+    }
+
+    @Throws(RemoteException::class)
+    public override suspend fun close() {
+        Log.d(TAG, "Calling close")
+        backend!!.close()
+    }
+
+    public override fun hasBackend(): Boolean {
+        return backend != null
+    }
+
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        super.onServiceConnected(name, service)
+        backend = AsyncLocationBackend(service, name.toShortString() + "-location-backend")
+        lifecycleScope.launchWhenStarted {
+            try {
+                Log.d(TAG, "Calling open")
+                backend!!.open(callback)
+                if (updateWaiting) {
+                    update()
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, e)
+                unbind()
+            }
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {
+        super.onServiceDisconnected(name)
+        backend = null
+    }
+
+    private inner class Callback : LocationCallback.Stub() {
+        override fun report(location: Location?) {
+            val lastLocation = lastLocation
+            if (location == null || lastLocation != null && location.time > 0 && location.time <= lastLocation.getTime())
+                return
+            this@LocationBackendHelper.lastLocation = location
+            locationFuser.reportLocation()
+        }
     }
 }

@@ -13,9 +13,11 @@ import android.os.Binder
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import org.microg.nlp.client.UnifiedLocationClient.Companion.PERMISSION_SERVICE_ADMIN
+import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -25,24 +27,21 @@ import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.min
 
-class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntryPoint, val coroutineScope: CoroutineScope) : UnifiedLocationService.Stub() {
+@Deprecated("Use LocationService or GeocodeService")
+class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntryPoint, private val lifecycle: Lifecycle) : UnifiedLocationService.Stub(), LifecycleOwner, LocationReceiver {
     private val instances = HashMap<Int, UnifiedLocationServiceInstance>()
     private val geocoderThreads: ThreadPoolExecutor = ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.SECONDS, LinkedBlockingQueue())
     private val timer: Timer = Timer("location-requests")
     private var timerTask: TimerTask? = null
     private var lastTime: Long = 0
-    val locationFuser: LocationFuser = LocationFuser(service, this)
-    val geocodeFuser: GeocodeFuser = GeocodeFuser(service, this)
+    val locationFuser: LocationFuser = LocationFuser(service, lifecycle, this)
+    val geocodeFuser: GeocodeFuser = GeocodeFuser(service, lifecycle)
     var lastReportedLocation: Location? = null
         private set
     private var interval: Long = 0
 
     val context: Context
         get() = service
-
-    init {
-        coroutineScope.launch { reset() }
-    }
 
     val instance: UnifiedLocationServiceInstance
         @Synchronized get() {
@@ -53,7 +52,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
         }
 
     @Synchronized
-    fun reportLocation(location: Location) {
+    override fun reportLocation(location: Location) {
         for (instance in ArrayList(instances.values)) {
             instance.reportLocation(location)
         }
@@ -72,7 +71,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     fun destroy() {
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             locationFuser.destroy()
             geocodeFuser.destroy()
         }
@@ -102,7 +101,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
 
             val timerTask = object : TimerTask() {
                 override fun run() {
-                    coroutineScope.launch {
+                    lifecycleScope.launchWhenStarted {
                         lastTime = System.currentTimeMillis()
                         locationFuser.update()
                     }
@@ -138,7 +137,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun getFromLocationWithOptions(latitude: Double, longitude: Double, maxResults: Int, locale: String, options: Bundle, callback: AddressCallback) {
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             val res = try {
                 geocodeFuser.getFromLocation(latitude, longitude, maxResults, locale).orEmpty()
             } catch (e: Exception) {
@@ -154,7 +153,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun getFromLocationNameWithOptions(locationName: String, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String, options: Bundle, callback: AddressCallback) {
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             val res = try {
                 geocodeFuser.getFromLocationName(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale).orEmpty()
             } catch (e: Exception) {
@@ -198,7 +197,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
 
     override fun reloadPreferences() {
         checkAdminPermission();
-        coroutineScope.launch {
+        lifecycleScope.launchWhenStarted {
             reset()
         }
     }
@@ -213,7 +212,8 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
         return locationFuser.getLastLocationForBackend(packageName, className, signatureDigest)
     }
 
-    @Synchronized
+    override fun getLifecycle(): Lifecycle = lifecycle
+
     suspend fun reset() {
         locationFuser.reset()
         locationFuser.bind()
@@ -221,9 +221,19 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
         geocodeFuser.bind()
     }
 
+    fun dump(writer: PrintWriter?) {
+        writer?.println("Last reported location: $lastReportedLocation")
+        writer?.println("Current location interval: $interval")
+        for (instance in instances.values) {
+            instance.dump(writer)
+        }
+        locationFuser.dump(writer)
+        geocodeFuser.dump(writer)
+    }
+
     companion object {
         private val TAG = "ULocService"
         val MIN_LOCATION_INTERVAL = 2500L
-        val MAX_LOCATION_AGE = 3600000L
+        val MAX_LOCATION_AGE = 300000L
     }
 }

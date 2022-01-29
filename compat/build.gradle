@@ -12,7 +12,15 @@ if (!sdkDir) {
     sdkDir = properties.getProperty('sdk.dir')
 }
 
-sourceSets.main {
-    java.srcDirs = ['src/current/java', 'src/v9/java']
-    compileClasspath += project.rootProject.files("$sdkDir/platforms/android-$androidCompileSdk/android.jar")
+sourceSets {
+    main {
+        java {
+            srcDir 'src/current/java'
+            srcDir 'src/v9/java'
+        }
+    }
+}
+
+dependencies {
+    compileOnly files("$sdkDir/platforms/android-$androidCompileSdk/android.jar")
 }

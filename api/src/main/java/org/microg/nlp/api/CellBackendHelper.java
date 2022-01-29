@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2013, microG Project Team
+ * SPDX-FileCopyrightText: 2013 microG Project Team
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -187,6 +187,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
      * This will fix empty MNC since Android 9 with 0-prefixed MNCs.
      * Issue: https://issuetracker.google.com/issues/113560852
      */
+    @SuppressLint("SoonBlockedPrivateApi")
     private void fixEmptyMnc(List<CellInfo> cellInfo) {
         if (Build.VERSION.SDK_INT < 28 || cellInfo == null) {
             return;

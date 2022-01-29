@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2021, microG Project Team
+# SPDX-License-Identifier: CC0-1.0
+
+name: Build
+on: [pull_request, push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: ./gradlew --no-daemon build
+        env:
+          TERM: dumb
+          JAVA_OPTS: -Xmx2048m

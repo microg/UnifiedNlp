@@ -5,6 +5,7 @@
 
 include ':api'
 include ':service'
+include ':service-api'
 include ':compat'
 include ':client'
 include ':location-v1'

@@ -18,10 +18,26 @@
     <application>
         <service
             android:name=".UnifiedLocationServiceEntryPoint"
-            android:exported="true"
+            android:exported="false"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.microg.nlp.service.UnifiedLocationService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".LocationService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.microg.nlp.service.LOCATION" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".GeocodeService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.microg.nlp.service.GEOCODE" />
             </intent-filter>
         </service>
 

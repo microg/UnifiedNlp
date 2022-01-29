@@ -26,14 +26,16 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.microg.nlp.client.UnifiedLocationClient
-import org.microg.nlp.ui.model.BackendType.GEOCODER
-import org.microg.nlp.ui.model.BackendType.LOCATION
+import org.microg.nlp.client.GeocodeClient
+import org.microg.nlp.client.LocationClient
+import org.microg.nlp.service.api.LatLon
+import org.microg.nlp.service.api.ReverseGeocodeRequest
 import org.microg.nlp.ui.databinding.BackendDetailsBinding
 import org.microg.nlp.ui.model.BackendDetailsCallback
 import org.microg.nlp.ui.model.BackendInfo
 import org.microg.nlp.ui.model.BackendType
+import org.microg.nlp.ui.model.BackendType.GEOCODER
+import org.microg.nlp.ui.model.BackendType.LOCATION
 import java.util.*
 
 class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetailsCallback {
@@ -80,6 +82,8 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
         }
 
     private lateinit var binding: BackendDetailsBinding
+    private lateinit var locationClient: LocationClient
+    private lateinit var geocodeClient: GeocodeClient
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = BackendDetailsBinding.inflate(inflater, container, false)
@@ -90,13 +94,13 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
     override fun onResume() {
         super.onResume()
         binding.switchWidget.trackTintList = switchBarTrackTintColor
-        UnifiedLocationClient[requireContext()].ref()
+        locationClient = LocationClient(requireContext(), lifecycle)
+        geocodeClient = GeocodeClient(requireContext(), lifecycle)
         lifecycleScope.launchWhenStarted { initContent(createBackendInfo()) }
     }
 
     override fun onPause() {
         super.onPause()
-        UnifiedLocationClient[requireContext()].unref()
     }
 
     private suspend fun initContent(entry: BackendInfo?) {
@@ -114,44 +118,66 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
         }
         if (entry.type == LOCATION && entry.enabled.get()) {
             if (updateInProgress) return
+            locationClient.connect()
             updateInProgress = true
-            val client = UnifiedLocationClient[requireContext()]
-
-            val locationTemp = client.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
-            val location = when (locationTemp) {
-                null -> {
-                    delay(500L) // Wait short time to ensure backend was activated
-                    Log.d(TAG, "Location was not available, requesting once")
-                    client.forceNextUpdate = true
-                    client.getSingleLocation()
-                    val secondAttempt = client.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
-                    if (secondAttempt == null) {
-                        Log.d(TAG, "Location still not available, waiting or giving up")
-                        delay(WAIT_FOR_RESULT)
-                        client.getLastLocationForBackend(entry.serviceInfo.packageName, entry.serviceInfo.name, entry.firstSignatureDigest)
-                    } else {
-                        secondAttempt
+            try {
+                val locationTemp = locationClient.getLastLocationForBackend(
+                    entry.serviceInfo.packageName,
+                    entry.serviceInfo.name,
+                    entry.firstSignatureDigest
+                )
+                val location = when (locationTemp) {
+                    null -> {
+                        delay(500L) // Wait short time to ensure backend was activated
+                        Log.d(TAG, "Location was not available, requesting once")
+                        locationClient.forceLocationUpdate()
+                        val secondAttempt = locationClient.getLastLocationForBackend(
+                            entry.serviceInfo.packageName,
+                            entry.serviceInfo.name,
+                            entry.firstSignatureDigest
+                        )
+                        if (secondAttempt == null) {
+                            Log.d(TAG, "Location still not available, waiting or giving up")
+                            delay(WAIT_FOR_RESULT)
+                            locationClient.getLastLocationForBackend(
+                                entry.serviceInfo.packageName,
+                                entry.serviceInfo.name,
+                                entry.firstSignatureDigest
+                            )
+                        } else {
+                            secondAttempt
+                        }
                     }
-                }
-                else -> locationTemp
-            } ?: return
-            var locationString = "${location.latitude.toStringWithDigits(6)}, ${location.longitude.toStringWithDigits(6)}"
+                    else -> locationTemp
+                } ?: return
+                var locationString =
+                    "${location.latitude.toStringWithDigits(6)}, ${location.longitude.toStringWithDigits(6)}"
 
-            val address = client.getFromLocation(location.latitude, location.longitude, 1, Locale.getDefault().toString()).singleOrNull()
-            if (address != null) {
-                val addressLine = StringBuilder()
-                var i = 0
-                addressLine.append(address.getAddressLine(i))
-                while (addressLine.length < 10 && address.maxAddressLineIndex > i) {
-                    i++
-                    addressLine.append(", ")
+                val address = geocodeClient.requestReverseGeocode(
+                    ReverseGeocodeRequest(
+                        LatLon(
+                            location.latitude,
+                            location.longitude
+                        )
+                    )
+                ).singleOrNull()
+                if (address != null) {
+                    val addressLine = StringBuilder()
+                    var i = 0
                     addressLine.append(address.getAddressLine(i))
+                    while (addressLine.length < 10 && address.maxAddressLineIndex > i) {
+                        i++
+                        addressLine.append(", ")
+                        addressLine.append(address.getAddressLine(i))
+                    }
+                    locationString = addressLine.toString()
                 }
-                locationString = addressLine.toString()
+                binding.lastLocationString = locationString
+                binding.executePendingBindings()
+            } finally {
+                locationClient.disconnect()
+                updateInProgress = false
             }
-            updateInProgress = false
-            binding.lastLocationString = locationString
-            binding.executePendingBindings()
         } else {
             Log.d(TAG, "Location is not available for this backend (type: ${entry.type}, enabled ${entry.enabled.get()}")
             binding.lastLocationString = ""
@@ -175,8 +201,8 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
         val serviceInfo = context?.packageManager?.getServiceInfo(ComponentName(packageName, name), GET_META_DATA)
                 ?: return null
         val enabledBackends = when (type) {
-            GEOCODER -> UnifiedLocationClient[requireContext()].getGeocoderBackends()
-            LOCATION -> UnifiedLocationClient[requireContext()].getLocationBackends()
+            LOCATION -> locationClient.getLocationBackends()
+            GEOCODER -> geocodeClient.getGeocodeBackends()
         }
         val info = BackendInfo(serviceInfo, type, firstSignatureDigest(requireContext(), packageName))
         info.enabled.set(enabledBackends.contains(info.signedComponent) || enabledBackends.contains(info.unsignedComponent))
@@ -186,9 +212,8 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
     override fun onEnabledChange(entry: BackendInfo?, newValue: Boolean) {
         if (entry?.enabled?.get() == newValue) return
         Log.d(TAG, "onEnabledChange: ${entry?.signedComponent} = $newValue")
-        val activity = requireActivity() as AppCompatActivity
         entry?.enabled?.set(newValue)
-        activity.lifecycleScope.launch {
+        lifecycleScope.launchWhenStarted {
             entry?.updateEnabled(this@BackendDetailsFragment, newValue)
             initContent(entry)
         }
