@@ -306,6 +306,8 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
             if (backends == null)
                 return@launchWhenStarted callback.onStatus(STATUS_INVALID_ARGS)
             Preferences(context).locationBackends = backends.toSet()
+            fuser.reset()
+            fuser.bind()
             callback.onStatus(STATUS_OK)
         }
     }

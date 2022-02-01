@@ -154,7 +154,7 @@ class GeocodeServiceImpl(private val context: Context, private val lifecycle: Li
                 return@launchWhenStarted callback.onStatus(STATUS_PERMISSION_ERROR)
             fuser.reset()
             fuser.bind()
-            callback.onStatus(Constants.STATUS_OK)
+            callback.onStatus(STATUS_OK)
         }
     }
 
@@ -164,7 +164,7 @@ class GeocodeServiceImpl(private val context: Context, private val lifecycle: Li
         lifecycleScope.launchWhenStarted {
             if (extras.checkPermission("org.microg.nlp.SERVICE_ADMIN") != PERMISSION_GRANTED)
                 return@launchWhenStarted callback.onStrings(STATUS_PERMISSION_ERROR, null)
-            callback.onStrings(Constants.STATUS_OK, Preferences(context).geocoderBackends.toList())
+            callback.onStrings(STATUS_OK, Preferences(context).geocoderBackends.toList())
         }
     }
 
@@ -177,7 +177,9 @@ class GeocodeServiceImpl(private val context: Context, private val lifecycle: Li
             if (backends == null)
                 return@launchWhenStarted callback.onStatus(STATUS_INVALID_ARGS)
             Preferences(context).geocoderBackends = backends.toSet()
-            callback.onStatus(Constants.STATUS_OK)
+            fuser.reset()
+            fuser.bind()
+            callback.onStatus(STATUS_OK)
         }
     }
 
