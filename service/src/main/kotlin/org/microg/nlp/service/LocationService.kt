@@ -313,12 +313,13 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun reportLocation(location: Location) {
-        this.lastLocation = location
+        val newLocation = Location(location)
+        this.lastLocation = newLocation
         val requestsToDelete = hashSetOf<LocationRequestInternal>()
         synchronized(requests) {
             for (request in requests) {
                 try {
-                    request.report(context, location)
+                    request.report(context, newLocation)
                     if (request.updatesPending <= 0) requestsToDelete.add(request)
                 } catch (e: Exception) {
                     Log.w(TAG, "Removing request due to error: ", e)
@@ -331,8 +332,8 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     fun dump(writer: PrintWriter?) {
-        writer?.println("Last reported location: $lastLocation")
-        writer?.println("Current location interval: $interval")
+        writer?.println("last location: $lastLocation")
+        writer?.println("interval: $interval")
         writer?.println("${requests.size} requests:")
         for (request in requests) {
             writer?.println("  ${request.id} package=${request.packageName} source=${request.source} interval=${request.interval} pending=${request.updatesPending}")

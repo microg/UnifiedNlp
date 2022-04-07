@@ -92,7 +92,7 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
         }
     }
 
-    fun dump(writer: PrintWriter?) {
+    open fun dump(writer: PrintWriter?) {
         writer?.println("  ${javaClass.simpleName} $serviceIntent bound=$bound")
     }
 

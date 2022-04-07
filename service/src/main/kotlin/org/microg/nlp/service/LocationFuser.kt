@@ -265,6 +265,11 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
         backend = null
     }
 
+    override fun dump(writer: PrintWriter?) {
+        super.dump(writer)
+        writer?.println("    last location: ${lastLocation?.let { Location(it) }}")
+    }
+
     private inner class Callback : LocationCallback.Stub() {
         override fun report(location: Location?) {
             val lastLocation = lastLocation

@@ -46,6 +46,7 @@ class LocationProvider(private val context: Context, private val lifecycle: Life
         }
     }
     private var opPackageName: String? = null
+    private var opPackageNames: Set<String> = emptySet()
     private var autoTime = Long.MAX_VALUE
     private var autoUpdate = false
 
@@ -73,12 +74,16 @@ class LocationProvider(private val context: Context, private val lifecycle: Life
             namesField.isAccessible = true
             val names = namesField[source] as Array<String>
             if (names != null) {
+                opPackageNames = setOfNotNull(*names)
                 for (name in names) {
                     if (!EXCLUDED_PACKAGES.contains(name)) {
                         opPackageName = name
                         break
                     }
                 }
+                if (opPackageName == null && names.isNotEmpty()) opPackageName = names[0]
+            } else {
+                opPackageNames = emptySet()
             }
         } catch (ignored: Exception) {
         }
@@ -129,6 +134,10 @@ class LocationProvider(private val context: Context, private val lifecycle: Life
         writer?.println("connected: ${client.isConnectedUnsafe}")
         writer?.println("active: $autoUpdate")
         writer?.println("interval: $autoTime")
+        writer?.println("${opPackageNames.size} sources:")
+        for (packageName in opPackageNames) {
+            writer?.println("  $packageName")
+        }
     }
 
     suspend fun connect() {
