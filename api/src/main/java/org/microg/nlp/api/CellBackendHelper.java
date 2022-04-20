@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -57,13 +55,15 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 public class CellBackendHelper extends AbstractBackendHelper {
     private final Listener listener;
     private final TelephonyManager telephonyManager;
-    private final Set<Cell> cells = new HashSet<>();
+    private Set<Cell> cells = new HashSet<>();
     private PhoneStateListener phoneStateListener;
     private boolean supportsCellInfoChanged = true;
 
     public static final int MIN_UPDATE_INTERVAL = 30 * 1000;
     public static final int FALLBACK_UPDATE_INTERVAL = 5 * 60 * 1000;
+    private final static int MAX_AGE = 300000;
     private long lastScan = 0;
+    private boolean forceNextUpdate = false;
 
     /**
      * Create a new instance of {@link CellBackendHelper}. Call this in
@@ -180,6 +180,8 @@ public class CellBackendHelper extends AbstractBackendHelper {
         lastScan = System.currentTimeMillis();
         if (loadCells(cellInfo)) {
             listener.onCellsChanged(getCells());
+        } else {
+            Log.d(TAG, "No change in Cell networks");
         }
     }
 
@@ -187,9 +189,8 @@ public class CellBackendHelper extends AbstractBackendHelper {
      * This will fix empty MNC since Android 9 with 0-prefixed MNCs.
      * Issue: https://issuetracker.google.com/issues/113560852
      */
-    @SuppressLint("SoonBlockedPrivateApi")
-    private void fixEmptyMnc(List<CellInfo> cellInfo) {
-        if (Build.VERSION.SDK_INT < 28 || cellInfo == null) {
+    private void fixEmptyMnc(Set<Cell> cells) {
+        if (Build.VERSION.SDK_INT < 28 || cells == null) {
             return;
         }
 
@@ -201,32 +202,36 @@ public class CellBackendHelper extends AbstractBackendHelper {
 
         String mnc = networkOperator.substring(3);
 
-        for (CellInfo info : cellInfo) {
-            if (!info.isRegistered()) {
+        for (Cell cell : cells) {
+            if (!cell.info.isRegistered()) {
                 continue;
             }
 
             Object identity = null;
 
-            if (info instanceof CellInfoGsm) {
-                identity = ((CellInfoGsm) info).getCellIdentity();
-            } else if (info instanceof CellInfoWcdma) {
-                identity = ((CellInfoWcdma) info).getCellIdentity();
-            } else if (info instanceof CellInfoLte) {
-                identity = ((CellInfoLte) info).getCellIdentity();
+            if (cell.info instanceof CellInfoGsm) {
+                identity = ((CellInfoGsm) cell.info).getCellIdentity();
+            } else if (cell.info instanceof CellInfoWcdma) {
+                identity = ((CellInfoWcdma) cell.info).getCellIdentity();
+            } else if (cell.info instanceof CellInfoLte) {
+                identity = ((CellInfoLte) cell.info).getCellIdentity();
             }
 
             if (identity == null) {
                 continue;
             }
 
-            try {
-                Field mncField = CellIdentity.class.getDeclaredField("mMncStr");
-                mncField.setAccessible(true);
-                if (mncField.get(identity) == null) {
-                    mncField.set(identity, mnc);
-                }
-            } catch (Exception ignored) {
+            String mncString = null;
+            if (identity instanceof CellIdentityGsm) {
+                mncString = ((CellIdentityGsm) identity).getMncString();
+            } else if (identity instanceof CellIdentityWcdma) {
+                mncString = ((CellIdentityWcdma) identity).getMncString();
+            } else if (identity instanceof CellIdentityLte) {
+                mncString = ((CellIdentityLte) identity).getMncString();
+            }
+
+            if (mncString == null) {
+                cell.mnc = Integer.parseInt(mnc);
             }
         }
     }
@@ -235,19 +240,15 @@ public class CellBackendHelper extends AbstractBackendHelper {
      * This will fix values returned by {@link TelephonyManager#getAllCellInfo()} as described
      * here: https://github.com/mozilla/ichnaea/issues/340
      */
-    @SuppressWarnings({"ChainOfInstanceofChecks", "MagicNumber", "ConstantConditions"})
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private void fixShortMncBug(List<CellInfo> cellInfo) {
-        if (cellInfo == null) return;
+    private void fixShortMncBug(Set<Cell> cells) {
+        if (cells == null) return;
         String networkOperator = telephonyManager.getNetworkOperator();
         if (networkOperator.length() != 5) return;
         int realMnc = Integer.parseInt(networkOperator.substring(3));
         boolean theBug = false;
-        for (CellInfo info : cellInfo) {
-            if (info instanceof CellInfoCdma) return;
-            if (info.isRegistered()) {
-                Cell cell = parseCellInfo(info);
-                if (cell == null) continue;
+        for (Cell cell : cells) {
+            if (cell.info instanceof CellInfoCdma) return;
+            if (cell.info.isRegistered()) {
                 int infoMnc = cell.getMnc();
                 if (infoMnc == (realMnc * 10 + 15)) {
                     theBug = true;
@@ -255,25 +256,25 @@ public class CellBackendHelper extends AbstractBackendHelper {
             }
         }
         if (theBug) {
-            for (CellInfo info : cellInfo) {
+            for (Cell cell : cells) {
                 Object identity = null;
-                if (info instanceof CellInfoGsm)
-                    identity = ((CellInfoGsm) info).getCellIdentity();
-                else if (info instanceof CellInfoLte)
-                    identity = ((CellInfoLte) info).getCellIdentity();
-                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 &&
-                        info instanceof CellInfoWcdma)
-                    identity = ((CellInfoWcdma) info).getCellIdentity();
+                if (cell.info instanceof CellInfoGsm)
+                    identity = ((CellInfoGsm) cell.info).getCellIdentity();
+                else if (cell.info instanceof CellInfoLte)
+                    identity = ((CellInfoLte) cell.info).getCellIdentity();
+                else if (Build.VERSION.SDK_INT >= 18 && cell.info instanceof CellInfoWcdma)
+                    identity = ((CellInfoWcdma) cell.info).getCellIdentity();
                 if (identity == null) continue;
-                try {
-                    Field mncField = identity.getClass().getDeclaredField("mMnc");
-                    mncField.setAccessible(true);
-                    int mnc = (Integer) mncField.get(identity);
-                    if (mnc >= 25 && mnc <= 1005) {
-                        mnc = (mnc - 15) / 10;
-                        mncField.setInt(identity, mnc);
-                    }
-                } catch (Exception ignored) {
+                int mnc = -1;
+                if (identity instanceof CellIdentityGsm) {
+                    mnc = ((CellIdentityGsm) identity).getMnc();
+                } else if (Build.VERSION.SDK_INT >= 18 && identity instanceof CellIdentityWcdma) {
+                    mnc = ((CellIdentityWcdma) identity).getMnc();
+                } else if (identity instanceof CellIdentityLte) {
+                    mnc = ((CellIdentityLte) identity).getMnc();
+                }
+                if (mnc >= 25 && mnc <= 1005) {
+                    cell.mnc = (mnc - 15) / 10;
                 }
             }
         }
@@ -321,18 +322,16 @@ public class CellBackendHelper extends AbstractBackendHelper {
     @SuppressWarnings("unchecked")
     @SuppressLint({"DiscouragedPrivateApi", "deprecation"})
     private synchronized boolean loadCells(List<CellInfo> cellInfo) {
-        int oldHash = cells.hashCode();
-        cells.clear();
-        currentDataUsed = false;
+        Set<Cell> cells = new HashSet<>();
         try {
             if (cellInfo != null) {
-                fixEmptyMnc(cellInfo);
-                fixShortMncBug(cellInfo);
                 for (CellInfo info : cellInfo) {
                     Cell cell = parseCellInfo(info);
                     if (cell == null) continue;
                     cells.add(cell);
                 }
+                fixEmptyMnc(cells);
+                fixShortMncBug(cells);
             }
             Method getNeighboringCellInfo = TelephonyManager.class.getDeclaredMethod("getNeighboringCellInfo");
             List<android.telephony.NeighboringCellInfo> neighboringCellInfo = (List<android.telephony.NeighboringCellInfo>) getNeighboringCellInfo.invoke(telephonyManager);
@@ -349,14 +348,17 @@ public class CellBackendHelper extends AbstractBackendHelper {
         }
         if (state == State.DISABLING)
             state = State.DISABLED;
-        switch (state) {
-            default:
-            case DISABLED:
-                return false;
-            case SCANNING:
+        if (!cells.equals(this.cells) || lastUpdate == 0 || forceNextUpdate) {
+            this.cells = cells;
+            lastUpdate = System.currentTimeMillis();
+            currentDataUsed = false;
+            forceNextUpdate = false;
+            if (state == State.SCANNING) {
                 state = State.WAITING;
-                return cells.hashCode() != oldHash;
+            }
+            return state != State.DISABLED;
         }
+        return false;
     }
 
     public synchronized Set<Cell> getCells() {
@@ -379,6 +381,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
                     @Override
                     public void onCellInfoChanged(List<CellInfo> cellInfo) {
                         if (cellInfo != null && !cellInfo.isEmpty()) {
+                            forceNextUpdate = true;
                             onCellsChanged(cellInfo);
                         } else if (supportsCellInfoChanged) {
                             supportsCellInfoChanged = false;
@@ -409,6 +412,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
             }, new TelephonyManager.CellInfoCallback() {
                 @Override
                 public void onCellInfo(List<CellInfo> cellInfo) {
+                    forceNextUpdate = true;
                     handleAllCellInfo(cellInfo);
                 }
             });
@@ -450,7 +454,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
 
     @Override
     public synchronized void onUpdate() {
-        if (!currentDataUsed) {
+        if (!currentDataUsed && System.currentTimeMillis() - lastUpdate < MAX_AGE) {
             listener.onCellsChanged(getCells());
         } else {
             state = State.SCANNING;
@@ -470,6 +474,7 @@ public class CellBackendHelper extends AbstractBackendHelper {
     }
 
     public static class Cell {
+        private CellInfo info;
         private CellType type;
         private int mcc;
         private int mnc;
@@ -477,6 +482,11 @@ public class CellBackendHelper extends AbstractBackendHelper {
         private long cid;
         private int psc;
         private int signal;
+
+        private Cell(CellInfo info, CellType type, int mcc, int mnc, int lac, long cid, int psc, int signal) {
+            this(type, mcc, mnc, lac, cid, psc, signal);
+            this.info = info;
+        }
 
         public Cell(CellType type, int mcc, int mnc, int lac, long cid, int psc, int signal) {
             if (type == null)

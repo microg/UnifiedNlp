@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.HashSet;
 import java.util.List;
@@ -31,10 +32,10 @@ import static android.Manifest.permission.CHANGE_WIFI_STATE;
 public class WiFiBackendHelper extends AbstractBackendHelper {
     private final static IntentFilter wifiBroadcastFilter =
             new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+    private final static int MAX_AGE = 60000;
 
     private final Listener listener;
     private final WifiManager wifiManager;
-    private final Set<WiFi> wiFis = new HashSet<>();
     private final BroadcastReceiver wifiBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -42,6 +43,7 @@ public class WiFiBackendHelper extends AbstractBackendHelper {
         }
     };
 
+    private Set<WiFi> wiFis = new HashSet<>();
     private boolean ignoreNomap = true;
 
     /**
@@ -90,7 +92,7 @@ public class WiFiBackendHelper extends AbstractBackendHelper {
      * Call this in {@link LocationBackendService#update()}.
      */
     public synchronized void onUpdate() {
-        if (!currentDataUsed) {
+        if (!currentDataUsed && System.currentTimeMillis() - lastUpdate < MAX_AGE) {
             listener.onWiFisChanged(getWiFis());
         } else {
             scanWiFis();
@@ -105,6 +107,8 @@ public class WiFiBackendHelper extends AbstractBackendHelper {
     private void onWiFisChanged() {
         if (loadWiFis()) {
             listener.onWiFisChanged(getWiFis());
+        } else {
+            Log.d(TAG, "No change in WiFi networks");
         }
     }
 
@@ -128,9 +132,7 @@ public class WiFiBackendHelper extends AbstractBackendHelper {
     }
 
     private synchronized boolean loadWiFis() {
-        int oldHash = wiFis.hashCode();
-        wiFis.clear();
-        currentDataUsed = false;
+        Set<WiFi> wiFis = new HashSet<>();
         List<ScanResult> scanResults = wifiManager.getScanResults();
         for (ScanResult scanResult : scanResults) {
             if (ignoreNomap && scanResult.SSID.toLowerCase(Locale.US).endsWith("_nomap")) continue;
@@ -138,14 +140,16 @@ public class WiFiBackendHelper extends AbstractBackendHelper {
         }
         if (state == State.DISABLING)
             state = State.DISABLED;
-        switch (state) {
-            default:
-            case DISABLED:
-                return false;
-            case SCANNING:
+        if (!wiFis.equals(this.wiFis) || lastUpdate == 0) {
+            this.wiFis = wiFis;
+            lastUpdate = System.currentTimeMillis();
+            currentDataUsed = false;
+            if (state == State.SCANNING) {
                 state = State.WAITING;
-                return wiFis.hashCode() != oldHash;
+            }
+            return state != State.DISABLED;
         }
+        return false;
     }
 
     @SuppressWarnings("MagicNumber")

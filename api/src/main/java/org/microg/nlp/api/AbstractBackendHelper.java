@@ -14,6 +14,7 @@ public class AbstractBackendHelper {
     protected final Context context;
     protected State state = State.DISABLED;
     protected boolean currentDataUsed = true;
+    protected long lastUpdate = 0;
 
     public AbstractBackendHelper(Context context) {
         if (context == null)
