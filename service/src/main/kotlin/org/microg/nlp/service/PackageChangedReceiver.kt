@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.Intent.*
 import android.util.Log
 
+@Deprecated("Registered in LocationService or GeocodeService")
 class PackageChangedReceiver : BroadcastReceiver() {
 
     private fun isProtectedAction(action: String) = when (action) {
@@ -28,6 +29,7 @@ class PackageChangedReceiver : BroadcastReceiver() {
             if (backend.startsWith("$packageName/")) {
                 Log.d(TAG, "Reloading location service for $packageName")
                 UnifiedLocationServiceEntryPoint.reloadPreferences()
+
                 return
             }
         }

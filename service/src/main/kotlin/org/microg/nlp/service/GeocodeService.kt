@@ -6,8 +6,10 @@
 package org.microg.nlp.service
 
 import android.app.ActivityManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Address
 import android.os.Bundle
@@ -52,6 +54,19 @@ class GeocodeService : LifecycleService() {
 }
 
 class GeocodeServiceImpl(private val context: Context, private val lifecycle: Lifecycle) : IGeocodeService.Stub(), LifecycleOwner {
+    private val packageFilter: IntentFilter = IntentFilter().apply {
+        addAction(Intent.ACTION_PACKAGE_CHANGED)
+        addAction(Intent.ACTION_PACKAGE_REMOVED)
+        addAction(Intent.ACTION_PACKAGE_REPLACED)
+        addAction(Intent.ACTION_PACKAGE_RESTARTED)
+        addDataScheme("package")
+    }
+    private val packageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d(TAG, "Package updated, binding")
+            fuser.bind()
+        }
+    }
     private val fuser = GeocodeFuser(context, lifecycle)
 
     init {
@@ -60,6 +75,7 @@ class GeocodeServiceImpl(private val context: Context, private val lifecycle: Li
             fuser.reset()
             fuser.bind()
             Log.d(TAG, "Finished preparing GeocodeFuser")
+            context.registerReceiver(packageReceiver, packageFilter)
         }
     }
 
@@ -188,6 +204,7 @@ class GeocodeServiceImpl(private val context: Context, private val lifecycle: Li
     }
 
     fun destroy() {
+        context.unregisterReceiver(packageReceiver)
         fuser.destroy()
     }
 

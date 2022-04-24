@@ -40,16 +40,5 @@
                 <action android:name="org.microg.nlp.service.GEOCODE" />
             </intent-filter>
         </service>
-
-        <receiver android:name=".PackageChangedReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_CHANGED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
-
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

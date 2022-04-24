@@ -117,8 +117,12 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
             entry.loadIntents(requireActivity() as AppCompatActivity)
         }
         if (entry.type == LOCATION && entry.enabled.get()) {
-            if (updateInProgress) return
+            if (updateInProgress) {
+                Log.d(TAG, "Location update still in progress")
+                return
+            }
             locationClient.connect()
+            Log.d(TAG, "Connected to location client")
             updateInProgress = true
             try {
                 val locationTemp = locationClient.getLastLocationForBackend(
@@ -153,6 +157,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
                 var locationString =
                     "${location.latitude.toStringWithDigits(6)}, ${location.longitude.toStringWithDigits(6)}"
 
+                Log.d(TAG, "Location reported is $locationString, trying to gather address")
                 val address = geocodeClient.requestReverseGeocode(
                     ReverseGeocodeRequest(
                         LatLon(
