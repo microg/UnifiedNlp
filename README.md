@@ -58,13 +58,16 @@ UnifiedNlp alone does not provide any features, but acts as a middleware for mul
 Here is a list of backends known to me.
 
 List of backends for geolocation:
-* [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - Uses Apple's service to resolve Wi-Fi locations. It has excellent coverage but the database is proprietary.
-* [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - Uses OpenWlanMap.org to resolve user location but the NLP backend did not reach release-quality, yet. Users interested in a freely licensed and downloadable database for offline use should stick with openBmap for now - *Last updated in 2015*
-* [OpenBmapNlpBackend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - Uses [openBmap](https://radiocells.org/) to resolve user location. Community-created, freely licensed database that can optionally be downloaded for offline operation. The coverage [varies from country to country](https://radiocells.org/stats/countries) (it's best in central Europe).
-* [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - Uses the Mozilla Location Service to resolve user location. The coverage is OK. Only the cell tower database is free.
-* [LocalWifiNlpBackend](https://github.com/n76/wifi_backend) - Local location provider for Wi-Fi APs using on-phone generated database.
+* [AMap UnifiedNlp Backend](https://gitlab.com/fasheng/amap-nlp-backend) - Uses the AMap Location API (a popular location service in China) to resolve locations. The database is proprietary.
+* [Apple UnifiedNlp Backend](https://github.com/microg/AppleWifiNlpBackend) - Uses Apple's service to resolve Wi-Fi locations. It has excellent coverage but the database is proprietary.
+* [Baidu UnifiedNlp Backend](https://gitlab.com/fasheng/baidu-nlp-backend) - Uses the Baidu Location API (another popular location service in China) to resolve locations. The database is proprietary. 
+* [Déjà Vu Location Service](https://github.com/n76/DejaVu) - Uses locally acquired WLAN/WiFi AP and mobile/cellular tower data to resolve user location.
 * [LocalGSMLocationProvider](https://github.com/rtreffer/LocalGSMLocationProvider) - Local opencellid based location provider backend. Has been surpassed by LocalGSMBackend which also has an OpenCellID option - *Last update in 2014*
-* [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for GSM cells. It works offline by downloading freely licensed database files from Mozilla, OpenCellID, or lacells.db.
+* [LocalGSMBackend](https://github.com/n76/Local-GSM-Backend) - Local location provider for GSM cells. It works offline by downloading freely licensed database files from Mozilla, OpenCellID, or lacells.db. The author is focusing development on the Déjà Vu backend. 
+* [LocalWifiNlpBackend](https://github.com/n76/wifi_backend) - Local location provider for Wi-Fi APs using on-phone generated database. The author is focusing development on the Déjà Vu backend.
+* [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - Uses the Mozilla Location Service to resolve user location. The coverage is OK. Only the cell tower database is free.
+* [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - Uses OpenWlanMap.org to resolve user location but the NLP backend did not reach release-quality, yet. Users interested in a freely licensed and downloadable database for offline use should stick with openBmap for now - *Last updated in 2015*
+* [Radiocells.org UnifiedNlp Backend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - Uses [Radiocells.org](https://radiocells.org/) to resolve user location. Community-created, freely licensed database that can optionally be downloaded for offline operation. The coverage [varies from country to country](https://radiocells.org/stats/countries) (it's best in central Europe).
 
 List of backends for (reverse) geocoding:
 * [NominatimGeocoderBackend](https://github.com/microg/NominatimGeocoderService) - Address lookup backend.
