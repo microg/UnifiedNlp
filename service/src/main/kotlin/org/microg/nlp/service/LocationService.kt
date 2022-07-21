@@ -27,6 +27,7 @@ import org.microg.nlp.service.api.Constants.*
 import java.io.FileDescriptor
 import java.io.PrintWriter
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
@@ -334,7 +335,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
         this.lastLocation = newLocation
         val requestsToDelete = hashSetOf<LocationRequestInternal>()
         synchronized(requests) {
-            for (request in requests) {
+            for (request in ArrayList(requests)) {
                 try {
                     request.report(context, newLocation)
                     if (request.updatesPending <= 0) requestsToDelete.add(request)
@@ -351,9 +352,11 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     fun dump(writer: PrintWriter?) {
         writer?.println("last location: $lastLocation")
         writer?.println("interval: $interval")
-        writer?.println("${requests.size} requests:")
-        for (request in requests) {
-            writer?.println("  ${request.id} package=${request.packageName} source=${request.source} interval=${request.interval} pending=${request.updatesPending}")
+        synchronized(requests) {
+            writer?.println("${requests.size} requests:")
+            for (request in requests) {
+                writer?.println("  ${request.id} package=${request.packageName} source=${request.source} interval=${request.interval} pending=${request.updatesPending}")
+            }
         }
         fuser.dump(writer)
     }
