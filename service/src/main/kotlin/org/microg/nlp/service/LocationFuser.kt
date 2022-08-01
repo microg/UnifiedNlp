@@ -29,6 +29,14 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 private const val TAG = "LocationFuser"
 
+val Location.isValid: Boolean
+    get() {
+        if (!latitude.isFinite() || latitude > 90 || latitude < -90) return false
+        if (!longitude.isFinite() || longitude > 180 || longitude < -180) return false
+        if (!accuracy.isFinite() || accuracy < 0) return false
+        return true
+    }
+
 class LocationFuser(private val context: Context, private val lifecycle: Lifecycle, private val receiver: LocationReceiver) : LifecycleOwner {
 
     private val backendHelpers = CopyOnWriteArrayList<LocationBackendHelper>()
@@ -93,7 +101,7 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
             handler.lastLocation?.let { locations.add(it) }
         }
         val location = mergeLocations(locations)
-        if (location != null) {
+        if (location != null && location.latitude.isFinite()) {
             location.provider = LocationManager.NETWORK_PROVIDER
             if (lastLocationReportTime < location.time) {
                 lastLocationReportTime = location.time
@@ -106,7 +114,7 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
     }
 
     private fun mergeLocations(locations: List<Location>): Location? {
-        Collections.sort(locations, LocationComparator.INSTANCE)
+        val locations = locations.filter { it.isValid }.sortedWith(LocationComparator)
         if (locations.isEmpty()) return null
         if (locations.size == 1) return locations[0]
         val location = Location(locations[0])
@@ -141,8 +149,8 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
 
     override fun getLifecycle(): Lifecycle = lifecycle
 
-    class LocationComparator : Comparator<Location> {
-
+    object LocationComparator : Comparator<Location> {
+        val SWITCH_ON_FRESHNESS_CLIFF_MS: Long = 30000 // 30 seconds
         /**
          * @return whether {@param lhs} is better than {@param rhs}
          */
@@ -155,11 +163,6 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
             if (rhs.time > lhs.time + SWITCH_ON_FRESHNESS_CLIFF_MS) return 1
             if (lhs.time > rhs.time + SWITCH_ON_FRESHNESS_CLIFF_MS) return -1
             return (lhs.accuracy - rhs.accuracy).toInt()
-        }
-
-        companion object {
-            val INSTANCE = LocationComparator()
-            val SWITCH_ON_FRESHNESS_CLIFF_MS: Long = 30000 // 30 seconds
         }
     }
 }

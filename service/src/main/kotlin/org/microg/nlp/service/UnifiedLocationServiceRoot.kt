@@ -53,6 +53,7 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
 
     @Synchronized
     override fun reportLocation(location: Location) {
+        if (!location.isValid) return
         for (instance in ArrayList(instances.values)) {
             instance.reportLocation(location)
         }

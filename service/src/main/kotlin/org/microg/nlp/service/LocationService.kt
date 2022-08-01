@@ -332,6 +332,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
 
     override fun reportLocation(location: Location) {
         val newLocation = Location(location)
+        if (!newLocation.isValid) return
         this.lastLocation = newLocation
         val requestsToDelete = hashSetOf<LocationRequestInternal>()
         synchronized(requests) {
