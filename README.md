@@ -25,31 +25,57 @@ Keep in mind that:
 * There is another repo containing the [deprecated version](https://github.com/microg/NetworkLocation) of NetworkLocation.apk without the plug-in system.
 * [microG GmsCore](https://github.com/microg/android_packages_apps_GmsCore/wiki) project already includes the Unified Network Location Provider.
 
-
-### Android 4.4 - 7.1.1 (KitKat / Lollipop / Marshmallow / Nougat)
-Most modern ROMs come with support for non-Google geolocation providers. On these systems installation is easy:
+Most modern ROMs come with support for non-Google geolocation providers.  
+On these systems installation is easy:
 
 1. Make sure that no Google geolocation tool is installed (it is usually listed as Google Play Services in Apps)
 2. Download and install `NetworkLocation.apk` as a usual app (you may need to enable "Unknown sources" in Settings->Security)
 3. Reboot and continue at [Usage](#usage)
 
-Some ROMs, especially those not based on AOSP might have problems using this method. However, if your system has root, you can try installing the hard way:
+**Important:** Installing as a system app will always work under all versions of Android, instead installing as user app will only work out of the box on Android versions from 4.4 to 6.x.  
+On Android 7 (or higher) can be used also as user app if you compile the ROM with an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch).
 
-1. Download `NetworkLocation.apk`
-2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `NetworkLocation.apk` to `/system/priv-app` (from your PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
-4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
+**Note:** Android versions lower then 4.4 are no longer officially supported, however I still provide a legacy build that should be compatible with those systems.
 
-**Note:** On Android 7 (or later) an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch) is needed to make it working, or alternatively, you can install it in `/system/priv-app` as explained above.
+To install as system app (you need root or a custom recovery) this method can be used:
+
+1. Download `NetworkLocation.apk` (or `LegacyNetworkLocation.apk` on Android versions lower then 4.4)
+2. Mount `/system` if not already mounted (needed only if the device is inside the recovery)
+3. Remount `/system` as read-write (needed if it was mounted as read-only)
+4. On Android versions equal or higher then 5 copy `NetworkLocation.apk` to `/system/priv-app/NetworkLocation`  
+   On Android versions from 4.4 to 4.4.4 copy `NetworkLocation.apk` to `/system/priv-app`  
+   On Android versions lower then 4.4 copy `LegacyNetworkLocation.apk` to `/system/app`
+5. Reboot and continue at [Usage](#usage)
+
+Here are listed the commands to install it as system app on various Android versions:
+
+### Android 5 - 8.x (Lollipop / Marshmallow / Nougat / Oreo)
+```shell
+adb root
+adb shell mount /system
+adb remount
+adb shell mkdir /system/priv-app/NetworkLocation
+adb push NetworkLocation.apk /system/priv-app/NetworkLocation/NetworkLocation.apk
+adb reboot
+```
+
+### Android 4.4 - 4.4.4 (KitKat)
+```shell
+adb root
+adb shell mount /system
+adb remount
+adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk
+adb reboot
+```
 
 ### Android 2.3 - 4.3.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
-Older Android versions are no longer officially supported. However I still provide a legacy build, that should be compatible with those systems.
-It is required to have a rooted system to install on Jelly Bean and older.
-
-1. Download `LegacyNetworkLocation.apk`
-2. Mount `/system` read-write (from your PC, call `adb root && adb remount`)
-3. Copy `LegacyNetworkLocation.apk` to `/system/app` (from your PC, call `adb push LegacyNetworkLocation.apk /system/app/LegacyNetworkLocation.apk`)
-4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
+```shell
+adb root
+adb shell mount /system
+adb remount
+adb push LegacyNetworkLocation.apk /system/app/LegacyNetworkLocation.apk
+adb reboot
+```
 
 
 Usage
@@ -59,6 +85,7 @@ Here is a list of backends known to me.
 
 List of backends for geolocation:
 * [AppleWifiNlpBackend](https://github.com/microg/AppleWifiNlpBackend) - Uses Apple's service to resolve Wi-Fi locations. It has excellent coverage but the database is proprietary.
+* [Déjà Vu](https://github.com/n76/DejaVu) - A backend that uses locally acquired WLAN/WiFi AP and mobile/cellular tower data to resolve user location.
 * [OpenWlanMapNlpBackend](https://github.com/microg/OpenWlanMapNlpBackend) - Uses OpenWlanMap.org to resolve user location but the NLP backend did not reach release-quality, yet. Users interested in a freely licensed and downloadable database for offline use should stick with openBmap for now - *Last updated in 2015*
 * [OpenBmapNlpBackend](https://github.com/wish7code/org.openbmap.unifiedNlpProvider) - Uses [openBmap](https://radiocells.org/) to resolve user location. Community-created, freely licensed database that can optionally be downloaded for offline operation. The coverage [varies from country to country](https://radiocells.org/stats/countries) (it's best in central Europe).
 * [MozillaNlpBackend](https://github.com/microg/IchnaeaNlpBackend) - Uses the Mozilla Location Service to resolve user location. The coverage is OK. Only the cell tower database is free.
