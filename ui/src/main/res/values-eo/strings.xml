@@ -5,6 +5,17 @@
   -->
 
 <resources>
+    <string name="nlp_backends_title">Pozici‑trovaj subservoj</string>
+    <string name="nlp_backend_details_title">Detaloj pri la subservo</string>
+
+    <string name="nlp_backends_network_location">Ret‑bazitaj pozici‑trovaj subservoj</string>
+    <string name="nlp_backends_geocoding">Adres‑trovaj subservoj</string>
+    <string name="nlp_backends_none">Neniu instalita subservo</string>
+
     <string name="nlp_backend_action_configure">Agordi</string>
     <string name="nlp_backend_action_about">Pri</string>
+    <string name="nlp_backend_enable">Uzi subservon</string>
+    <string name="nlp_backend_description">Priskribo</string>
+    <string name="nlp_backend_last_location">Antaŭa pozicio</string>
 </resources>
+
