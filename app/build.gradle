@@ -1,0 +1,111 @@
+/*
+ * SPDX-FileCopyrightText: 2019, microG Project Team
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+String getMyVersionName() {
+    def stdout = new ByteArrayOutputStream()
+    if (rootProject.file("gradlew").exists())
+        exec { commandLine 'git', 'describe', '--tags', '--always', '--dirty'; standardOutput = stdout }
+    else // automatic build system, don't tag dirty
+        exec { commandLine 'git', 'describe', '--tags', '--always'; standardOutput = stdout }
+    return stdout.toString().trim().substring(1)
+}
+
+int getMyVersionCode() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-list', '--count', "HEAD"
+        standardOutput = stdout
+    }
+    return Integer.parseInt(stdout.toString().trim())
+}
+
+android {
+    compileSdkVersion androidCompileSdk
+    buildToolsVersion "$androidBuildVersionTools"
+    dataBinding {
+        enabled = true
+    }
+
+    defaultConfig {
+        versionName getMyVersionName()
+        versionCode(20000 + getMyVersionCode())
+        minSdkVersion Math.max(androidMinSdk, 14)
+        targetSdkVersion androidTargetSdk
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    flavorDimensions 'default'
+    productFlavors {
+        NetworkLocation {
+            applicationId = 'com.google.android.gms'
+            minSdkVersion 19
+            dimension 'default'
+        }
+        LegacyNetworkLocation {
+            applicationId = 'com.google.android.location'
+            dimension 'default'
+        }
+        UnifiedNlp {
+            applicationId = 'org.microg.nlp'
+            dimension 'default'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    lintOptions {
+        warning "MissingTranslation"
+    }
+}
+
+apply from: "../gradle/androidJars.gradle"
+
+dependencies {
+    implementation project(':api')
+    implementation project(':geocode-v1')
+    implementation project(':location-v2')
+    implementation project(':location-v3')
+    implementation project(':service')
+    api project(':client')
+    api project(':ui')
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+    // AndroidX UI
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation "androidx.preference:preference:$preferenceVersion"
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycleVersion"
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui:$navigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+}
+
+afterEvaluate {
+    android.applicationVariants.all { variant ->
+        variant.resValue 'string', 'application_id', variant.applicationId
+    }
+}

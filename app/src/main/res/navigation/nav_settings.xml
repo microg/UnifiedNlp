@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="org.microg.nlp.app.SettingsFragment"
+        android:label="@string/nlp_settings_label">
+        <action
+            android:id="@+id/openSelfcheck"
+            app:destination="@id/selfcheckFragment" />
+        <action
+            android:id="@+id/openUnifiedNlpSettings"
+            app:destination="@id/nav_unlp" />
+        <action
+            android:id="@+id/openAbout"
+            app:destination="@id/aboutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/selfcheckFragment"
+        android:name="org.microg.nlp.app.SelfCheckFragment"
+        android:label="self_check_title" />
+
+    <include app:graph="@navigation/nav_unlp" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="org.microg.nlp.app.AboutFragment"
+        android:label="@string/prefcat_about"
+        tools:layout="@layout/about_root" />
+</navigation>

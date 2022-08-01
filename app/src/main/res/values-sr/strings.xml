@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2013-2016 microG Project Team
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="nlp_app_name">Обједињени МПЛ</string>
+    <string name="nlp_settings_label">Поставке Обједињеног МПЛ</string>
+
+    <string name="self_check_cat_nlpcompat">Подршка за Мрежне Провајдере Локације</string>
+    <string name="self_check_name_system_supported">Издање Андроида подржано:</string>
+    <string name="self_check_resolution_system_supported">Ваше издање Андроида није службено подржано. Ово нужно не мора да значи ништа.</string>
+    <string name="self_check_name_nlp_package_name">Систем подржава провајдере локације:</string>
+    <string name="self_check_resolution_nlp_package_name">Ваш систем не подржава овај пакет Обједињеног МПЛ. Или инсталирајте одговарајући пакет или Xposed модул за компатибилност.</string>
+
+    <string name="self_check_cat_nlp_status">Стање Обједињеног МПЛ-а</string>
+    <string name="self_check_name_nlp_bound">Обједињени МПЛ је регистрован у систему:</string>
+    <string name="self_check_resolution_nlp_bound">Систем се није повезао са услугом Обједињеног МПЛ-а. Ако сте инсталирали Обједињени МПЛ покушајте са рестартом уређаја.</string>
+    <string name="self_check_name_last_location">Обједињени МПЛ има познату локацију:</string>
+    <string name="self_check_resolution_last_location">Обједињени МПЛ нема последњу познату локацију. Неке апликације ће краховати због овога.</string>
+    <string name="self_check_name_nlp_is_providing">Обједињени МПЛ пружа освежавања локације:</string>
+    <string name="self_check_resolution_nlp_is_providing">Систем није пружио ниједну локацију Обједињеног МПЛ-а у последњих 10 секунди.</string>
+    <string name="self_check_name_network_enabled">Мрежна локација укључена:</string>
+    <string name="self_check_resolution_network_enabled">Или сте искључили мрежну локацију (у поставкама система) или систем није подржан.</string>
+    <string name="self_check_loc_perm_missing">Дозвола за локацију још није одобрена</string>
+
+    <string name="prefcat_about">О програму</string>
+    <string name="pref_about_title">О микроГ Обједињеном МПЛ-у</string>
+    <string name="pref_about_summary">Подаци о издању и коришћеним библиотекама</string>
+
+</resources>
