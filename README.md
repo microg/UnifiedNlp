@@ -25,6 +25,27 @@ Keep in mind that:
 * There is another repo containing the [deprecated version](https://github.com/microg/NetworkLocation) of NetworkLocation.apk without the plug-in system.
 * [microG GmsCore](https://github.com/microg/android_packages_apps_GmsCore/wiki) project already includes the Unified Network Location Provider.
 
+### Android 9
+Since google is now enforcing permission-whitelisting for system apps just copying the apk to `/system/priv-app/` is not sufficient anymore. Therefore an xml file with the following contents has to be placed at `/system/etc/permissions`:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+    <privapp-permissions package="com.google.android.gms">
+        <permission name="android.permission.INSTALL_LOCATION_PROVIDER"/>
+        <permission name="android.permission.ACCESS_FINE_LOCATION"/>
+        <permission name="android.permission.ACCESS_COARSE_LOCATION"/>
+        <permission name="android.permission.ACCESS_COARSE_UPDATES"/>
+    </privapp-permissions>
+</permissions>
+```
+This leaves us with the following installation steps:
+
+1. Make sure no gapps are installed
+2. Download `NetworkLocation.apk`
+3. Boot into recovery and copy the apk to `/system/priv-app/` using the adb-command `adb push NetworkLocation.apk /system/priv-app/UnifiedNLP/NetworkLocation.apk` (also make sure you mount the `/system` partition in advance)
+4. Still in recovery mode, copy the `privapp-permissions-unifiednlp.xml` with the contents from above to `/system/etc/permissions` using the adb-command `adb push privapp-permissions-unifiednlp.xml /system/etc/permissions/privapp-permissions-unifiednlp.xml`
+5. Reboot `adb reboot`
+
 
 ### Android 4.4 - 7.1.1 (KitKat / Lollipop / Marshmallow / Nougat)
 Most modern ROMs come with support for non-Google geolocation providers. On these systems installation is easy:
@@ -40,7 +61,7 @@ Some ROMs, especially those not based on AOSP might have problems using this met
 3. Copy `NetworkLocation.apk` to `/system/priv-app` (from your PC, call `adb push NetworkLocation.apk /system/priv-app/NetworkLocation.apk`)
 4. Reboot (from you PC, call `adb reboot`) and continue at [Usage](#usage)
 
-**Note:** On Android 7 (or later) an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch) is needed to make it working, or alternatively, you can install it in `/system/priv-app` as explained above.
+**Note:** On Android 7 an [additional patch](https://github.com/microg/android_packages_apps_UnifiedNlp/blob/master/patches/android_frameworks_base-N.patch) is needed to make it working, or alternatively, you can install it in `/system/priv-app` as explained above.
 
 ### Android 2.3 - 4.3.1 (Gingerbread / Honeycomb / Ice Cream Sandwich / Jelly Bean)
 Older Android versions are no longer officially supported. However I still provide a legacy build, that should be compatible with those systems.
