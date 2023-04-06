@@ -5,8 +5,8 @@
   -->
 
 <resources>
-    <string name="nlp_backends_title">Usługi lokaliacji</string>
-    <string name="nlp_backend_details_title">Szczeguły usługi</string>
+    <string name="nlp_backends_title">Usługi lokalizacji</string>
+    <string name="nlp_backend_details_title">Szczegóły usługi</string>
 
     <string name="nlp_backends_network_location">Usługi lokalizacji oparte o sieć</string>
     <string name="nlp_backends_geocoding">Usługi wyszukiwania adresów</string>
@@ -18,4 +18,3 @@
     <string name="nlp_backend_description">Opis</string>
     <string name="nlp_backend_last_location">Ostatnia lokalizacja</string>
 </resources>
-
