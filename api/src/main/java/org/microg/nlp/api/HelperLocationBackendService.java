@@ -44,7 +44,7 @@ public abstract class HelperLocationBackendService extends LocationBackendServic
     }
 
     @Override
-    protected synchronized void onOpen() {
+    public synchronized void onOpen() {
         for (AbstractBackendHelper helper : helpers) {
             helper.onOpen();
         }
@@ -60,7 +60,7 @@ public abstract class HelperLocationBackendService extends LocationBackendServic
     }
 
     @Override
-    protected synchronized Location update() {
+    public synchronized Location update() {
         for (AbstractBackendHelper helper : helpers) {
             helper.onUpdate();
         }
@@ -68,7 +68,7 @@ public abstract class HelperLocationBackendService extends LocationBackendServic
     }
 
     @Override
-    protected Intent getInitIntent() {
+    public Intent getInitIntent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Consider permissions
             List<String> perms = new LinkedList<>();

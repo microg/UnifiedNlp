@@ -25,8 +25,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 11
+        targetCompatibility = 11
     }
 }
 
@@ -38,9 +38,12 @@ dependencies {
     implementation project(':api')
     implementation project(':service-api')
     implementation project(':client')
+    implementation project(':app-dejavu')
+    implementation project(':app-nominatim')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-service:$lifecycleVersion"
+    implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0"
 }

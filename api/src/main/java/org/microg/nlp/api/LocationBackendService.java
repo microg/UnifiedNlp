@@ -14,7 +14,7 @@ import android.os.RemoteException;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class LocationBackendService extends AbstractBackendService {
 
-    private LocationCallback callback;
+    public LocationCallback callback;
     private Location waiting;
 
     /**
@@ -28,7 +28,7 @@ public abstract class LocationBackendService extends AbstractBackendService {
      * @return a new {@link android.location.Location} instance or null if not available.
      */
     @SuppressWarnings("SameReturnValue")
-    protected Location update() {
+    public Location update() {
         return null;
     }
 
@@ -106,6 +106,14 @@ public abstract class LocationBackendService extends AbstractBackendService {
         @Override
         public Intent getInitIntent() {
             return LocationBackendService.this.getInitIntent();
+        }
+
+        public String getBackendName() {
+            return LocationBackendService.this.getBackendName();
+        }
+
+        public String getDescription() {
+            return LocationBackendService.this.getDescription();
         }
 
         @Override

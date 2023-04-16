@@ -1,0 +1,78 @@
+/*
+ * Copyright 2014-2017 microG Project Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+/* This is a hack, trying to provide release updates to F-Droid until it can properly handle Gradle
+applicationId "org.microg.nlp.backend.nominatim"
+versionName "1.2.2"
+versionCode "20042"
+ */
+
+
+String getMyVersionName() {
+    def stdout = new ByteArrayOutputStream()
+    if (rootProject.file("gradlew").exists())
+        exec { commandLine 'git', 'describe', '--tags', '--always', '--dirty'; standardOutput = stdout }
+    else // automatic build system, don't tag dirty
+        exec { commandLine 'git', 'describe', '--tags', '--always'; standardOutput = stdout }
+    return stdout.toString().trim().substring(1)
+}
+
+int getMyVersionCode() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-list', '--count', "HEAD"
+        standardOutput = stdout
+    }
+    return Integer.parseInt(stdout.toString().trim())
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation project(':api')
+    implementation 'org.microg:address-formatter:0.2.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.preference:preference:1.2.0'
+}
+
+android {
+    compileSdkVersion 33
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        versionName getMyVersionName()
+        versionCode(20000 + getMyVersionCode())
+        minSdkVersion 14
+        targetSdkVersion 33
+    }
+}
+
+if (file('user.gradle').exists()) {
+    apply from: 'user.gradle'
+}

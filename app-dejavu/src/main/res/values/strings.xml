@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Déjà Vu Location Service</string>
+    <string name="summary">A microG/UnifiedNlp location provider backend using private on phone RF emitter database</string>
+</resources>

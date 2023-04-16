@@ -40,12 +40,15 @@ class LocationService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "Creating userspace service...")
+        LogToFile.appendLog(TAG, "Creating userspace service...")
         service = LocationServiceImpl(this, lifecycle)
         Log.d(TAG, "Created userspace service.")
+        LogToFile.appendLog(TAG, "Created userspace service.")
     }
 
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
+        LogToFile.appendLog(TAG, "onBind")
         return service.asBinder()
     }
 
@@ -53,6 +56,7 @@ class LocationService : LifecycleService() {
         service.destroy()
         super.onDestroy()
         Log.d(TAG, "Destroyed")
+        LogToFile.appendLog(TAG, "onDestroy")
     }
 
     override fun dump(fd: FileDescriptor?, writer: PrintWriter?, args: Array<out String>?) {
@@ -118,6 +122,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     private val packageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d(TAG, "Package updated, binding")
+            LogToFile.appendLog(TAG, "Package updated, binding")
             fuser.bind()
         }
     }
@@ -128,15 +133,19 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     private val timer: Timer = Timer("location-requests")
     private var timerTask: TimerTask? = null
     private var lastTime: Long = 0
+    private var packageReceiverRegistered = false;
 
     init {
         lifecycleScope.launchWhenStarted {
             Log.d(TAG, "Preparing LocationFuser...")
+            LogToFile.appendLog(TAG, "Preparing LocationFuser...")
             fuser.reset()
             fuser.bind()
             fuser.update()
             Log.d(TAG, "Finished preparing LocationFuser")
+            LogToFile.appendLog(TAG, "Finished preparing LocationFuser")
             context.registerReceiver(packageReceiver, packageFilter)
+            packageReceiverRegistered = true
         }
     }
 
@@ -161,6 +170,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
 
             if (interval < Long.MAX_VALUE) {
                 Log.d(TAG, "Set merged location interval to $interval")
+                LogToFile.appendLog(TAG, "Set merged location interval to $interval")
 
                 val timerTask = object : TimerTask() {
                     override fun run() {
@@ -168,6 +178,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
                             lastTime = SystemClock.elapsedRealtime()
                             fuser.update()
                             Log.d(TAG, "Triggered update")
+                            LogToFile.appendLog(TAG, "Triggered update")
                         }
                     }
                 }
@@ -180,6 +191,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
                 this.timerTask = timerTask
             } else {
                 Log.d(TAG, "Disable location updates")
+                LogToFile.appendLog(TAG, "Disable location updates")
             }
         }
     }
@@ -203,6 +215,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
             val claimedPackageName = options.getString("packageName")
             if (context.packageManager.getPackagesForUid(getCallingUid())?.any { it == claimedPackageName } != true) {
                 Log.d(TAG, "$callingPackage invalidly claimed package name $claimedPackageName, ignoring")
+                LogToFile.appendLog(TAG, "$callingPackage invalidly claimed package name $claimedPackageName, ignoring")
                 options.putString("packageName", callingPackage)
             }
         }
@@ -226,6 +239,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun getLastLocationForBackend(packageName: String?, className: String?, signatureDigest: String?, listener: ILocationListener?, options: Bundle?) {
+        LogToFile.appendLog(TAG, "getLastLocationForBackend: $packageName")
         val extras = processOptions(options)
         if (listener == null || extras.getString("packageName") == null) return
         lifecycleScope.launchWhenStarted {
@@ -238,6 +252,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun updateLocationRequest(request: LocationRequest?, callback: IStatusCallback?, options: Bundle?) {
+        LogToFile.appendLog(TAG, "updateLocationRequest location: $request")
         val extras = processOptions(options)
         if (callback == null || extras.getString("packageName") == null) return
         lifecycleScope.launchWhenStarted {
@@ -283,6 +298,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun forceLocationUpdate(callback: IStatusCallback?, options: Bundle?) {
+        LogToFile.appendLog(TAG, "forceLocationUpdate: $callback")
         val extras = processOptions(options)
         if (callback == null || extras.getString("packageName") == null) return
         lifecycleScope.launchWhenStarted {
@@ -306,6 +322,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun getLocationBackends(callback: IStringsCallback?, options: Bundle?) {
+        LogToFile.appendLog(TAG, "getLocationBackends")
         val extras = processOptions(options)
         if (callback == null || extras.getString("packageName") == null) return
         lifecycleScope.launchWhenStarted {
@@ -316,6 +333,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun setLocationBackends(backends: MutableList<String>?, callback: IStatusCallback?, options: Bundle?) {
+        LogToFile.appendLog(TAG, "setLocationBackends: $backends")
         val extras = processOptions(options)
         if (callback == null || extras.getString("packageName") == null) return
         lifecycleScope.launchWhenStarted {
@@ -331,6 +349,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     override fun reportLocation(location: Location) {
+        LogToFile.appendLog(TAG, "Report location: $location")
         val newLocation = Location(location)
         if (!newLocation.isValid) return
         this.lastLocation = newLocation
@@ -342,6 +361,7 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
                     if (request.updatesPending <= 0) requestsToDelete.add(request)
                 } catch (e: Exception) {
                     Log.w(TAG, "Removing request due to error: ", e)
+                    LogToFile.appendLog(TAG, e.message, e)
                     requestsToDelete.add(request)
                 }
             }
@@ -363,7 +383,10 @@ class LocationServiceImpl(private val context: Context, private val lifecycle: L
     }
 
     fun destroy() {
-        context.unregisterReceiver(packageReceiver)
+        if (packageReceiverRegistered) {
+            context.unregisterReceiver(packageReceiver)
+            packageReceiverRegistered = false
+        }
         fuser.destroy()
     }
 

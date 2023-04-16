@@ -179,7 +179,9 @@ class UnifiedLocationServiceRoot(private val service: UnifiedLocationServiceEntr
     }
 
     override fun setLocationBackends(backends: Array<String>) {
+        LogToFile.appendLog(TAG, "setLocationBackends: $backends")
         checkAdminPermission();
+        LogToFile.appendLog(TAG, "setLocationBackends:after checkAdminPermission")
         if (Preferences(service).locationBackends.contentEquals(backends.toSet())) return
         Preferences(service).locationBackends = backends.toSet()
         reloadPreferences()

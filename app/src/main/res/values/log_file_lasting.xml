@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="log_file_lasting_entries">
+        <item>@string/log_file_12_label</item>
+        <item>@string/log_file_24_label</item>
+        <item>@string/log_file_48_label</item>
+        <item>@string/log_file_72_label</item>
+        <item>@string/log_file_168_label</item>
+        <item>@string/log_file_720_label</item>
+    </string-array>
+    <string-array name="log_file_lasting_values">
+        <item>12</item>
+        <item>24</item>
+        <item>48</item>
+        <item>72</item>
+        <item>168</item>
+        <item>720</item>
+    </string-array>
+</resources>

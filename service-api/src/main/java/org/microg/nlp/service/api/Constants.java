@@ -17,4 +17,7 @@ public final class Constants {
     public static final String LOCATION_EXTRA_BACKEND_PROVIDER = "org.microg.nlp.extra.SERVICE_BACKEND_PROVIDER";
     public static final String LOCATION_EXTRA_BACKEND_COMPONENT = "org.microg.nlp.extra.SERVICE_BACKEND_COMPONENT";
     public static final String LOCATION_EXTRA_OTHER_BACKENDS = "org.microg.nlp.extra.OTHER_BACKEND_RESULTS";
+
+    public static final String[] LOCATION_BACKENDS = { "org.microg.nlp.backend.dejavu.BackendService" };
+    public static final String[] GEOCODE_BACKENDS = { "org.microg.nlp.backend.nominatim.BackendService" };
 }
