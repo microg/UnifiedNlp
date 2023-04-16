@@ -30,12 +30,9 @@ import org.microg.nlp.ui.model.BackendType
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-
-private fun Array<String>.without(entry: BackendInfo): Array<String> = filterNot { it == entry.unsignedComponent || it.startsWith("${entry.unsignedComponent}/") }.toTypedArray()
-private fun List<String>.without(entry: BackendInfo): List<String> = filterNot { it == entry.unsignedComponent || it.startsWith("${entry.unsignedComponent}/") }
+private const val TAG = "USettings"
 
 suspend fun BackendInfo.updateEnabled(fragment: Fragment, newValue: Boolean) {
-    Log.d("USettings", "updateEnabled $signedComponent = $newValue")
     val success = try {
         if (newValue) enable(fragment) else disable(fragment)
     } catch (e: Exception) {
@@ -44,95 +41,41 @@ suspend fun BackendInfo.updateEnabled(fragment: Fragment, newValue: Boolean) {
     enabled.set(if (success) newValue else false)
 }
 
-fun BackendInfo.fillDetails(context: Context) {
-    appIcon.set(serviceInfo.loadIcon(context.packageManager))
-    name.set(serviceInfo.loadLabel(context.packageManager).toString())
-    appName.set(serviceInfo.applicationInfo.loadLabel(context.packageManager).toString())
-    summary.set(serviceInfo.metaData?.getString(Constants.METADATA_BACKEND_SUMMARY))
-    aboutIntent.set(serviceInfo.metaData?.getString(Constants.METADATA_BACKEND_ABOUT_ACTIVITY)?.let { createExternalIntent(serviceInfo.packageName, it) })
-    settingsIntent.set(serviceInfo.metaData?.getString(Constants.METADATA_BACKEND_SETTINGS_ACTIVITY)?.let { createExternalIntent(serviceInfo.packageName, it) })
-    initIntent.set(serviceInfo.metaData?.getString(Constants.METADATA_BACKEND_INIT_ACTIVITY)?.let { createExternalIntent(serviceInfo.packageName, it) })
-}
-
-fun BackendInfo.loadIntents(activity: AppCompatActivity) {
-    if (aboutIntent.get() == null || settingsIntent.get() == null || initIntent.get() == null) {
-        val intent = when (type) {
-            BackendType.LOCATION -> Intent(ACTION_LOCATION_BACKEND)
-            BackendType.GEOCODER -> Intent(ACTION_GEOCODER_BACKEND)
-        }
-        intent.setPackage(serviceInfo.packageName);
-        intent.setClassName(serviceInfo.packageName, serviceInfo.name);
-        activity.bindService(intent, object : ServiceConnection {
-
-            override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                if (aboutIntent.get() == null) {
-                    aboutIntent.set(when (type) {
-                        BackendType.LOCATION -> LocationBackend.Stub.asInterface(service).aboutIntent
-                        BackendType.GEOCODER -> GeocoderBackend.Stub.asInterface(service).aboutIntent
-                    })
-                }
-                if (settingsIntent.get() == null) {
-                    settingsIntent.set(when (type) {
-                        BackendType.LOCATION -> LocationBackend.Stub.asInterface(service).settingsIntent
-                        BackendType.GEOCODER -> GeocoderBackend.Stub.asInterface(service).settingsIntent
-                    })
-                }
-                if (initIntent.get() == null) {
-                    initIntent.set(when (type) {
-                        BackendType.LOCATION -> LocationBackend.Stub.asInterface(service).initIntent
-                        BackendType.GEOCODER -> GeocoderBackend.Stub.asInterface(service).initIntent
-                    })
-                }
-                activity.unbindService(this)
-                loaded.set(true)
-            }
-
-            override fun onServiceDisconnected(name: ComponentName) {}
-        }, BIND_AUTO_CREATE)
-    }
-}
-
-private fun createExternalIntent(packageName: String, activityName: String): Intent {
-    val intent = Intent(Intent.ACTION_VIEW);
-    intent.setPackage(packageName);
-    intent.setClassName(packageName, activityName);
-    return intent;
-}
-
 private suspend fun BackendInfo.enable(fragment: Fragment): Boolean {
     val initIntent = initIntent.get()
     val activity = fragment.requireActivity() as AppCompatActivity
     if (initIntent != null) {
+        Log.d(TAG, "enable: $initIntent")
         val success = fragment.startActivityForResultCode(initIntent) == RESULT_OK
         if (!success) {
-            Log.w("USettings", "Failed to init backend $signedComponent")
+            Log.w("USettings", "Failed to init backend $initIntent")
             return false
         }
     }
-    when(type) {
+    when(type.get()) {
         BackendType.LOCATION -> {
             val client = LocationClient(activity, activity.lifecycle)
-            client.setLocationBackends(client.getLocationBackends().without(this) + signedComponent)
+            client.setLocationBackends(client.getLocationBackends())
         }
         BackendType.GEOCODER -> {
             val client = GeocodeClient(activity, activity.lifecycle)
-            client.setGeocodeBackends(client.getGeocodeBackends().without(this) + signedComponent)
+            client.setGeocodeBackends(client.getGeocodeBackends())
         }
     }
-    Log.w("USettings", "Enabled backend $signedComponent")
+    Log.w("USettings", "Enabled backend $initIntent")
     return true
 }
 
 private suspend fun BackendInfo.disable(fragment: Fragment): Boolean {
     val activity = fragment.requireActivity() as AppCompatActivity
-    when(type) {
+    when(type.get()) {
         BackendType.LOCATION -> {
             val client = LocationClient(activity, activity.lifecycle)
-            client.setLocationBackends(client.getLocationBackends().without(this))
+            client.setLocationBackends(client.getLocationBackends())
         }
         BackendType.GEOCODER -> {
             val client = GeocodeClient(activity, activity.lifecycle)
-            client.setGeocodeBackends(client.getGeocodeBackends().without(this))
+            client.setGeocodeBackends(client.getGeocodeBackends())
         }
     }
     return true

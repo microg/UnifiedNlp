@@ -15,17 +15,14 @@ import android.os.*
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-
-import java.util.ArrayList
-import java.util.Collections
-import java.util.Comparator
-
-import org.microg.nlp.api.Constants.ACTION_LOCATION_BACKEND
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import org.microg.nlp.api.LocationBackendService
 import org.microg.nlp.api.LocationCallback
+import org.microg.nlp.backend.dejavu.BackendService
 import org.microg.nlp.service.api.Constants
 import java.io.PrintWriter
 import java.util.concurrent.CopyOnWriteArrayList
+
 
 private const val TAG = "LocationFuser"
 
@@ -39,7 +36,11 @@ val Location.isValid: Boolean
 
 class LocationFuser(private val context: Context, private val lifecycle: Lifecycle, private val receiver: LocationReceiver) : LifecycleOwner {
 
-    private val backendHelpers = CopyOnWriteArrayList<LocationBackendHelper>()
+    companion object {
+        @JvmStatic
+        public val backendHelpers = CopyOnWriteArrayList<LocationBackendHelper>()
+    }
+
     private var fusing = false
     private var lastLocationReportTime: Long = 0
 
@@ -47,16 +48,18 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
         unbind()
         backendHelpers.clear()
         lastLocationReportTime = 0
-        for (backend in Preferences(context).locationBackends) {
-            Log.d(TAG, "Backend: $backend")
-            val parts = backend.split("/".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
-            if (parts.size >= 2) {
-                val intent = Intent(ACTION_LOCATION_BACKEND)
-                intent.setPackage(parts[0])
-                intent.setClassName(parts[0], parts[1])
-                backendHelpers.add(LocationBackendHelper(context, this, lifecycle, intent, if (parts.size >= 3) parts[2] else null))
+        for (backend in Constants.LOCATION_BACKENDS) {
+            Log.d(TAG, "reset: backend: $backend")
+            LogToFile.appendLog(TAG, "reset: backend $backend");
+            if (backend.equals("org.microg.nlp.backend.dejavu.BackendService")) {
+                backendHelpers.add(LocationBackendHelper(context, this, lifecycle, BackendService(context), null))
             }
         }
+        sendMessageToActivity()
+    }
+
+    private fun sendMessageToActivity() {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("LocationGeocodeBackendUpdated"))
     }
 
     suspend fun unbind() {
@@ -84,9 +87,11 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
     }
 
     suspend fun update() {
+        LogToFile.appendLog(TAG, "update2 start");
         var hasUpdates = false
         fusing = true
         for (handler in backendHelpers) {
+            LogToFile.appendLog(TAG, "update handler $handler");
             if (handler.update() != null)
                 hasUpdates = true
         }
@@ -96,6 +101,7 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
     }
 
     fun updateLocation() {
+        LogToFile.appendLog(TAG, "updateLocation start");
         val locations = ArrayList<Location>()
         for (handler in backendHelpers) {
             handler.lastLocation?.let { locations.add(it) }
@@ -114,6 +120,8 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
     }
 
     private fun mergeLocations(locations: List<Location>): Location? {
+        LogToFile.appendLog(TAG, "Merge locations: " + locations);
+
         val locations = locations.filter { it.isValid }.sortedWith(LocationComparator)
         if (locations.isEmpty()) return null
         if (locations.size == 1) return locations[0]
@@ -124,7 +132,7 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
             backendResults.add(backendResult)
         }
         if (backendResults.isNotEmpty()) {
-            location.extras.putParcelableArrayList(Constants.LOCATION_EXTRA_OTHER_BACKENDS, backendResults)
+            location.extras?.putParcelableArrayList(Constants.LOCATION_EXTRA_OTHER_BACKENDS, backendResults)
         }
         return location
     }
@@ -136,9 +144,10 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
     }
 
     fun getLastLocationForBackend(packageName: String?, className: String?, signatureDigest: String?): Location? =
-            backendHelpers.find {
+            backendHelpers.get(0)
+                    /*.find {
                 it.serviceIntent.`package` == packageName && it.serviceIntent.component?.className == className && (signatureDigest == null || it.signatureDigest == null || it.signatureDigest == signatureDigest)
-            }?.lastLocation
+            }?*/.lastLocation
 
     fun dump(writer: PrintWriter?) {
         writer?.println("${backendHelpers.size} backends:")
@@ -168,21 +177,25 @@ class LocationFuser(private val context: Context, private val lifecycle: Lifecyc
 }
 
 
-class LocationBackendHelper(context: Context, private val locationFuser: LocationFuser, lifecycle: Lifecycle, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, lifecycle, serviceIntent, signatureDigest) {
-    private val callback = Callback()
-    private var backend: AsyncLocationBackend? = null
+class LocationBackendHelper(context: Context, private val locationFuser: LocationFuser, lifecycle: Lifecycle, serviceIntent: LocationBackendService, signatureDigest: String?) : AbstractBackendHelper(TAG, context, lifecycle, serviceIntent, signatureDigest) {
+    public var backend: AsyncLocationBackend = AsyncLocationBackend(serviceIntent, Callback(), serviceIntent.toString() + "-location-backend")
+
     private var updateWaiting: Boolean = false
     var lastLocation: Location? = null
         private set(location) {
+            LogToFile.appendLog(TAG, "lastLocation setLocation $location");
             if (location == null || !location.hasAccuracy()) {
                 return
             }
-            if (location.extras == null) {
-                location.extras = Bundle()
+            var bundle = location.extras;
+            if (bundle == null) {
+                bundle = Bundle()
             }
-            location.extras.putString(Constants.LOCATION_EXTRA_BACKEND_PROVIDER, location.provider)
-            location.extras.putString(Constants.LOCATION_EXTRA_BACKEND_COMPONENT,
-                    serviceIntent.component!!.flattenToShortString())
+            bundle?.putString(Constants.LOCATION_EXTRA_BACKEND_PROVIDER, location.provider)
+            bundle?.putString(Constants.LOCATION_EXTRA_BACKEND_COMPONENT,
+                    serviceIntent.toString())
+
+            location.extras = bundle;
             location.provider = "network"
             if (!location.hasAccuracy()) {
                 location.accuracy = 50000f
@@ -203,25 +216,39 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
      * location, or if it is going to return a location asynchronously.
      */
     suspend fun update(): Location? {
+        LogToFile.appendLog(TAG, "update start");
         var result: Location? = null
+        if (backend != null) {
+            try {
+                LogToFile.appendLog(TAG, "update - backend not null");
+                LogToFile.appendLog(TAG, "update - backend $backend");
+                backend.open()
+                LogToFile.appendLog(TAG, "update:" + backend!!.getInitIntent())
+            } catch (e: java.lang.Exception) {
+                LogToFile.appendLog(TAG, "exception update get initIntent", e)
+            }
+        }
         if (backend == null) {
-            Log.d(TAG, "Not (yet) bound.")
+            LogToFile.appendLog(TAG, "Not (yet) bound.");
             updateWaiting = true
         } else {
             updateWaiting = false
             try {
+                LogToFile.appendLog(TAG, "update perform");
                 result = backend?.update()
                 if (result == null) {
-                    Log.d(TAG, "Received no location from ${serviceIntent.component!!.flattenToShortString()}")
+                    LogToFile.appendLog(TAG, "Received no location from ${serviceIntent}");
                 } else {
-                    Log.d(TAG, "Received location from ${serviceIntent.component!!.flattenToShortString()} with time ${result.time} (last was ${lastLocation?.time ?: 0})")
-                    if (this.lastLocation == null || result.time > this.lastLocation!!.time) {
+                    Log.d(TAG, "Received location from ${serviceIntent} with time ${result.time} (last was ${lastLocation?.time ?: 0})")
+                    LogToFile.appendLog(TAG,"Received location from ${serviceIntent} with time ${result.time} (last was ${lastLocation?.time ?: 0})")
+                            if (this.lastLocation == null || result.time > this.lastLocation!!.time) {
                         lastLocation = result
                         locationFuser.reportLocation()
                     }
                 }
             } catch (e: Exception) {
                 Log.w(TAG, e)
+                LogToFile.appendLog(TAG, e.message, e)
                 unbind()
             }
 
@@ -239,6 +266,7 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
     @Throws(RemoteException::class)
     public override suspend fun close() {
         Log.d(TAG, "Calling close")
+        LogToFile.appendLog(TAG, "Calling close")
         backend!!.close()
     }
 
@@ -248,24 +276,12 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
         super.onServiceConnected(name, service)
-        backend = AsyncLocationBackend(service, name.toShortString() + "-location-backend")
-        lifecycleScope.launchWhenStarted {
-            try {
-                Log.d(TAG, "Calling open")
-                backend!!.open(callback)
-                if (updateWaiting) {
-                    update()
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, e)
-                unbind()
-            }
-        }
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
         super.onServiceDisconnected(name)
-        backend = null
+        LogToFile.appendLog(TAG, "onServiceDisconnected")
+        //backend = null
     }
 
     override fun dump(writer: PrintWriter?) {
@@ -275,6 +291,7 @@ class LocationBackendHelper(context: Context, private val locationFuser: Locatio
 
     private inner class Callback : LocationCallback.Stub() {
         override fun report(location: Location?) {
+            LogToFile.appendLog(TAG, "report")
             val lastLocation = lastLocation
             if (location == null || lastLocation != null && location.time > 0 && location.time <= lastLocation.getTime())
                 return

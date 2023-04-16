@@ -23,7 +23,7 @@ public abstract class AbstractBackendService extends Service {
     /**
      * Called after a connection was setup
      */
-    protected void onOpen() {
+    public void onOpen() {
 
     }
 
@@ -34,17 +34,25 @@ public abstract class AbstractBackendService extends Service {
 
     }
 
-    protected Intent getInitIntent() {
+    public Intent getInitIntent() {
         return null;
     }
 
     @SuppressWarnings("SameReturnValue")
-    protected Intent getSettingsIntent() {
+    public Intent getSettingsIntent() {
         return null;
     }
 
     @SuppressWarnings("SameReturnValue")
-    protected Intent getAboutIntent() {
+    public Intent getAboutIntent() {
+        return null;
+    }
+
+    public String getBackendName() {
+        return null;
+    }
+
+    public String getDescription() {
         return null;
     }
 

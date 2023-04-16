@@ -7,21 +7,24 @@ package org.microg.nlp.service
 
 import android.content.Intent
 import android.location.Location
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.microg.nlp.api.AbstractBackendService
 import org.microg.nlp.api.LocationBackend
+import org.microg.nlp.api.LocationBackendService
 import org.microg.nlp.api.LocationCallback
-import java.lang.Exception
-import java.util.concurrent.CountDownLatch
-import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class AsyncLocationBackend(binder: IBinder, name: String = "location-backend-thread") : Thread(name) {
+class AsyncLocationBackend(binder: AbstractBackendService, callback: LocationCallback, name: String = "location-backend-thread") : Thread(name) {
     private lateinit var looper: Looper
     private lateinit var handler: Handler
     private val mutex = Mutex(true)
-    private val backend = LocationBackend.Stub.asInterface(binder)
+    private val backend: LocationBackendService = binder as LocationBackendService
+    private val callback: LocationCallback = callback
+    private var opened = false
 
     override fun run() {
         Looper.prepare()
@@ -37,7 +40,7 @@ class AsyncLocationBackend(binder: IBinder, name: String = "location-backend-thr
         suspendCoroutine {
             handler.post {
                 val result = try {
-                    Result.success(backend.updateWithOptions(options))
+                    Result.success(backend.update())
                 } catch (e: Exception) {
                     Result.failure<Location>(e)
                 }
@@ -72,13 +75,44 @@ class AsyncLocationBackend(binder: IBinder, name: String = "location-backend-thr
         }
     }
 
-    suspend fun open(callback: LocationCallback) {
+    suspend fun getBackendName(): String = mutex.withLock {
+        suspendCoroutine {
+            handler.post {
+                val result = try {
+                    Result.success(backend.getBackendName())
+                } catch (e: Exception) {
+                    Result.failure<String>(e)
+                }
+                it.resumeWith(result)
+            }
+        }
+    }
+
+    suspend fun getDescription(): String = mutex.withLock {
+        suspendCoroutine {
+            handler.post {
+                val result = try {
+                    Result.success(backend.getDescription())
+                } catch (e: Exception) {
+                    Result.failure<String>(e)
+                }
+                it.resumeWith(result)
+            }
+        }
+    }
+
+    suspend fun open() {
+        if (opened) {
+            return;
+        }
+        opened = true
         start()
         mutex.withLock {
             suspendCoroutine<Unit> {
                 handler.post {
                     val result = try {
-                        backend.open(callback)
+                        backend.callback = callback
+                        backend.onOpen()
                         Result.success(Unit)
                     } catch (e: Exception) {
                         Result.failure<Unit>(e)
@@ -103,6 +137,7 @@ class AsyncLocationBackend(binder: IBinder, name: String = "location-backend-thr
     }
 
     suspend fun update(): Location = mutex.withLock {
+        open()
         suspendCoroutine {
             handler.post {
                 val result = try {
@@ -120,7 +155,7 @@ class AsyncLocationBackend(binder: IBinder, name: String = "location-backend-thr
             suspendCoroutine<Unit> {
                 handler.post {
                     val result = try {
-                        backend.close()
+                        //backend.close()
                         Result.success(Unit)
                     } catch (e: Exception) {
                         Result.failure<Unit>(e)

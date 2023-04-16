@@ -9,20 +9,21 @@ import android.content.Intent
 import android.location.Address
 import android.os.Bundle
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.microg.nlp.api.GeocoderBackend
+import org.microg.nlp.api.GeocoderBackendService
 import java.util.concurrent.*
 import kotlin.coroutines.suspendCoroutine
 
-class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thread") : Thread(name) {
+class AsyncGeocoderBackend(binder: GeocoderBackendService, name: String = "geocoder-backend-thread") : Thread(name) {
     private val syncThreads: ThreadPoolExecutor = ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.SECONDS, LinkedBlockingQueue())
     private lateinit var looper: Looper
     private lateinit var handler: Handler
     private val mutex = Mutex(true)
-    private val backend = GeocoderBackend.Stub.asInterface(binder)
+    private val backend = binder
+    private var opened = false
 
     override fun run() {
         Looper.prepare()
@@ -35,12 +36,16 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     suspend fun open() {
+        if (opened) {
+            return;
+        }
+        opened = true
         start()
         mutex.withLock {
             suspendCoroutine<Unit> {
                 handler.post {
                     val result = try {
-                        backend.open()
+                        backend.onOpen()
                         Result.success(Unit)
                     } catch (e: Exception) {
                         Result.failure<Unit>(e)
@@ -52,6 +57,7 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     suspend fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int, locale: String?): List<Address> = mutex.withLock {
+        open()
         suspendCoroutine {
             handler.post {
                 val result = try {
@@ -69,6 +75,7 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     suspend fun getFromLocationName(locationName: String?, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String?): List<Address> = mutex.withLock {
+        open()
         suspendCoroutine {
             handler.post {
                 val result = try {
@@ -90,7 +97,7 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
             suspendCoroutine<Unit> {
                 handler.post {
                     val result = try {
-                        backend.close()
+                        //backend.close()
                         Result.success(Unit)
                     } catch (e: Exception) {
                         Result.failure<Unit>(e)
@@ -116,12 +123,41 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     suspend fun getInitIntent(): Intent = mutex.withLock {
+        open()
         suspendCoroutine {
             handler.post {
                 val result = try {
                     Result.success(backend.initIntent)
                 } catch (e: Exception) {
                     Result.failure<Intent>(e)
+                }
+                it.resumeWith(result)
+            }
+        }
+    }
+
+    suspend fun getBackendName(): String = mutex.withLock {
+        open()
+        suspendCoroutine {
+            handler.post {
+                val result = try {
+                    Result.success(backend.backendName)
+                } catch (e: Exception) {
+                    Result.failure<String>(e)
+                }
+                it.resumeWith(result)
+            }
+        }
+    }
+
+    suspend fun getDescription(): String = mutex.withLock {
+        open()
+        suspendCoroutine {
+            handler.post {
+                val result = try {
+                    Result.success(backend.description)
+                } catch (e: Exception) {
+                    Result.failure<String>(e)
                 }
                 it.resumeWith(result)
             }
@@ -142,10 +178,11 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     suspend fun getFromLocationWithOptions(latitude: Double, longitude: Double, maxResults: Int, locale: String?, options: Bundle?): List<Address> = mutex.withLock {
+        open()
         suspendCoroutine {
             handler.post {
                 val result = try {
-                    Result.success(backend.getFromLocationWithOptions(latitude, longitude, maxResults, locale, options))
+                    Result.success(backend.getFromLocation(latitude, longitude, maxResults, locale))
                 } catch (e: Exception) {
                     Result.failure<List<Address>>(e)
                 }
@@ -155,14 +192,15 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     fun getFromLocationWithOptionsSync(latitude: Double, longitude: Double, maxResults: Int, locale: String?, options: Bundle?): List<Address> = executeWithTimeout {
-        backend.getFromLocationWithOptions(latitude, longitude, maxResults, locale, options)
+        backend.getFromLocation(latitude, longitude, maxResults, locale)
     }
 
     suspend fun getFromLocationNameWithOptions(locationName: String?, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String?, options: Bundle?): List<Address> = mutex.withLock {
+        open()
         suspendCoroutine {
             handler.post {
                 val result = try {
-                    Result.success(backend.getFromLocationNameWithOptions(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale, options))
+                    Result.success(backend.getFromLocationName(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale))
                 } catch (e: Exception) {
                     Result.failure<List<Address>>(e)
                 }
@@ -172,7 +210,7 @@ class AsyncGeocoderBackend(binder: IBinder, name: String = "geocoder-backend-thr
     }
 
     fun getFromLocationNameWithOptionsSync(locationName: String?, maxResults: Int, lowerLeftLatitude: Double, lowerLeftLongitude: Double, upperRightLatitude: Double, upperRightLongitude: Double, locale: String?, options: Bundle?): List<Address> = executeWithTimeout {
-        backend.getFromLocationNameWithOptions(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale, options)
+        backend.getFromLocationName(locationName, maxResults, lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude, locale)
     }
 
     private fun <T> executeWithTimeout(timeout: Long = CALL_TIMEOUT, action: () -> T): T {

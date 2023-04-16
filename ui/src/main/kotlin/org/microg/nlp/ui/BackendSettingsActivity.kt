@@ -5,6 +5,7 @@
 
 package org.microg.nlp.ui
 
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -21,6 +22,7 @@ class BackendSettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_AppCompat);
         setContentView(R.layout.backend_settings_activity)
 
         appBarConfiguration = AppBarConfiguration(navController.graph)

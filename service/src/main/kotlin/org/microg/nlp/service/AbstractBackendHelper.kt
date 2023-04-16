@@ -8,7 +8,6 @@ package org.microg.nlp.service
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -16,9 +15,8 @@ import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import kotlinx.coroutines.CoroutineScope
+import org.microg.nlp.api.AbstractBackendService
 import java.io.PrintWriter
-
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
@@ -26,7 +24,7 @@ fun <T> Array<out T>?.isNotNullOrEmpty(): Boolean {
     return this != null && this.isNotEmpty()
 }
 
-abstract class AbstractBackendHelper(private val TAG: String, private val context: Context, private val lifecycle: Lifecycle, val serviceIntent: Intent, val signatureDigest: String?) : ServiceConnection, LifecycleOwner {
+abstract class AbstractBackendHelper(private val TAG: String, private val context: Context, private val lifecycle: Lifecycle, val serviceIntent: AbstractBackendService, val signatureDigest: String?) : ServiceConnection, LifecycleOwner {
     private var bound: Boolean = false
 
     protected abstract suspend fun close()
@@ -62,7 +60,7 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
         if (bound) {
             try {
                 Log.d(TAG, "Unbinding from: $serviceIntent")
-                context.unbindService(this)
+                //context.unbindService(this)
             } catch (e: Exception) {
                 Log.w(TAG, e)
             }
@@ -72,24 +70,8 @@ abstract class AbstractBackendHelper(private val TAG: String, private val contex
     }
 
     fun bind() {
-        if (!bound) {
-            Log.d(TAG, "Binding to: $serviceIntent sig: $signatureDigest")
-            if (serviceIntent.getPackage() == null) {
-                Log.w(TAG, "Intent is not properly resolved, can't verify signature. Aborting.")
-                return
-            }
-            val computedDigest = firstSignatureDigest(context, serviceIntent.getPackage(), "SHA-256")
-            if (signatureDigest != null && signatureDigest != computedDigest) {
-                Log.w(TAG, "Target signature does not match selected package ($signatureDigest != $computedDigest). Aborting.")
-                return
-            }
-            try {
-                context.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
-            } catch (e: Exception) {
-                Log.w(TAG, e)
-            }
+        Log.d(TAG, "Binding start: $bound")
 
-        }
     }
 
     open fun dump(writer: PrintWriter?) {

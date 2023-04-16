@@ -15,29 +15,37 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlinx.coroutines.launch
 import org.microg.nlp.api.Constants.ACTION_GEOCODER_BACKEND
+import org.microg.nlp.api.GeocoderBackendService
+import org.microg.nlp.backend.nominatim.BackendService
+import org.microg.nlp.service.api.Constants
 import java.io.PrintWriter
-import java.util.ArrayList
 import java.util.concurrent.CopyOnWriteArrayList
 
 private const val TAG = "GeocodeFuser"
 
 class GeocodeFuser(private val context: Context, private val lifecycle: Lifecycle) : LifecycleOwner {
-    private val backendHelpers = CopyOnWriteArrayList<GeocodeBackendHelper>()
+
+    companion object {
+        @JvmStatic
+        public val backendHelpers = CopyOnWriteArrayList<GeocodeBackendHelper>()
+    }
 
     suspend fun reset() {
         unbind()
         backendHelpers.clear()
-        for (backend in Preferences(context).geocoderBackends) {
-            val parts = backend.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (parts.size >= 2) {
-                val intent = Intent(ACTION_GEOCODER_BACKEND)
-                intent.setPackage(parts[0])
-                intent.setClassName(parts[0], parts[1])
-                backendHelpers.add(GeocodeBackendHelper(context, lifecycle, intent, if (parts.size >= 3) parts[2] else null))
+        for (backend in Constants.GEOCODE_BACKENDS) {
+            if (backend.equals("org.microg.nlp.backend.nominatim.BackendService")) {
+                backendHelpers.add(GeocodeBackendHelper(context, lifecycle, BackendService(context), null))
             }
         }
+        sendMessageToActivity()
+    }
+
+    private fun sendMessageToActivity() {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("LocationGeocodeBackendUpdated"))
     }
 
     fun bind() {
@@ -117,8 +125,8 @@ class GeocodeFuser(private val context: Context, private val lifecycle: Lifecycl
     override fun getLifecycle(): Lifecycle = lifecycle
 }
 
-class GeocodeBackendHelper(context: Context, lifecycle: Lifecycle, serviceIntent: Intent, signatureDigest: String?) : AbstractBackendHelper(TAG, context, lifecycle, serviceIntent, signatureDigest) {
-    private var backend: AsyncGeocoderBackend? = null
+class GeocodeBackendHelper(context: Context, lifecycle: Lifecycle, serviceIntent: GeocoderBackendService, signatureDigest: String?) : AbstractBackendHelper(TAG, context, lifecycle, serviceIntent, signatureDigest) {
+    public var backend: AsyncGeocoderBackend = AsyncGeocoderBackend(serviceIntent, serviceIntent.toString() + "-geocoder-backend")
 
     suspend fun getFromLocation(latitude: Double, longitude: Double, maxResults: Int,
                                 locale: String): List<Address> {
@@ -188,20 +196,11 @@ class GeocodeBackendHelper(context: Context, lifecycle: Lifecycle, serviceIntent
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
         super.onServiceConnected(name, service)
-        backend = AsyncGeocoderBackend(service, name.toShortString() + "-geocoder-backend")
-        lifecycleScope.launchWhenStarted {
-            try {
-                backend!!.open()
-            } catch (e: Exception) {
-                Log.w(TAG, e)
-                unbind()
-            }
-        }
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
         super.onServiceDisconnected(name)
-        backend = null
+        //backend = null
     }
 
     @Throws(RemoteException::class)

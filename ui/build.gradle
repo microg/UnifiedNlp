@@ -30,12 +30,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 11
+        targetCompatibility = 11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     lintOptions {
@@ -50,6 +50,9 @@ description = 'UnifiedNlp UI library for common configuration fragments'
 dependencies {
     implementation project(':api')
     implementation project(':client')
+    implementation project(':service')
+    implementation project(':app-dejavu')
+    implementation project(':app-nominatim')
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"

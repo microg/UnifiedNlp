@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="org.microg.nlp.backend.nominatim"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        tools:ignore="GoogleAppIndexingWarning">
+        <service
+            android:name=".BackendService"
+            android:label="@string/backend_name"
+            tools:ignore="ExportedService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.microg.nlp.GEOCODER_BACKEND" />
+            </intent-filter>
+            <meta-data
+                android:name="org.microg.nlp.BACKEND_SETTINGS_ACTIVITY"
+                android:value="org.microg.nlp.backend.nominatim.SettingsActivity" />
+        </service>
+
+        <activity android:name=".SettingsActivity"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

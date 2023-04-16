@@ -5,10 +5,8 @@
 
 package org.microg.nlp.ui
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager.GET_META_DATA
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
@@ -21,22 +19,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
+import org.microg.nlp.backend.dejavu.ui.MainActivity
+import org.microg.nlp.backend.nominatim.SettingsActivity
 import org.microg.nlp.client.GeocodeClient
 import org.microg.nlp.client.LocationClient
-import org.microg.nlp.service.api.LatLon
-import org.microg.nlp.service.api.ReverseGeocodeRequest
+import org.microg.nlp.service.Preferences
 import org.microg.nlp.ui.databinding.BackendDetailsBinding
 import org.microg.nlp.ui.model.BackendDetailsCallback
 import org.microg.nlp.ui.model.BackendInfo
 import org.microg.nlp.ui.model.BackendType
 import org.microg.nlp.ui.model.BackendType.GEOCODER
 import org.microg.nlp.ui.model.BackendType.LOCATION
-import java.util.*
 
 class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetailsCallback {
 
@@ -112,11 +108,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
     private var updateInProgress = false
     private suspend fun updateContent(entry: BackendInfo?) {
         if (entry == null) return
-        if (!entry.loaded.get()) {
-            entry.fillDetails(requireContext())
-            entry.loadIntents(requireActivity() as AppCompatActivity)
-        }
-        if (entry.type == LOCATION && entry.enabled.get()) {
+        if (entry.type.get() == LOCATION && entry.enabled.get()) {
             if (updateInProgress) {
                 Log.d(TAG, "Location update still in progress")
                 return
@@ -125,7 +117,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
             Log.d(TAG, "Connected to location client")
             updateInProgress = true
             try {
-                val locationTemp = locationClient.getLastLocationForBackend(
+                /*val locationTemp = locationClient.getLastLocationForBackend(
                     entry.serviceInfo.packageName,
                     entry.serviceInfo.name,
                     entry.firstSignatureDigest
@@ -178,7 +170,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
                     locationString = addressLine.toString()
                 }
                 binding.lastLocationString = locationString
-                binding.executePendingBindings()
+                binding.executePendingBindings()*/
             } finally {
                 locationClient.disconnect()
                 updateInProgress = false
@@ -203,20 +195,31 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
                 ?: return null
         val packageName = arguments?.getString("package") ?: return null
         val name = arguments?.getString("name") ?: return null
-        val serviceInfo = context?.packageManager?.getServiceInfo(ComponentName(packageName, name), GET_META_DATA)
-                ?: return null
         val enabledBackends = when (type) {
-            LOCATION -> locationClient.getLocationBackends()
-            GEOCODER -> geocodeClient.getGeocodeBackends()
+            LOCATION -> Preferences(requireContext()).locationBackends.toList()
+            GEOCODER -> Preferences(requireContext()).geocoderBackends.toList()
         }
-        val info = BackendInfo(serviceInfo, type, firstSignatureDigest(requireContext(), packageName))
-        info.enabled.set(enabledBackends.contains(info.signedComponent) || enabledBackends.contains(info.unsignedComponent))
+
+        val info = BackendInfo()
+        info.name.set(name)
+        info.appName.set(name)
+        info.enabled.set(enabledBackends.contains(info.name.get()))
+        info.type.set(type)
+        when (type) {
+            LOCATION -> info.settingsIntent.set(Intent(context, MainActivity::class.java))
+            GEOCODER -> info.settingsIntent.set(Intent(context, SettingsActivity::class.java))
+        }
+        for (enabledLocation: String in enabledBackends) {
+            val enabledLocationParts = enabledLocation.split("/".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
+            if ((enabledLocationParts[0].equals("org.microg.nlp")) && (enabledLocationParts[1].equals(info.name.get()))) {
+                info.enabled.set(true)
+            }
+        }
         return info
     }
 
     override fun onEnabledChange(entry: BackendInfo?, newValue: Boolean) {
         if (entry?.enabled?.get() == newValue) return
-        Log.d(TAG, "onEnabledChange: ${entry?.signedComponent} = $newValue")
         entry?.enabled?.set(newValue)
         lifecycleScope.launchWhenStarted {
             entry?.updateEnabled(this@BackendDetailsFragment, newValue)
@@ -228,7 +231,7 @@ class BackendDetailsFragment : Fragment(R.layout.backend_details), BackendDetail
         if (entry == null) return
         val intent = Intent()
         intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-        val uri = Uri.fromParts("package", entry.serviceInfo.packageName, null)
+        val uri = Uri.fromParts("package", entry.initIntent.get()?.`package`, null)
         intent.data = uri
         requireContext().startActivity(intent)
     }

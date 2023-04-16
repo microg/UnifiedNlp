@@ -36,7 +36,7 @@ public abstract class GeocoderBackendService extends AbstractBackendService {
      *               address should be localized in
      * @see android.location.Geocoder#getFromLocation(double, double, int)
      */
-    protected abstract List<Address> getFromLocation(double latitude, double longitude, int maxResults, String locale);
+    public abstract List<Address> getFromLocation(double latitude, double longitude, int maxResults, String locale);
 
     protected List<Address> getFromLocation(double latitude, double longitude, int maxResults, String locale, Bundle options) {
         return getFromLocation(latitude, longitude, maxResults, locale);
@@ -47,7 +47,7 @@ public abstract class GeocoderBackendService extends AbstractBackendService {
      *               address should be localized in
      * @see android.location.Geocoder#getFromLocationName(String, int, double, double, double, double)
      */
-    protected abstract List<Address> getFromLocationName(String locationName, int maxResults, double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude, String locale);
+    public abstract List<Address> getFromLocationName(String locationName, int maxResults, double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude, String locale);
 
 
     protected List<Address> getFromLocationName(String locationName, int maxResults, double lowerLeftLatitude, double lowerLeftLongitude, double upperRightLatitude, double upperRightLongitude, String locale, Bundle options) {
